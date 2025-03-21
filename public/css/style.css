@@ -225,6 +225,17 @@ a:hover {
     justify-content: center;
 }
 
+.boton-vista-test {
+    white-space: nowrap; 
+    display: inline-flex; 
+    align-items: center; 
+    padding: 10px 20px; 
+    width: auto; 
+    font-size: 1rem;
+    margin-top: 50px;
+    box-sizing: border-box; 
+}
+
 .btn.btn-primary:hover{
     background-color: rgb(24, 24, 69);
 }
@@ -248,8 +259,9 @@ nav {
 }
 
 .nombre-app {
-    margin-left: 1%;
-    font-size: 2.5vh; 
+    margin-left: 2%;
+    margin-top:2%;
+    font-size: 2.4vh; 
 }
 
 /* Con esto evitamos que el titulo de los enlaces del navbar se dividan en varias líneas */
@@ -266,7 +278,12 @@ nav {
 }
 
 .navbar-toggler-icon {
-    background-color: white; 
+    filter: invert(1);
+}
+
+.navbar-toggler {
+    position: relative;
+    top: -40px; /* Ajusta este valor según sea necesario */
 }
 
 .pregunta {
@@ -305,7 +322,7 @@ nav {
     }
 
     .logo{
-        width: 15%;
+        width: 10%;
     }
     
     .nombre-app {

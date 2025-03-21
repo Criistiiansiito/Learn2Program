@@ -69,12 +69,18 @@
             </div>
         </div>
         <div class="boton-test">
+<<<<<<< HEAD
             <form action="/previsualizacion-de-test" method="GET"> 
                 <input type="hidden" name="idCurso" value="<%= curso.id %>"> <!--Vamos a necesitar este valor para luego buscar el test asociado al curso-->
                 <button type="submit" class="btn btn-primary">
                     Acceder al test <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
+=======
+            <a href="/vista-test" class="btn btn-primary">
+                Acceder al test <i class="fas fa-arrow-right"></i>
+            </a>
+>>>>>>> e0a94e71817a0ac79503e97f6ca5fd5ad62d2395
         </div>
     <% } else { %>
         <!--  Si el curso no está en revisión y no tiene temas, mostramos que el curso no está disponible  -->

@@ -9,21 +9,19 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg ">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <div class="logo-container d-flex align-items-center">
                 <img src="/images/logo.png" alt="Logo de Learn2Program" class="logo">
                 <h1 class="nombre-app">Learn2Program</h1>
             </div>
     
-            <!-- Este es el boton que sale para móviles, osea las tres rallitas -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
     
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <!-- De momento este enlace, pero habria que cambiarlo -->
                     <li class="nav-item"><a class="nav-link" href="/">Ver Curso</a></li>
                 </ul>
             </div>
@@ -31,9 +29,21 @@
     </nav>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var navbarToggler = document.querySelector(".navbar-toggler");
+            var navbarCollapse = document.querySelector("#navbarNav");
+
+            document.addEventListener("click", function (event) {
+                var isClickInsideNavbar = navbarCollapse.contains(event.target) || navbarToggler.contains(event.target);
+
+                if (!isClickInsideNavbar && navbarCollapse.classList.contains("show")) {
+                    var bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                    bsCollapse.hide();
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
-
-
-
