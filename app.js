@@ -42,7 +42,11 @@ app.get('/', (req, res) => {
         res.render('ver-teoria-curso', { curso: curso, temas: temas});
      });
   });
-}); 
+});
+
+app.get('/nuevo-recordatorio', (req, res) => {
+  res.render("establecer-recordatorio");
+});
 
 // Iniciar el servidor en el puerto
 app.listen(port, () => {

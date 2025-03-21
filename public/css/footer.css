@@ -4,6 +4,7 @@ footer {
     padding: 1rem;
     font-size:100%;
     text-align: center; /* centra el contenido */
+    width: 100%;
 }
 
 @media (max-width: 800px) {

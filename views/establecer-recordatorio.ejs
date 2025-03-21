@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Recordatorio</title>
+    <link rel="stylesheet" href="/css/establecer-recordatorio.css" />
+  </head>
+
+  <body>
+    <%- include('fragments/header') %>
+    <div class="form-container">
+      <h2>Añadir un Recordatorio</h2>
+      <form action="/recordatorios" method="POST">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="ejemplo@email.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="frequency">Frecuencia</label>
+          <select id="frequency" name="frequency" required>
+            <option value="">Seleccionar frecuencia</option>
+            <option value="once">Una vez</option>
+            <option value="daily">Diaria</option>
+            <option value="weekly">Semanal</option>
+            <option value="monthly">Mensual</option>
+          </select>
+        </div>
+
+        <div class="form-group date-time-group">
+          <div class="input-wrapper">
+              <label for="date">Fecha</label>
+              <input type="date" id="date" name="date" disabled>
+          </div>
+          <div class="input-wrapper">
+              <label for="time">Hora</label>
+              <input type="time" id="time" name="time">
+          </div>
+      </div>
+
+        <div class="form-group">
+          <label for="name">Nombre</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Mi Recordatorio"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Descripcion</label>
+          <textarea
+            id="description"
+            name="description"
+            placeholder="Introducir detalles"
+          ></textarea>
+        </div>
+
+        <button type="submit">Añadir Recordatorio</button>
+      </form>
+    </div>
+    <%- include('fragments/footer') %>
+
+    <script>
+      const frequencySelect = document.getElementById("frequency");
+      const dateInput = document.getElementById("date");
+
+      frequencySelect.addEventListener("change", function () {
+        if (this.value === "once") {
+          dateInput.disabled = false;
+          dateInput.required = true;
+        } else {
+          dateInput.disabled = true;
+          dateInput.required = false;
+          dateInput.value = ""; // Clear the date when disabled
+        }
+      });
+    </script>
+  </body>
+</html>
