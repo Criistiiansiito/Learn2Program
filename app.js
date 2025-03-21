@@ -48,6 +48,18 @@ app.get('/nuevo-recordatorio', (req, res) => {
   res.render("establecer-recordatorio");
 });
 
+// Ruta para mostrar la página de pregunta-test.ejs
+app.get('/pregunta', (req, res) => {
+  console.log("GET /pregunta");
+  res.render('pregunta-test', {sol: false});
+});
+
+app.get('/retroalimentacion', (req, res) => {
+  console.log("GET /retroalimentacion");
+  res.render('pregunta-test', {sol: true});
+});
+
+
 // Iniciar el servidor en el puerto
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);

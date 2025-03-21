@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pregunta Test</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include('fragments/navbar') %>
+
+    <div class="container mt-5">
+        <form method="get" action="/retroalimentacion" onsubmit="return validateForm()">
+            <div class="card">
+                <div class="card-body pregunta">
+                    <p class="card-title">Enunciado de la pregunta</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion1" value="opcion1" <%= sol ? 'disabled' : '' %>>
+                        <label class="form-check-label" for="opcion1">
+                            Opción 1
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion2" value="opcion2" <%= sol ? 'disabled' : '' %>>
+                        <label class="form-check-label" for="opcion2">
+                            Opción 2
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion3" value="opcion3" <%= sol ? 'disabled checked' : '' %>>
+                        <label class="form-check-label" for="opcion3">
+                            Opción 3
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion4" value="opcion4" <%= sol ? 'disabled' : '' %>>
+                        <label class="form-check-label" for="opcion4">
+                            Opción 4
+                        </label>
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion1" onclick="removeSelection('opcion1')">Quitar</button>
+                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion2" onclick="removeSelection('opcion2')">Quitar</button>
+                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion3" onclick="removeSelection('opcion3')">Quitar</button>
+                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion4" onclick="removeSelection('opcion4')">Quitar</button>
+                </div>
+            </div>
+            <% if (sol) { %>
+                <div class="card mt-3">
+                    <div class="card-body retroalimentacion">
+                        <p>RETROALIMENTADCIÓN Un texto es una composición de signos codificados en un sistema de escritura que forma una unidad de sentido. También es una composición de caracteres imprimibles generados por un algoritmo de cifrado que, aunque no tienen sentido para cualquier persona, sí puede ser descifrado por su destinatario original.</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <a href="/pregunta" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
+                </div>
+            <% } else { %>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-personalizado mt-3">Responder</button>
+                </div>
+            <% } %>
+        </form>
+    </div>
+
+    <script>
+      function validateForm() {
+    const options = document.querySelectorAll('.form-check-input');
+    for (let option of options) {
+        if (option.checked) {
+            return true;
+        }
+    }
+
+    let alertMessage = document.getElementById('alertMessage');
+
+    if (!alertMessage) {
+        alertMessage = document.createElement('div');
+        alertMessage.id = 'alertMessage';
+        alertMessage.className = 'alert alert-danger alert-dismissible fade show mt-3';
+        alertMessage.textContent = 'Por favor, seleccione una opción antes de enviar.';
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'close';
+        closeButton.setAttribute('data-dismiss', 'alert');
+        closeButton.setAttribute('aria-label', 'Close');
+
+        const closeSpan = document.createElement('span');
+        closeSpan.setAttribute('aria-hidden', 'true');
+        closeSpan.innerHTML = '&times;';
+
+        closeButton.appendChild(closeSpan);
+        alertMessage.appendChild(closeButton);
+
+        document.querySelector('.card').after(alertMessage);
+    } else {
+        alertMessage.classList.remove('d-none'); // Mostrarla si ya existe
+    }
+
+    // Ocultar la alerta después de 5 segundos
+    setTimeout(() => {
+        if (alertMessage) {
+            alertMessage.classList.add('d-none');
+        }
+    }, 5000);
+
+    return false;
+}
+
+    </script>
+
+    <script>
+        document.querySelectorAll('.form-check-input').forEach(input => {
+            input.addEventListener('change', function() {
+                document.querySelectorAll('.btn-link').forEach(button => button.classList.add('d-none'));
+                if (this.checked) {
+                    document.getElementById('remove' + this.id.charAt(0).toUpperCase() + this.id.slice(1)).classList.remove('d-none');
+                }
+            });
+        });
+
+        function removeSelection(id) {
+            document.getElementById(id).checked = false;
+            document.getElementById('remove' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('d-none');
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <%- include('fragments/footer') %>
+    
+</body>
+</html></div>
