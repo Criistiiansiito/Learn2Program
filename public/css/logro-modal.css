@@ -1,0 +1,13 @@
+.text {
+    font-size: 28px;
+    font-weight: bold;
+    animation: colorChange 3s linear infinite;
+}
+
+@keyframes colorChange {
+    0% { color: red; }
+    25% { color: orange; }
+    50% { color: green; }
+    75% { color: blue; }
+    100% { color: red; }
+}
