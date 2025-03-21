@@ -29,7 +29,7 @@
 </head>
 <body>
 
-    <%- include('fragments/navbar') %>
+    <%- include('fragments/header') %>
 
 <% if (curso.enRevision) { %>
         <!-- Si la teoría está siendo revisada por un profesional mostramos este mensaje -->
@@ -67,6 +67,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="boton-test">
+        <%- include('fragments/go_test_button')%>
     </div>
 <% } else { %>
     <!--  Si el curso no está en revisión y no tiene temas, mostramos que el curso no está disponible  -->
@@ -131,8 +134,6 @@
         }
     }
 </script>
-
-<%- include('fragments/go_test_button') %>
 
 <%- include('fragments/footer') %>
 
