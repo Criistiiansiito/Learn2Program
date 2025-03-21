@@ -55,6 +55,14 @@ app.get('/retroalimentacion', (req, res) => {
   res.render('pregunta-test', {sol: true});
 });
 
+app.get('/vista-test', (req, res) => {
+  console.log("GET /vista-test");
+ 
+        console.log("Carga de la página para ver test");
+        res.render('vista-test');
+     
+  
+}); 
 
 // Iniciar el servidor en el puerto
 app.listen(port, () => {
