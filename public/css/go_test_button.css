@@ -1,0 +1,6 @@
+.btn.btn-primary{
+    border-radius: 20px;
+}
+.btn.btn-primary:hover{
+    background-color: rgb(24, 24, 69);
+}
