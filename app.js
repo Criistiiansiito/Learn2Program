@@ -43,6 +43,7 @@ app.get('/', (req, res) => {
   });
 }); 
 
+
 // Ruta para mostrar la página de pregunta-test.ejs
 app.get('/obtenerPreguntasTest', (req, res) => {
   //se llamará cuando se implemente la vista intermedia entre el botón realizar test
@@ -50,10 +51,12 @@ app.get('/obtenerPreguntasTest', (req, res) => {
   res.render('pregunta-test', {sol: false});
 });
 
+
 app.get('/retroalimentacion', (req, res) => {
   console.log("GET /retroalimentacion");
   res.render('pregunta-test', {sol: true});
 });
+
 
 app.get('/vista-test', (req, res) => {
   console.log("GET /vista-test");
@@ -63,8 +66,6 @@ app.get('/vista-test', (req, res) => {
      
   
 }); 
-
-
 
 //ver informacion entes de realizar test
 app.get('/previsualizacion-de-test', (req,res)=>{
@@ -131,7 +132,7 @@ app.get('/obtener-preguntas-test', (req, res) => {
     }
 
     // Renderizar la vista 'ver-test' pasando la lista de preguntas con sus respuestas
-    res.render('ver-test', { preguntas: results });
+    res.render('pregunta-test', { preguntas: results });
 
     /*esto va a devolver :  {
     "idPregunta": 1,
