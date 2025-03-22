@@ -151,31 +151,54 @@ app.get('/obtener-preguntas-test', (req, res) => {
 });
 
 app.get('/obtener-logro-curso', (req, res) => {
-  const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
-  pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
+  
+  const consultarTestId = 'SELECT id from test where idCurso = ?;';
+  pool.query(consultarTestId, [app.locals.idCurso], (err, results) => {
     if (err) {
-      console.error('Error en la consulta de logros:', err);
+      console.error('Error en la consulta del id test:', err);
       return res.status(500).send('Error interno del servidor');
     }
+    let testId = results[0];
 
-    let logro = results[0];
-    
-    // Formatear la fecha de obtención del logro
-    if (logro && logro.fechaObtencion) {
-      logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
-    }
-    console.log(logro);    
-      const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
-      pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
-        if (err) {
-          return res.status(500).send('Error al obtener los datos: ' + err.message);
-        }
-        
-        console.log('p3');
-        res.render('obtencion-logros', { logro: logro,
-          nombreCurso: results2[0]?.nombre || 'Curso Desconocido' 
+    const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
+    pool.query(consultaIntentos, [testId], (err, resultsIntentos) => {
+      if (err) {
+        console.error('Error en consulta de intentos:', err);
+        return;
+      }
+      let intento = resultsIntentos[0];
+      let nota = intento.nota;
+
+      console.log(nota);
+      //a partir d aqui lo que ya estaba
+
+      const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
+      pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de logros:', err);
+        return res.status(500).send('Error interno del servidor');
+      }
+
+      let logro = results[0];
+
+      // Formatear la fecha de obtención del logro
+      if (logro && logro.fechaObtencion) {
+        logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
+      }
+      console.log(logro);    
+        const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
+        pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
+          if (err) {
+            return res.status(500).send('Error al obtener los datos: ' + err.message);
+          }
+          
+          console.log('p3');
+          res.render('obtencion-logros', { logro: logro, nota: nota,
+            nombreCurso: results2[0]?.nombre || 'Curso Desconocido' 
+          });
         });
       });
+    });
   });
 });
 
