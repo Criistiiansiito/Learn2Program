@@ -3,9 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const pool = require('./database/connection');
+const moment = require('moment');  
+
 
 const app = express();
 const port = 8080;
+
+//Variable que almancenará el idCurso durante toda la ejecucion
+app.locals.idCurso = 1;
 
 // Configuración para que el servidor sepa redirigir correctamente a las plantillas
 app.set('view engine', 'ejs');
@@ -108,8 +113,6 @@ app.get('/previsualizacion-de-test', (req,res)=>{
 });
 
 
-
-
 //ver test
 app.get('/obtener-preguntas-test', (req, res) => {
   const idTest = req.body.idTest; // El ID del test lo envías desde el frontend
@@ -148,21 +151,31 @@ app.get('/obtener-preguntas-test', (req, res) => {
 });
 
 app.get('/obtener-logro-curso', (req, res) => {
-  const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ? ;';
+  const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
   pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
     if (err) {
-      console.error('Error en la consulta de preguntas:', err);
+      console.error('Error en la consulta de logros:', err);
       return res.status(500).send('Error interno del servidor');
     }
-    const logro = results[0];
-    const consultarNombreCurso = 'SELECT nombre FROM CURSOS WHERE id = ? ;';
-    pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
-      if (err) {
-        res.status(500).send('Error al obtener los datos: ' + err.message);
-          return;
-      }
-      res.render('obtencion-logros', {logro: logro, nombreCurso: results2});
-    });
+
+    let logro = results[0];
+    
+    // Formatear la fecha de obtención del logro
+    if (logro && logro.fechaObtencion) {
+      logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
+    }
+    console.log(logro);    
+      const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
+      pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
+        if (err) {
+          return res.status(500).send('Error al obtener los datos: ' + err.message);
+        }
+        
+        console.log('p3');
+        res.render('obtencion-logros', { logro: logro,
+          nombreCurso: results2[0]?.nombre || 'Curso Desconocido' 
+        });
+      });
   });
 });
 

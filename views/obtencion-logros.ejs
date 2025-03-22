@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Test</title>
+    <link rel="stylesheet" href="/css/logro-modal.css">
+    <link rel="stylesheet" href="/css/obtencion-logros.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+    <%- include('fragments/navbar') %>
+
+    <!-- Contenedor para mensaje de finalización del test -->
+    <div class="row justify-content-center flex-grow-1 m-5">
+        <div class="col-12 col-md-6 text-center p-5 rounded-3 custom-box shadow-lg">
+            <h2 class="custom-title mb-4">Test completado <i class="fas fa-check-circle"></i></h2>
+            <hr class="custom-line"> <!-- Línea horizontal -->
+            <p class="custom-text mb-4"><strong>¡Enhorabuena por terminar el test! Haz clic en el siguiente botón para ver tus resultados.</strong></p>
+            <button type="button" class="btn btn-success btn-lg mt-3 custom-button" data-bs-toggle="modal" data-bs-target="#logro-modal">
+                Ver resultados <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            
+        </div>
+        
+        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+            <img src="/images/logo-fin-test.png" 
+                 class="img-fluid w-75 rounded" 
+                 alt="Logo-fin-test">
+        </div>
+    </div>
+    
+    
+    
+        <!-- Modal -->
+    <div class="modal" id="logro-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-white">
+            <h5 class="modal-title">
+                <i class="fas fa-trophy me-2"></i> Logro obtenido
+            </h5>
+            <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+            <% if (logro) { %>
+                <p class="text"><i class="fas fa-check-circle"></i> <%= logro.mensajeMotivacionalCursoOK %></p>
+
+                <strong>Has obtenido la siguiente logro: </strong><br><br>
+                <p>
+                <img src="<%= logro.imagen %>" 
+                    class="img-fluid rounded-circle mx-auto  w-25" 
+                    alt="Logo-modal" >
+                </p>
+                <p class="p">Fecha de obtención:</p><strong><%= logro.fechaObtencion %></strong>
+                <% } else { %>
+                <p class="text-danger text"><i class="fas fa-times-circle"></i> No se ha encontrado un logro para este curso.</p>
+            <% } %>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                <i class="fas fa-thumbs-up"></i> Aceptar
+            </button>
+            </div>
+        </div>
+        </div>
+    </div>
+  
+
+    <%- include('fragments/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      var logroModal = document.getElementById('logro-modal');
+      logroModal.addEventListener('shown.bs.modal', function () {
+        var audio = new Audio('/sonidos/logro-modal.mp3');
+        audio.play();
+      });
+    </script>
+
+</body>
+</html>
