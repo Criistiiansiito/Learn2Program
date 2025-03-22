@@ -52,13 +52,15 @@
             <% if (logro) { %>
                 <p class="text"><i class="fas fa-check-circle"></i> <%= logro.mensajeMotivacionalCursoOK %></p>
 
-                <strong>Has obtenido la siguiente logro: </strong><br><br>
+                <strong>Has obtenido el siguiente logro: </strong><br>
                 <p>
                 <img src="<%= logro.imagen %>" 
                     class="img-fluid rounded-circle mx-auto  w-25" 
                     alt="Logo-modal" >
                 </p>
-                <p class="p">Fecha de obtención:</p><strong><%= logro.fechaObtencion %></strong>
+                <p class="p">Curso :   <strong><%= nombreCurso%></strong> superado</p>
+                <p class="p">Fecha de obtención :    <strong><%= logro.fechaObtencion %></strong></p>
+
                 <% } else { %>
                 <p class="text-danger text"><i class="fas fa-times-circle"></i> No se ha encontrado un logro para este curso.</p>
             <% } %>
