@@ -67,17 +67,13 @@ app.get('/vista-test', (req, res) => {
   
 }); 
 
-//ver informacion entes de realizar test
+//Ver información de intentos y vista para poder intentar el test
 app.get('/previsualizacion-de-test', (req,res)=>{
 
-  //Renderizará a la vista dinámica de Cristian
   //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
   const idCurso = req.query.idCurso;
 
-
-  //tabla intentos(id, idTest, nota,preguntasAcertadas, fechaFin,)
-	//tabla test(id, titulo, idCurso)
-  //seleccionamos el test del curso
+  //Seleccionamos el test del curso y los intentos asociados a ese test
   const consultaTestdeCurso = 'SELECT * FROM test WHERE idCurso = ?;';
   const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
 
@@ -102,10 +98,9 @@ app.get('/previsualizacion-de-test', (req,res)=>{
         return;
       }
       // en este punto resultsIntentos contendrá los resultados de la consulta de intentos
-      res.render('previsualizar-test', { idTest: idTest, numIntentos: resultsIntentos.length, intentos: resultsIntentos , preguntasAcertadas : test.preguntasAcertadas});
+      res.render('previsualizar-test', { idTest: idTest, tituloTest: test.titulo ,numIntentos: resultsIntentos.length, intentos: resultsIntentos , preguntasAcertadas : test.preguntasAcertadas});
     });
   });
-  //HACER RENDER A LA VISTA  DE ERIC Y CRISTIAN
 });
 
 

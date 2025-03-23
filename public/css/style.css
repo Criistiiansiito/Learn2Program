@@ -298,6 +298,7 @@ nav {
 
 .btn-personalizado {
     background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    border-radius: 40px;
     border-color: #ffffff;
     color: white; 
     transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
@@ -309,6 +310,30 @@ nav {
     color: white;
 }
 
+i{
+    margin-right:10px;
+}
+
+.table-custom th {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    color: #ffffff; 
+}
+
+hr.linea-separacion {
+    border: 0;
+    border-top: 1px solid rgb(17, 39, 54); 
+    margin: 30px 0; 
+    opacity: 1; 
+}
+                
+.recuadro-gris {
+    border: 2px solid #ccc; 
+    border-radius: 10px; 
+    padding: 15px;
+    background-color: #cacaca; 
+    font-size: 1.2rem; 
+    height:150px;
+}
 
 @media (max-width: 800px) {
     /* Contenido del acordeón oculto por defecto */
