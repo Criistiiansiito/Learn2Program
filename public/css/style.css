@@ -213,11 +213,145 @@ a:hover {
     margin-bottom:2%;
 }
 
+.btn.btn-primary{
+    border-radius: 20px;
+    width:150px;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.boton-test{
+    display:flex;
+    justify-content: center;
+}
+
+.boton-vista-test {
+    white-space: nowrap; 
+    display: inline-flex; 
+    align-items: center; 
+    padding: 10px 20px; 
+    width: auto; 
+    font-size: 1rem;
+    margin-top: 50px;
+    box-sizing: border-box; 
+}
+
+.btn.btn-primary:hover{
+    background-color: rgb(24, 24, 69);
+}
+
+footer {
+    background: linear-gradient(to right, rgb(11, 26, 36), rgb(19, 45, 54)); /* degradado de izquierda a derecha */
+    color: white; /* Color del texto */
+    padding: 1rem;
+    font-size:100%;
+    text-align: center; /* centra el contenido */
+}
+
+nav {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    color: white;
+    padding-left: 0rem;
+}
+
+.logo {
+    width: 6%; 
+}
+
+.nombre-app {
+    margin-left: 2%;
+    margin-top:2%;
+    font-size: 2.4vh; 
+}
+
+/* Con esto evitamos que el titulo de los enlaces del navbar se dividan en varias líneas */
+.navbar-nav .nav-item {
+    white-space: nowrap; 
+}
+
+.navbar-nav .nav-link {
+    color: white; 
+}
+
+.navbar-nav .nav-link:hover {
+    color: #6c757d;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+.navbar-toggler {
+    position: relative;
+    top: -40px; /* Ajusta este valor según sea necesario */
+}
+
+.pregunta {
+    background-color: #b3cde0;
+    border: 1px solid #7195bb;
+}
+
+.retroalimentacion {
+    background-color: #f5e6a1;
+    border: 1px solid #e2cb6f;
+}
+
+.btn-personalizado {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    border-radius: 40px;
+    border-color: #ffffff;
+    color: white; 
+    transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.btn-personalizado:hover {
+    background: linear-gradient(to right, rgba(17, 39, 54, 0.411), rgba(19, 45, 54, 0.438));
+    border-color: #ffffff;
+    color: white;
+}
+
+i{
+    margin-right:10px;
+}
+
+.table-custom th {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    color: #ffffff; 
+}
+
+hr.linea-separacion {
+    border: 0;
+    border-top: 1px solid rgb(17, 39, 54); 
+    margin: 30px 0; 
+    opacity: 1; 
+}
+                
+.recuadro-gris {
+    border: 2px solid #ccc; 
+    border-radius: 10px; 
+    padding: 15px;
+    background-color: #cacaca; 
+    font-size: 1.2rem; 
+    height:150px;
+}
+
 @media (max-width: 800px) {
     /* Contenido del acordeón oculto por defecto */
     .accordion-content {
         padding: 15px;
         font-size:90%;
     }
-}
 
+    .footer{
+        font-size:80%;
+    }
+
+    .logo{
+        width: 10%;
+    }
+    
+    .nombre-app {
+        margin-left: 3%;
+        font-size: 2vh; 
+    }
+}

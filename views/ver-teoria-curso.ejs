@@ -16,7 +16,7 @@
     <!-- FONT AWESOME (Para iconos) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <link rel="stylesheet" href="/css/ver-teoria-curso.css">
+    <link rel="stylesheet" href="/css/style.css">
     
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 
@@ -29,9 +29,9 @@
 </head>
 <body>
 
-    <%- include('fragments/header') %>
+    <%- include('fragments/navbar') %>
 
-<% if (curso.enRevision) { %>
+    <% if (curso.enRevision) { %>
         <!-- Si la teoría está siendo revisada por un profesional mostramos este mensaje -->
         <div class="container contenido">
             <div class="container contenedor-principal mt-5">
@@ -69,7 +69,7 @@
         </div>
     </div>
     <div class="boton-test">
-        <%- include('fragments/go_test_button')%>
+       <!-- include('fragments/go_test_button') -->
     </div>
 <% } else { %>
     <!--  Si el curso no está en revisión y no tiene temas, mostramos que el curso no está disponible  -->
@@ -86,56 +86,56 @@
     </div>
 <% } %>
 
-<a href="#" class="scroll-to-top" id="scrollToTop"><i class="fas fa-chevron-up"></i></a>
+    <a href="#" class="scroll-to-top" id="scrollToTop"><i class="fas fa-chevron-up"></i></a>
 
-<script>
+    <script>
 
-    //Iniciamos para poder usar las animaciones
-    AOS.init();
+        //Iniciamos para poder usar las animaciones
+        AOS.init();
 
-    // Mostrar u ocultar la flechita según la posición de scroll 
-    window.addEventListener('scroll', function() {
-        const scrollToTop = document.getElementById('scrollToTop');
-        if (window.pageYOffset > 300) {
-            scrollToTop.classList.add('show');
-        } else {
-            scrollToTop.classList.remove('show');
-        }
-    });
-
-    // Al hacer clic en la flechita nos lleva lentamente al inicio de la página (ideal para cuando hay mucha información y estamos muy abajo)
-    document.getElementById('scrollToTop').addEventListener('click', function(e) {
-        e.preventDefault();
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+        // Mostrar u ocultar la flechita según la posición de scroll 
+        window.addEventListener('scroll', function() {
+            const scrollToTop = document.getElementById('scrollToTop');
+            if (window.pageYOffset > 300) {
+                scrollToTop.classList.add('show');
+            } else {
+                scrollToTop.classList.remove('show');
+            }
         });
-    });
 
-    // Función para abrir y cerrar el contenido del acordeón
-    function toggleAccordion(index) {
-        var content = document.getElementById('content-' + index);
-        var button = content.previousElementSibling.querySelector('.accordion-button');
-        var icon = button.querySelector('.accordion-icon'); // Seleccionamos el ícono de la flecha
+        // Al hacer clic en la flechita nos lleva lentamente al inicio de la página (ideal para cuando hay mucha información y estamos muy abajo)
+        document.getElementById('scrollToTop').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
 
-        // Según esté abierto o cerrado ese "tema"
-        if (content.style.display === "block") {
-            // Si está abierto lo cerramos 
-            content.style.display = "none";
-            content.classList.remove('show');
-            button.classList.add('collapsed');  
-            icon.style.transform = 'rotate(0deg)'; 
-        } else {
-            // Si está cerrado lo abrimos 
-            content.style.display = "block";
-            content.classList.add('show');
-            button.classList.remove('collapsed');  
-            icon.style.transform = 'rotate(180deg)';  
+        // Función para abrir y cerrar el contenido del acordeón
+        function toggleAccordion(index) {
+            var content = document.getElementById('content-' + index);
+            var button = content.previousElementSibling.querySelector('.accordion-button');
+            var icon = button.querySelector('.accordion-icon'); // Seleccionamos el ícono de la flecha
+
+            // Según esté abierto o cerrado ese "tema"
+            if (content.style.display === "block") {
+                // Si está abierto lo cerramos 
+                content.style.display = "none";
+                content.classList.remove('show');
+                button.classList.add('collapsed');  
+                icon.style.transform = 'rotate(0deg)'; 
+            } else {
+                // Si está cerrado lo abrimos 
+                content.style.display = "block";
+                content.classList.add('show');
+                button.classList.remove('collapsed');  
+                icon.style.transform = 'rotate(180deg)';  
+            }
         }
-    }
-</script>
+    </script>
 
-<%- include('fragments/footer') %>
+    <%- include('fragments/footer') %>
 
 </body>
 </html>

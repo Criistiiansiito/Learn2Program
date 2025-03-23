@@ -5,9 +5,12 @@ const path = require('path');
 const servicioIntento = require('./servicios/servicioIntento');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
+const Pregunta = require('./modelos/Pregunta');
+const Respuesta = require('./modelos/Respuesta');
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const StatusCodes = require('http-status-codes');
+const { PreguntaNoEncontradaError } = require('./utils/errores');
 
 const app = express();
 const port = 8080;
@@ -22,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Necesario para los intentos de las preguntas del test
 app.use(express.urlencoded({ extended: true }));
 
-// Ruta principal (de momento se quedará así para la primera historia de usuario)
+// Home en primera historia de usuario
 app.get('/', async (req, res) => {
 
   // Carga un curso junto con sus temas
@@ -49,13 +52,197 @@ app.post('/intento-test/:idIntentoTest/pregunta/:idPregunta/intento-pregunta', a
     // Delegamos a la capa de servicio
     const preguntaCorregida = await servicioIntento.anyadirIntento(intento);
     console.log(JSON.stringify(preguntaCorregida));
-    res.render('pregunta-test', { preguntaCorregida: preguntaCorregida, sol: true }); // sol: true, pregunta corregida
+    res.status(200).send(preguntaCorregida); // Provisional. Cambiar por render
+    // res.render('pregunta-test', { preguntaCorregida: preguntaCorregida, sol: true }); // sol: true, pregunta corregida
   } catch (error) {
     next(error); // Llamamos al (middleware) manejador de errores/excepciones
   }
 })
 
-// Añadimos el manejador de errores
+
+// Ruta para mostrar la página de pregunta-test.ejs
+app.get('/obtenerPreguntasTest', (req, res) => {
+  //se llamará cuando se implemente la vista intermedia entre el botón realizar test
+  console.log("GET /pregunta");
+  res.render('pregunta-test', { sol: false });
+});
+
+
+app.get('/retroalimentacion', async (req, res) => {
+
+  // ### Con Sequelize (y manejo de excepciones) ###
+  // try {
+  //   // Obtenemos la pregunta, junto con sus respuestas, por id
+  //   const pregunta = await Pregunta.findByPk(req.query.idPregunta, {
+  //     include: [{
+  //       model: Respuesta, // Indicamos que carge las respuestas
+  //       as: "respuestas" // Indicamos el nombre que tendrá la lista de respuestas en el objeto pregunta
+  //     }]
+  //   })
+    
+  //   if (!pregunta) {
+  //     // Si el idPregunta proporcionado no se corresponde con ninguna pregunta, lanzamos una excepcion
+  //     throw new PreguntaNoEncontradaError(req.query.idPregunta);
+  //   }
+    
+  //   // Ya tienes la pregunta con retroalimentacion
+  //   res.render('pregunta-test', {
+  //     pregunta: pregunta,
+  //     sol: true,
+  //   });
+    
+  // } catch (error) {
+  //   next(manejadorErrores);
+  // }
+  
+  // ### A la vieja usanza ###
+  const idTest = req.query.idTest;
+  let offset = parseInt(req.query.numeroPregunta, 10);
+  // Vuelves a hacer la consulta a la DB
+  pool.query(`
+    SELECT 
+      p.id AS idPregunta,
+      p.enunciado, 
+      p.retroalimentacion,
+      o.idOpcion, 
+      o.respuesta1, 
+      o.respuesta2, 
+      o.respuesta3, 
+      o.respuesta4, 
+      r.respuestaCorrecta
+    FROM Preguntas p
+    JOIN Respuestas r ON p.id = r.idPregunta
+    JOIN Opciones o ON r.idOpcion = o.idOpcion
+    WHERE p.idTest = ?
+    ORDER BY p.id
+    LIMIT 1 OFFSET ?;
+  `, [idTest, offset], (err, results) => {
+    if (err) return res.status(500).send('Error en la DB');
+
+    if (results.length === 0) {
+      return res.send('No existe esa pregunta');
+    }
+
+    const pregunta = results[0];
+
+    // Ya tienes la pregunta con retroalimentacion
+    res.render('pregunta-test', {
+      pregunta,
+      sol: true,
+      idTest,
+      numeroPregunta: offset
+    });
+  });
+});
+
+
+
+app.get('/vista-test', (req, res) => {
+  console.log("GET /vista-test");
+
+  console.log("Carga de la página para ver test");
+  res.render('vista-test');
+
+
+});
+
+//ver informacion entes de realizar test
+app.get('/previsualizacion-de-test', (req, res) => {
+
+  //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
+  const idCurso = req.query.idCurso;
+
+  //Seleccionamos el test del curso y los intentos asociados a ese test
+  const consultaTestdeCurso = 'SELECT * FROM test WHERE idCurso = ?;';
+  const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
+
+  //AÑADIR SERGIO V : Implementar toda la lógica para obtener los intentos realizados por test.
+  pool.query(consultaTestdeCurso, [idCurso], (err, resultsTest) => {
+    if (err) {
+      console.error('Error en consulta de test:', err);
+      return;
+    }
+    // Aquí, resultsTest contendrá los resultados de la consulta del test
+    console.log('Resultado de la consulta del test:', resultsTest);
+
+    // Ahora, usando el idTest de los resultados obtenidos en la consulta anterior
+    const test = resultsTest[0]; //cogemos el test
+    const idTest = test.id; // cogemos idTest que se usará para buscar las preguntas
+
+    // Conusltar información del idTest
+    // Posible idea :)
+    pool.query(consultaIntentos, [idTest], (err, resultsIntentos) => {
+      if (err) {
+        console.error('Error en consulta de intentos:', err);
+        return;
+      }
+      // en este punto resultsIntentos contendrá los resultados de la consulta de intentos
+      res.render('previsualizar-test', { idTest: idTest, tituloTest: test.titulo, numIntentos: resultsIntentos.length, intentos: resultsIntentos, preguntasAcertadas: test.preguntasAcertadas });
+    });
+  });
+});
+
+
+
+
+//ver test
+app.get('/obtener-preguntas-test/:idTest/:numeroPregunta', (req, res) => {
+  const { idTest, numeroPregunta } = req.params; // El ID del test y el numero de la pregunta lo envías desde el url
+
+  if (!idTest) {
+    return res.status(400).json({ error: "El idTest es obligatorio" });
+  }
+
+  let offset = parseInt(numeroPregunta, 10);
+  if (isNaN(offset)) offset = 0;
+  const consultaPreguntas = `SELECT
+    p.id AS idPregunta,
+    p.enunciado,
+    p.retroalimentacion, 
+    o.idOpcion, 
+    o.respuesta1, 
+    o.respuesta2, 
+    o.respuesta3, 
+    o.respuesta4, 
+    r.respuestaCorrecta
+    FROM Preguntas p 
+    JOIN Respuestas r ON p.id = r.idPregunta 
+    JOIN Opciones o ON r.idOpcion = o.idOpcion 
+    WHERE p.idTest = ? 
+    ORDER BY p.id 
+    LIMIT 1 OFFSET ?;`;
+
+  pool.query(consultaPreguntas, [idTest, offset], (err, results) => {
+    if (err) {
+      console.error('Error en la consulta de preguntas:', err);
+      return res.status(500).send('Error interno del servidor');
+    }
+
+    // Si no hay preguntas para el test, renderizamos con un mensaje vacío
+    if (results.length === 0) {
+      return res.render('pregunta-test', { preguntas: [], mensaje: 'No hay preguntas disponibles para este test.' });
+    }
+
+    // Extraemos la pregunta que se mostrará
+    const pregunta = results[0];
+
+    // Renderizar la vista 'ver-test' pasando la lista de preguntas con sus respuestas
+    res.render('pregunta-test', { pregunta, sol: false, idTest, numeroPregunta: offset });
+
+    /*esto va a devolver :  {
+    "idPregunta": 1,
+    "enunciado": "¿pregunta?",
+    "idOpcion": la q sea,
+    "respuesta1": "",
+    "respuesta2": "",
+    "respuesta3": "",
+    "respuesta4": "",
+    "respuestaCorrecta": ""
+    */
+  });
+});
+
+// Añadimos el manejador de errores/excepciones
 app.use(manejadorErrores);
 
 // Poblamos y sincronizamos la base de datos con el modelo
