@@ -58,15 +58,6 @@ app.get('/retroalimentacion', (req, res) => {
 });
 
 
-app.get('/vista-test', (req, res) => {
-  console.log("GET /vista-test");
- 
-        console.log("Carga de la página para ver test");
-        res.render('vista-test');
-     
-  
-}); 
-
 //Ver información de intentos y vista para poder intentar el test
 app.get('/previsualizacion-de-test', (req,res)=>{
 
