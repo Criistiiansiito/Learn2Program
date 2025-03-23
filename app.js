@@ -72,7 +72,8 @@ app.get('/previsualizacion-de-test', (req,res)=>{
 
   //Renderizará a la vista dinámica de Cristian
   //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
-  const idCurso=req.body.idCurso;
+  const idCurso = req.query.idCurso;
+
 
   //tabla intentos(id, idTest, nota,preguntasAcertadas, fechaFin,)
 	//tabla test(id, titulo, idCurso)
