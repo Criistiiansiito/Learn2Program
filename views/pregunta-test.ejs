@@ -13,31 +13,34 @@
 
     <div class="container mt-5">
         <form method="get" action="/retroalimentacion" onsubmit="return validateForm()">
+            <input type="hidden" name="idTest" value="<%= idTest %>">
+            <input type="hidden" name="numeroPregunta" value="<%= numeroPregunta %>">
+            <h5 class="text mb-3">Pregunta <%= numeroPregunta + 1 %></h5>
             <div class="card">
                 <div class="card-body pregunta">
-                    <p class="card-title">Enunciado de la pregunta</p>
+                    <p class="card-title"><p class="card-title"><%= pregunta.enunciado %></p></p>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion1" value="opcion1" <%= sol ? 'disabled' : '' %>>
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion1" value="opcion1" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta1) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
                         <label class="form-check-label" for="opcion1">
-                            Opción 1
+                            <%= pregunta.respuesta1 %>
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion2" value="opcion2" <%= sol ? 'disabled' : '' %>>
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion2" value="opcion2" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta2) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
                         <label class="form-check-label" for="opcion2">
-                            Opción 2
+                            <%= pregunta.respuesta2 %>
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion3" value="opcion3" <%= sol ? 'disabled checked' : '' %>>
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion3" value="opcion3" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta3) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
                         <label class="form-check-label" for="opcion3">
-                            Opción 3
+                            <%= pregunta.respuesta3 %>
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion4" value="opcion4" <%= sol ? 'disabled' : '' %>>
+                        <input class="form-check-input" type="radio" name="opcion" id="opcion4" value="opcion4" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta4) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
                         <label class="form-check-label" for="opcion4">
-                            Opción 4
+                            <%= pregunta.respuesta4 %>
                         </label>
                     </div>
                     <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion1" onclick="removeSelection('opcion1')">Quitar</button>
@@ -49,11 +52,11 @@
             <% if (sol) { %>
                 <div class="card mt-3">
                     <div class="card-body retroalimentacion">
-                        <p>RETROALIMENTADCIÓN Un texto es una composición de signos codificados en un sistema de escritura que forma una unidad de sentido. También es una composición de caracteres imprimibles generados por un algoritmo de cifrado que, aunque no tienen sentido para cualquier persona, sí puede ser descifrado por su destinatario original.</p>
+                        <p><%= pregunta.retroalimentacion %></p>
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <a href="/pregunta" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
+                    <a href="/obtener-preguntas-test/<%= idTest %>/<%= numeroPregunta + 1 %>" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
                 </div>
             <% } else { %>
                 <div class="d-flex justify-content-end">

@@ -53,12 +53,58 @@ app.get('/obtenerPreguntasTest', (req, res) => {
 
 
 app.get('/retroalimentacion', (req, res) => {
-  console.log("GET /retroalimentacion");
-  res.render('pregunta-test', {sol: true});
+  const idTest = req.query.idTest;
+  let offset = parseInt(req.query.numeroPregunta, 10);
+
+  // Vuelves a hacer la consulta a la DB
+  pool.query(`
+    SELECT 
+      p.id AS idPregunta,
+      p.enunciado, 
+      p.retroalimentacion,
+      o.idOpcion, 
+      o.respuesta1, 
+      o.respuesta2, 
+      o.respuesta3, 
+      o.respuesta4, 
+      r.respuestaCorrecta
+    FROM Preguntas p
+    JOIN Respuestas r ON p.id = r.idPregunta
+    JOIN Opciones o ON r.idOpcion = o.idOpcion
+    WHERE p.idTest = ?
+    ORDER BY p.id
+    LIMIT 1 OFFSET ?;
+  `, [idTest, offset], (err, results) => {
+    if (err) return res.status(500).send('Error en la DB');
+    
+    if (results.length === 0) {
+      return res.send('No existe esa pregunta');
+    }
+    
+    const pregunta = results[0];
+    
+    // Ya tienes la pregunta con retroalimentacion
+    res.render('pregunta-test', { 
+      pregunta,
+      sol: true,
+      idTest,
+      numeroPregunta: offset
+    });
+  });
 });
 
 
-//Ver información de intentos y vista para poder intentar el test
+
+app.get('/vista-test', (req, res) => {
+  console.log("GET /vista-test");
+ 
+        console.log("Carga de la página para ver test");
+        res.render('vista-test');
+     
+  
+}); 
+
+//ver informacion entes de realizar test
 app.get('/previsualizacion-de-test', (req,res)=>{
 
   //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
@@ -98,16 +144,33 @@ app.get('/previsualizacion-de-test', (req,res)=>{
 
 
 //ver test
-app.get('/obtener-preguntas-test', (req, res) => {
-  const idTest = req.query.idTest; // El ID del test lo envías desde el frontend
+app.get('/obtener-preguntas-test/:idTest/:numeroPregunta', (req, res) => {
+  const { idTest, numeroPregunta } = req.params; // El ID del test y el numero de la pregunta lo envías desde el url
 
   if (!idTest) {
       return res.status(400).json({ error: "El idTest es obligatorio" });
   }
 
-  const consultaPreguntas = `SELECT p.id AS idPregunta, p.enunciado, o.idOpcion, o.respuesta1, o.respuesta2, o.respuesta3, o.respuesta4, r.respuestaCorrecta FROM Preguntas p JOIN Respuestas r ON p.id = r.idPregunta JOIN Opciones o ON r.idOpcion = o.idOpcion WHERE p.idTest = ?;`;
+  let offset = parseInt(numeroPregunta, 10); 
+  if (isNaN(offset)) offset = 0;
+  const consultaPreguntas = `SELECT
+    p.id AS idPregunta,
+    p.enunciado,
+    p.retroalimentacion, 
+    o.idOpcion, 
+    o.respuesta1, 
+    o.respuesta2, 
+    o.respuesta3, 
+    o.respuesta4, 
+    r.respuestaCorrecta
+    FROM Preguntas p 
+    JOIN Respuestas r ON p.id = r.idPregunta 
+    JOIN Opciones o ON r.idOpcion = o.idOpcion 
+    WHERE p.idTest = ? 
+    ORDER BY p.id 
+    LIMIT 1 OFFSET ?;`;
 
-  pool.query(consultaPreguntas, [idTest], (err, results) => {
+  pool.query(consultaPreguntas, [idTest,offset], (err, results) => {
     if (err) {
         console.error('Error en la consulta de preguntas:', err);
         return res.status(500).send('Error interno del servidor');
@@ -115,11 +178,14 @@ app.get('/obtener-preguntas-test', (req, res) => {
 
     // Si no hay preguntas para el test, renderizamos con un mensaje vacío
     if (results.length === 0) {
-        return res.render('ver-test', { preguntas: [], mensaje: 'No hay preguntas disponibles para este test.' });
+        return res.render('pregunta-test', { preguntas: [], mensaje: 'No hay preguntas disponibles para este test.' });
     }
 
+     // Extraemos la pregunta que se mostrará
+    const pregunta = results[0];
+
     // Renderizar la vista 'ver-test' pasando la lista de preguntas con sus respuestas
-    res.render('pregunta-test', { preguntas: results, sol: false });
+    res.render('pregunta-test', { pregunta, sol: false, idTest, numeroPregunta: offset});
 
     /*esto va a devolver :  {
     "idPregunta": 1,
