@@ -74,9 +74,12 @@
 
                 <!-- Volver a realizar el test -->
                 <div class="d-flex justify-content-center mt-4">
-                    <button class="btn btn-personalizado btn-lg boton-vista-test">
-                        <i class="fas fa-sync-alt "></i>  Reintentar Test  
-                    </button>
+                    <form action="/obtener-preguntas-test" method="GET">
+                        <input type="hidden" name="idTest" value="<%= idTest %>"> <!--Valor para asociar las preguntas que se muestran -->
+                        <button class="btn btn-personalizado btn-lg boton-vista-test">
+                            <i class="fas fa-sync-alt "></i>  Reintentar Test  
+                        </button>
+                    </form>
                 </div>
 
             <% } else { %>
@@ -87,9 +90,12 @@
                 
                 <!-- Realizar el test por primera vez -->
                 <div class="d-flex justify-content-center mt-4">
-                    <button class="btn btn-personalizado btn-lg boton-vista-test">
-                        <i class="fas fa-play"></i> Comenzar Test  
-                    </button>
+                    <form action="/obtener-preguntas-test" method="GET">
+                        <input type="hidden" name="idTest" value="<%= idTest %>"> <!--Valor para asociar las preguntas que se muestran -->
+                        <button class="btn btn-personalizado btn-lg boton-vista-test">
+                            <i class="fas fa-play"></i> Comenzar Test  
+                        </button>
+                    </form>
                 </div>
             <% } %>
         </div>

@@ -99,7 +99,7 @@ app.get('/previsualizacion-de-test', (req,res)=>{
 
 //ver test
 app.get('/obtener-preguntas-test', (req, res) => {
-  const idTest = req.body.idTest; // El ID del test lo envías desde el frontend
+  const idTest = req.query.idTest; // El ID del test lo envías desde el frontend
 
   if (!idTest) {
       return res.status(400).json({ error: "El idTest es obligatorio" });
@@ -119,7 +119,7 @@ app.get('/obtener-preguntas-test', (req, res) => {
     }
 
     // Renderizar la vista 'ver-test' pasando la lista de preguntas con sus respuestas
-    res.render('pregunta-test', { preguntas: results });
+    res.render('pregunta-test', { preguntas: results, sol: false });
 
     /*esto va a devolver :  {
     "idPregunta": 1,
