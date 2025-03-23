@@ -44,14 +44,14 @@
                 </div>
             </div>
         </div>
-<% } else if (temas && temas.length > 0) { %>
+<% } else if (curso.temas && curso.temas.length > 0) { %>
     <!-- Si el curso no está en revisión y tiene temas, mostramos los temas -->
     <div class="container contenido">
         <div class="container contenedor-principal mt-5">
             <h1 class="mb-4 text-center titulos"><%= curso.nombre %></h1>
             <div class="container">
                 <div class="accordion">
-                    <% temas.forEach(function(tema, index) { %>
+                    <% curso.temas.forEach(function(tema, index) { %>
                         <div class="accordion-item" data-aos="zoom-in" data-aos-duration="<%= 500 + (index * 300) %>">
                             <!-- Botón de acordeón -->
                             <h2 class="accordion-header">

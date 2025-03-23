@@ -1,13 +1,13 @@
+const { Sequelize } = require('sequelize');
 
-const mysql = require('mysql');
-
-// Configuración del pool de conexiones
-const pool = mysql.createPool({
+// Conexion con la base de datos con sequelize
+const sequelize = new Sequelize({
+    dialect: "mysql", // Cambiar si usas otro gestor
     host: process.env.DB_HOST,    
-    user: process.env.DB_USER,         
+    username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,        
     database: process.env.DB_NAME,
     ssl: { rejectUnauthorized: false }
 });
 
-module.exports = pool;
+module.exports = sequelize;

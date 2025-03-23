@@ -1,9 +1,13 @@
 require('dotenv').config();
 // Importar dependencias
 const express = require('express');
-const sql = require('mysql');
 const path = require('path');
-const pool = require('./database/connection');
+const servicioIntento = require('./servicios/servicioIntento');
+const Curso = require('./modelos/Curso');
+const Tema = require('./modelos/Tema');
+const manejadorErrores = require('./middleware/manejadorErrores');
+const seedDatabase = require('./database/seed');
+const StatusCodes = require('http-status-codes');
 
 const app = express();
 const port = 8080;
@@ -14,37 +18,49 @@ app.set('views', path.join(__dirname, 'views'));
 
 // sirve para que en tiempo de ejecución el servidor sepa acceder a la carpeta public para imagenes, etc
 app.use(express.static(path.join(__dirname, 'public')));
+// (Middleware que) covierte los cuerpos x-www-form-urlencoded de las peticiones en objetos javascript
+// Necesario para los intentos de las preguntas del test
+app.use(express.urlencoded({ extended: true }));
 
 // Ruta principal (de momento se quedará así para la primera historia de usuario)
-app.get('/', (req, res) => {
-  console.log("GET /");
-  const query1 = 'SELECT * FROM Cursos';
+app.get('/', async (req, res) => {
 
-  pool.query(query1, (err, cursos) => {
-    if (err) {
-      res.status(500).send('Error al obtener los datos: ' + err.message);
-      return;
-    }
-
-    // Seleccionamos el primer curso de la lista ya que solo
-    // hay uno para la primera historia de usuario
-    var curso = cursos[0]; 
-
-     // Obtener los temas del curso usando el idCurso
-     const query2 = 'SELECT * FROM Temas WHERE idCurso = ?';
-     pool.query(query2, [curso.id], (err, temas) => {
-        if (err) {
-         res.status(500).send('Error al obtener los temas: ' + err.message);
-         return;
-        }
-
-        console.log("Carga de la página principal");
-        res.render('ver-teoria-curso', { curso: curso, temas: temas});
-     });
+  // Carga un curso junto con sus temas
+  const curso = await Curso.findOne({
+    include: [{
+      model: Tema,
+      as: "temas"
+    }]
   });
-}); 
+  console.log("Carga de la página principal");
+  res.render('ver-teoria-curso', { curso: curso });
 
-// Iniciar el servidor en el puerto
+});
+
+// Procesa el intento de una pregunta de un test
+app.post('/intento-test/:idIntentoTest/pregunta/:idPregunta/intento-pregunta', async (req, res, next) => {
+  try {
+    console.log(JSON.stringify(req.body));
+    const intento = {
+      idPregunta: req.params.idPregunta, // Rescatamos :idPregunta de la URL
+      idRespuesta: req.body.idRespuesta, // Rescatamos el id de la respuesta seleccionada del cuerpo de la petición
+      idIntentoTest: req.params.idIntentoTest // Rescatamos :idIntentoTest de la URL
+    }
+    // Delegamos a la capa de servicio
+    const preguntaCorregida = await servicioIntento.anyadirIntento(intento);
+    console.log(JSON.stringify(preguntaCorregida));
+    res.render('pregunta-test', { preguntaCorregida: preguntaCorregida, sol: true }); // sol: true, pregunta corregida
+  } catch (error) {
+    next(error); // Llamamos al (middleware) manejador de errores/excepciones
+  }
+})
+
+// Añadimos el manejador de errores
+app.use(manejadorErrores);
+
+// Poblamos y sincronizamos la base de datos con el modelo
+seedDatabase();
+
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
