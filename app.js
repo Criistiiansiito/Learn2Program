@@ -94,17 +94,7 @@ app.get('/retroalimentacion', (req, res) => {
 });
 
 
-
-app.get('/vista-test', (req, res) => {
-  console.log("GET /vista-test");
- 
-        console.log("Carga de la página para ver test");
-        res.render('vista-test');
-     
-  
-}); 
-
-//ver informacion entes de realizar test
+//Ver información de intentos y vista para poder intentar el test
 app.get('/previsualizacion-de-test', (req,res)=>{
 
   //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
