@@ -10,39 +10,22 @@
 <body>
 
     <%- include('fragments/navbar') %>
+    <% let pregunta = test.preguntas[0]; %>
 
     <div class="container mt-5">
         <form method="get" action="/retroalimentacion" onsubmit="return validateForm()">
-            <input type="hidden" name="idTest" value="<%= idTest %>">
-            <input type="hidden" name="numeroPregunta" value="<%= numeroPregunta %>">
-            <h5 class="text mb-3">Pregunta <%= numeroPregunta + 1 %></h5>
+            <h5 class="text mb-3">Pregunta <%= pregunta.numero %></h5>
             <div class="card">
                 <div class="card-body pregunta">
                     <p class="card-title"><p class="card-title"><%= pregunta.enunciado %></p></p>
+                    <% for (let i = 0; i < 4; i++) { %>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion1" value="opcion1" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta1) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
+                        <input class="form-check-input" type="radio" name="<%= pregunta.id %>" id="opcion1" value="<%= pregunta.respuestas[i].id %>" <%= (sol && pregunta.respuestas[i].esCorrecta) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
                         <label class="form-check-label" for="opcion1">
-                            <%= pregunta.respuesta1 %>
+                            <%= pregunta.respuestas[i].texto %>
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion2" value="opcion2" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta2) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
-                        <label class="form-check-label" for="opcion2">
-                            <%= pregunta.respuesta2 %>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion3" value="opcion3" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta3) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
-                        <label class="form-check-label" for="opcion3">
-                            <%= pregunta.respuesta3 %>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="opcion" id="opcion4" value="opcion4" <%= (sol && pregunta.respuestaCorrecta === pregunta.respuesta4) ? 'disabled checked' : (sol ? 'disabled' : '') %>>
-                        <label class="form-check-label" for="opcion4">
-                            <%= pregunta.respuesta4 %>
-                        </label>
-                    </div>
+                    <% } %>
                     <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion1" onclick="removeSelection('opcion1')">Quitar</button>
                     <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion2" onclick="removeSelection('opcion2')">Quitar</button>
                     <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion3" onclick="removeSelection('opcion3')">Quitar</button>
@@ -56,7 +39,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <a href="/obtener-preguntas-test/<%= idTest %>/<%= numeroPregunta + 1 %>" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
+                    <a href="/test/<%= test.id %>/preguntas/<%= pregunta.numero + 1 %>" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
                 </div>
             <% } else { %>
                 <div class="d-flex justify-content-end">

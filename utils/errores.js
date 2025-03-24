@@ -1,6 +1,12 @@
 const { StatusCodes } = require('http-status-codes');
 const MENSAJES = require('./mensajes');
 
+class TestNoEncontradoError extends Error {
+    constructor(id) {
+        super(MENSAJES.TEST_NO_ENCONTRADO(id))
+    }
+}
+
 class PreguntaNoEncontradaError extends Error {
     constructor(id) {
         super(MENSAJES.PREGUNTA_NO_ENCONTRADA(id));

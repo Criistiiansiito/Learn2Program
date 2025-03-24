@@ -7,6 +7,7 @@ const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
 const Pregunta = require('./modelos/Pregunta');
 const Respuesta = require('./modelos/Respuesta');
+const Test = require('./modelos/Test');
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const StatusCodes = require('http-status-codes');
@@ -68,71 +69,43 @@ app.get('/obtenerPreguntasTest', (req, res) => {
 });
 
 
-app.get('/retroalimentacion', async (req, res) => {
+app.get('/test/:idTest/preguntas/:numeroPregunta/retroalimentacion', async (req, res) => {
 
   // ### Con Sequelize (y manejo de excepciones) ###
-  // try {
-  //   // Obtenemos la pregunta, junto con sus respuestas, por id
-  //   const pregunta = await Pregunta.findByPk(req.query.idPregunta, {
-  //     include: [{
-  //       model: Respuesta, // Indicamos que carge las respuestas
-  //       as: "respuestas" // Indicamos el nombre que tendrá la lista de respuestas en el objeto pregunta
-  //     }]
-  //   })
-    
-  //   if (!pregunta) {
-  //     // Si el idPregunta proporcionado no se corresponde con ninguna pregunta, lanzamos una excepcion
-  //     throw new PreguntaNoEncontradaError(req.query.idPregunta);
-  //   }
-    
-  //   // Ya tienes la pregunta con retroalimentacion
-  //   res.render('pregunta-test', {
-  //     pregunta: pregunta,
-  //     sol: true,
-  //   });
-    
-  // } catch (error) {
-  //   next(manejadorErrores);
-  // }
-  
-  // ### A la vieja usanza ###
-  const idTest = req.query.idTest;
-  let offset = parseInt(req.query.numeroPregunta, 10);
-  // Vuelves a hacer la consulta a la DB
-  pool.query(`
-    SELECT 
-      p.id AS idPregunta,
-      p.enunciado, 
-      p.retroalimentacion,
-      o.idOpcion, 
-      o.respuesta1, 
-      o.respuesta2, 
-      o.respuesta3, 
-      o.respuesta4, 
-      r.respuestaCorrecta
-    FROM Preguntas p
-    JOIN Respuestas r ON p.id = r.idPregunta
-    JOIN Opciones o ON r.idOpcion = o.idOpcion
-    WHERE p.idTest = ?
-    ORDER BY p.id
-    LIMIT 1 OFFSET ?;
-  `, [idTest, offset], (err, results) => {
-    if (err) return res.status(500).send('Error en la DB');
+  try {
+    // Obtenemos la pregunta, junto con sus respuestas, por id
+    const test = await Test.findByPk(req.params.idTest, {
+      include: [{
+        model: Pregunta, // Indicamos que carge las preguntas
+        as: "preguntas", // Indicamos el nombre que tendrá la lista de preguntas en el objeto test
+        where: {
+          numero: req.params.numeroPregunta // Que solo carge la pregunta con el numero indicado
+        },
+        include: [{
+          model: Respuesta, // Indicamos que carge las respuestas
+          as: "respuestas" // Indicamos el nombre que tendrá la lista de respuestas en el objeto pregunta
+        }]
+      }]
+    });
 
-    if (results.length === 0) {
-      return res.send('No existe esa pregunta');
+    console.log(JSON.stringify(test));
+    
+    // Debería ir en el servicio (para testearlo)
+    if (!test) {
+      // Si el idTest proporcionado no se corresponde con ningun test, lanzamos una excepcion
+      throw new PreguntaNoEncontradaError(req.params.idPregunta);
     }
-
-    const pregunta = results[0];
-
+    
     // Ya tienes la pregunta con retroalimentacion
     res.render('pregunta-test', {
-      pregunta,
+      test,
       sol: true,
-      idTest,
-      numeroPregunta: offset
     });
-  });
+    
+  } catch (error) {
+    next(manejadorErrores);
+  }
+  
 });
 
 

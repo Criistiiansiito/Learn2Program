@@ -10,6 +10,10 @@ const Pregunta = sequelize.define("Pregunta", {
         primaryKey: true,
         autoIncrement: true
     },
+    numero: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     enunciado: {
         type: DataTypes.TEXT,
         allowNull: false

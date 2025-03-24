@@ -49,6 +49,7 @@ async function seedDatabase() {
                 titulo: "Test C++",
                 preguntas: [
                     {
+                        numero: 1,
                         enunciado: "¿Cuál es la función principal de la instrucción #include <iostream> en un programa en C++?",
                         retroalimentacion: "La instrucción #include <iostream> se utiliza para incluir la biblioteca estándar de entrada/salida en C++ que permite realizar operaciones como la entrada de datos desde el teclado y la salida de datos hacia la pantalla.",
                         respuestas: [
@@ -71,6 +72,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 2,
                         enunciado: "¿Qué sucede si se omite return 0; en la función main() de un programa en C++?",
                         retroalimentacion: "Aunque no es obligatorio, algunas implementaciones de C++ añaden automáticamente \"return 0;\" al final de la función main(), indicando una terminación exitosa del programa.",
                         respuestas: [
@@ -93,6 +95,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 3,
                         enunciado: "¿Cuál de las siguientes afirmaciones sobre C++ es correcta?",
                         retroalimentacion: "C++ es una extensión del lenguaje C que incorpora características de la programación orientada a objetos, permitiendo una mayor modularidad y reutilización del código.",
                         respuestas: [
@@ -115,6 +118,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 4,
                         enunciado: "¿Cuál es la diferencia entre una variable int y una double en C++?",
                         retroalimentacion: "La principal diferencia es que int almacena números enteros, mientras que double almacena números con decimales, lo cual es útil para representar valores más precisos.",
                         respuestas: [
@@ -137,6 +141,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 5,
                         enunciado: "¿Qué ocurre si intentas acceder a una variable local fuera de la función donde fue declarada?",
                         retroalimentacion: "Las variables locales solo son accesibles dentro de la función en la que se declaran, por lo que intentar acceder fuera de su ámbito generará un error de compilación.",
                         respuestas: [
@@ -159,6 +164,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 6,
                         enunciado: "¿Cuál de las siguientes declaraciones es incorrecta en C++?",
                         retroalimentacion: "Una declaración incorrecta sería \"unsigned int edad = -25;\" ya que los valores negativos no son válidos para una variable de tipo unsigned int.",
                         respuestas: [
@@ -181,6 +187,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 7,
                         enunciado: "¿Cuál de las siguientes afirmaciones sobre funciones en C++ es correcta?",
                         retroalimentacion: "Las funciones pueden ser declaradas y definidas en diferentes archivos, lo que permite una organización más clara y modular del código.",
                         respuestas: [
@@ -203,6 +210,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 8,
                         enunciado: "¿Cuál es la principal ventaja de utilizar funciones en C++?",
                         retroalimentacion: "Las funciones permiten dividir el código en bloques reutilizables y organizados, lo que facilita el mantenimiento y la reutilización del código.",
                         respuestas: [
@@ -225,6 +233,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 9,
                         enunciado: "¿Qué indica la palabra clave void en una función en C++?",
                         retroalimentacion: "La palabra clave void indica que la función no devuelve ningún valor, lo que es útil cuando la función realiza acciones pero no necesita retornar un resultado.",
                         respuestas: [
@@ -247,6 +256,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 10,
                         enunciado: "¿Cuál de las siguientes opciones es la forma correcta de declarar un array de 5 elementos en C++?",
                         retroalimentacion: "La declaración correcta es \"int numeros[5] = {1, 2, 3, 4, 5};\", lo cual especifica un array con 5 enteros inicializados.",
                         respuestas: [
@@ -269,6 +279,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 11,
                         enunciado: "¿Cuál es el índice del último elemento en un array declarado como int valores[10];?",
                         retroalimentacion: "En un array de 10 elementos, el índice del último elemento es 9, ya que los índices empiezan desde 0.",
                         respuestas: [
@@ -291,6 +302,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 12,
                         enunciado: "¿Cómo se accede al tercer elemento de un array arr en C++?",
                         retroalimentacion: "El tercer elemento de un array se accede usando el índice 2, ya que los índices en C++ comienzan desde 0.",
                         respuestas: [
@@ -313,6 +325,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 13,
                         enunciado: "¿Qué almacena un puntero en C++?",
                         retroalimentacion: "Un puntero almacena la dirección de memoria de una variable, permitiendo el acceso directo a esa dirección para manipular el valor almacenado en ella.",
                         respuestas: [
@@ -335,6 +348,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 14,
                         enunciado: "Si ptr es un puntero a un entero, ¿cómo se obtiene el valor almacenado en la dirección de memoria a la que apunta?",
                         retroalimentacion: "Se puede obtener el valor de la dirección de memoria apuntada por el puntero usando el operador de desreferencia \"*\", por ejemplo, *ptr.",
                         respuestas: [
@@ -357,6 +371,7 @@ async function seedDatabase() {
                         ]
                     },
                     {
+                        numero: 15,
                         enunciado: "¿Cuál es la función del operador & en el contexto de punteros?",
                         retroalimentacion: "El operador \"&\" se utiliza para obtener la dirección de memoria de una variable, lo cual es necesario para trabajar con punteros.",
                         respuestas: [

@@ -1,4 +1,5 @@
 const MENSAJES = {
+    TEST_NO_ENCONTRADO: (id) => `El test con id ${id} no se ha podido encontrar`,
     PREGUNTA_NO_ENCONTRADA: (id) => `La pregunta con id ${id} no se ha podido encontrar`,
     RESPUESTA_NO_ENCONTRADA: (id) => `La respuesta con id ${id} no se ha podido encontrar`,
     RESPUESTA_NO_PERTENECE_PREGUNTA: (idPregunta, idRespuesta) => `La respuesta con id ${idRespuesta} no pertenece a la pregunta con id ${idPregunta}`,
