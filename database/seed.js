@@ -5,12 +5,20 @@ const Test = require('../modelos/Test');
 const Logro = require('../modelos/Logros');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
+const Recordatorio = require('../modelos/Recordatorios');
 
 // Función que puebla la base de datos
 async function seedDatabase() {
     try {
         // Si no estamos en la fase de desarrollo poblamos la BD
         const enDesarrollo = (process.env.NODE_ENV || "development") === "development";
+
+        await Recordatorio.create({
+            fecha: '2025-03-30',  // Fecha en la que se debe hacer el recordatorio
+            email: 'ejemplo@email.com',  // El correo asociado al recordatorio
+            mensaje: 'Este es un recordatorio de prueba para verificar la funcionalidad.' ,
+            asunto: 'Recordatorio Learn2Program'
+        });
 
         // Sincroniza la BD con el modelo
         await sequelize.sync({ force: enDesarrollo }); // {force: true} borra y crea las tablas de nuevo (en producción no poblamos)
