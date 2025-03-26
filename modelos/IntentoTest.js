@@ -9,7 +9,7 @@ const IntentoTest = sequelize.define("IntentoTest", {
         primaryKey: true,
         autoIncrement: true
     },
-    acertadas: {
+    preguntasAcertadas: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
