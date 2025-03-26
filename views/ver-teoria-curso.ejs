@@ -44,53 +44,47 @@
                 </div>
             </div>
         </div>
-    <% } else if (temas && temas.length > 0) { %>
-        <!-- Si el curso no está en revisión y tiene temas, mostramos los temas -->
-        <div class="container contenido">
-            <div class="container contenedor-principal mt-5">
-                <h1 class="mb-4 text-center titulos"><%= curso.nombre %></h1>
-                <div class="container">
-                    <div class="accordion">
-                        <% temas.forEach(function(tema, index) { %>
-                            <div class="accordion-item" data-aos="zoom-in" data-aos-duration="<%= 500 + (index * 300) %>">
-                                <!-- Botón de acordeón -->
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" onclick="toggleAccordion('<%= index %>')">
-                                        <%= tema.titulo %>
-                                    </button>
-                                </h2>
-                                <div id="content-<%= index %>" class="accordion-content">
-                                    <p class="card-text"><%- tema.contenido %></p>
-                                </div>
+<% } else if (curso.temas && curso.temas.length > 0) { %>
+    <!-- Si el curso no está en revisión y tiene temas, mostramos los temas -->
+    <div class="container contenido">
+        <div class="container contenedor-principal mt-5">
+            <h1 class="mb-4 text-center titulos"><%= curso.nombre %></h1>
+            <div class="container">
+                <div class="accordion">
+                    <% curso.temas.forEach(function(tema, index) { %>
+                        <div class="accordion-item" data-aos="zoom-in" data-aos-duration="<%= 500 + (index * 300) %>">
+                            <!-- Botón de acordeón -->
+                            <h2 class="accordion-header">
+                                 <button class="accordion-button collapsed" type="button" onclick="toggleAccordion('<%= index %>')">
+                                       <%= tema.titulo %>
+                                 </button>
+                            </h2>
+                            <div id="content-<%= index %>" class="accordion-content">
+                                <p class="card-text"><%- tema.contenido %></p>
                             </div>
-                        <% }); %>
-                    </div>
+                        </div>
+                    <% }); %>
                 </div>
             </div>
         </div>
-        <div class="boton-test">
-            <form action="/previsualizacion-de-test" method="GET"> 
-                <input type="hidden" name="idCurso" value="<%= curso.id %>"> <!--Vamos a necesitar este valor para luego buscar el test asociado al curso-->
-                <button type="submit" class="btn btn-primary">
-                    Acceder al test <i class="fas fa-arrow-right"></i>
-                </button>
-            </form>
-            
-        </div>
-    <% } else { %>
-        <!--  Si el curso no está en revisión y no tiene temas, mostramos que el curso no está disponible  -->
-        <div class="container contenido">
-            <div class="container contenedor-principal mt-5">
-                <h1 class="mb-4 text-center titulos"><%= curso.nombre %></h1>
-                <div class="alert alert-danger text-center" role="alert" style="font-size: 1.2rem; padding: 20px;">
-                    <strong>La teoría de este curso no está disponible.</strong>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <img src="/images/logo-llorando.png" alt="Carita triste" class="logo-llorando">
-                </div>
+    </div>
+    <div class="boton-test">
+       <!-- include('fragments/go_test_button') -->
+    </div>
+<% } else { %>
+    <!--  Si el curso no está en revisión y no tiene temas, mostramos que el curso no está disponible  -->
+    <div class="container contenido">
+        <div class="container contenedor-principal mt-5">
+            <h1 class="mb-4 text-center titulos"><%= curso.nombre %></h1>
+            <div class="alert alert-danger text-center" role="alert" style="font-size: 1.2rem; padding: 20px;">
+                <strong>La teoría de este curso no está disponible.</strong>
+            </div>
+            <div class="d-flex justify-content-center">
+                <img src="/images/logo-llorando.png" alt="Carita triste" class="logo-llorando">
             </div>
         </div>
-    <% } %>
+    </div>
+<% } %>
 
     <a href="#" class="scroll-to-top" id="scrollToTop"><i class="fas fa-chevron-up"></i></a>
 

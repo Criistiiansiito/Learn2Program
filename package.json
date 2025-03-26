@@ -13,11 +13,12 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "mssql": "^11.0.1",
-    "mysql": "^2.18.1",
+    "http-status-codes": "^2.3.0",
+    "learn2program": "file:",
     "mysql2": "^3.14.0",
     "node": "^23.9.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "sequelize": "^6.37.6"
   },
   "devDependencies": {
     "jest": "^29.7.0",
