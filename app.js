@@ -8,13 +8,15 @@ const Tema = require('./modelos/Tema');
 const Pregunta = require('./modelos/Pregunta');
 const Respuesta = require('./modelos/Respuesta');
 const Test = require('./modelos/Test');
+const IntentoTest = require('./modelos/IntentoTest');
+
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const StatusCodes = require('http-status-codes');
 const { PreguntaNoEncontradaError } = require('./utils/errores');
 const { off } = require('process');
-const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');  
+const pool = require('./database/connection');
 
 
 const app = express();
@@ -277,56 +279,91 @@ app.get('/obtener-preguntas-test', (req, res) => {
   });
 });
 
+
+
+
 app.get('/obtener-logro-curso', (req, res) => {
-  
-  const consultarTestId = 'SELECT id from test where idCurso = ?;';
-  pool.query(consultarTestId, [app.locals.idCurso], (err, results) => {
-    if (err) {
-      console.error('Error en la consulta del id test:', err);
-      return res.status(500).send('Error interno del servidor');
-    }
-    let testId = results[0];
-
-    const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
-    pool.query(consultaIntentos, [testId], (err, resultsIntentos) => {
-      if (err) {
-        console.error('Error en consulta de intentos:', err);
-        return;
+  // Obtener el id del test asociado al curso
+  pool.query(
+    'SELECT id FROM test WHERE idCurso = :idCurso',
+    { 
+      replacements: { idCurso: app.locals.idCurso },
+      type: pool.QueryTypes.SELECT 
+    })
+    .then(testResults => {
+      if (testResults.length === 0) {
+        return res.render('error', { mensaje: 'No se encontró un test para este curso' });
       }
-      let intento = resultsIntentos[0];
-      let nota = intento.nota;
+      const testId = testResults[0].id;
 
-      console.log(nota);
-      //a partir d aqui lo que ya estaba
-
-      const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
-      pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
-      if (err) {
-        console.error('Error en la consulta de logros:', err);
-        return res.status(500).send('Error interno del servidor');
-      }
-
-      let logro = results[0];
-
-      // Formatear la fecha de obtención del logro
-      if (logro && logro.fechaObtencion) {
-        logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
-      }
-      console.log(logro);    
-        const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
-        pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
-          if (err) {
-            return res.status(500).send('Error al obtener los datos: ' + err.message);
+      // Obtener el último intento del test
+      pool.query(
+        'SELECT * FROM intentos_test WHERE idTest = :testId ORDER BY fechaFin DESC LIMIT 1',
+        { 
+          replacements: { testId: testId },
+          type: pool.QueryTypes.SELECT 
+        })
+        .then(intentosResults => {
+          if (intentosResults.length === 0) {
+            return res.render('error', { mensaje: 'No se encontraron intentos para este test' });
           }
-          
-          console.log('p3');
-          res.render('obtencion-logros', { logro: logro, nota: nota,
-            nombreCurso: results2[0]?.nombre || 'Curso Desconocido' 
-          });
+          const intento = intentosResults[0];
+          const nota = intento.preguntasAcertadas;
+
+          // Obtener el logro asociado al curso
+          pool.query(
+            'SELECT * FROM logros WHERE idCurso = :idCurso',
+            { 
+              replacements: { idCurso: app.locals.idCurso },
+              type: pool.QueryTypes.SELECT 
+            })
+            .then(logrosResults => {
+              if (logrosResults.length === 0) {
+                return res.render('error', { mensaje: 'No se encontraron logros para este curso' });
+              }
+              let logro = logrosResults[0];
+
+              // Formatear la fecha de obtención del logro
+              if (logro.fechaObtencion) {
+                logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
+              }
+
+              // Obtener el nombre del curso
+              pool.query(
+                'SELECT titulo FROM cursos WHERE id = :idCurso',
+                { 
+                  replacements: { idCurso: app.locals.idCurso },
+                  type: pool.QueryTypes.SELECT 
+                })
+                .then(cursoResults => {
+                  const nombreCurso = cursoResults.length > 0 ? cursoResults[0].titulo : 'Curso Desconocido';
+
+                  // Renderizar la vista con los datos obtenidos
+                  res.render('obtencion-logros', { 
+                    logro, 
+                    nota, 
+                    nombreCurso 
+                  });
+                })
+                .catch(err => {
+                  console.error('Error en la consulta del curso:', err);
+                  return res.render('error', { mensaje: 'Error interno del servidor' });
+                });
+            })
+            .catch(err => {
+              console.error('Error en la consulta de logros:', err);
+              return res.render('error', { mensaje: 'Error interno del servidor' });
+            });
+        })
+        .catch(err => {
+          console.error('Error en la consulta de intentos:', err);
+          return res.render('error', { mensaje: 'Error interno del servidor' });
         });
-      });
+    })
+    .catch(err => {
+      console.error('Error en la consulta del test:', err);
+      return res.render('error', { mensaje: 'Error interno del servidor' });
     });
-  });
 });
 
 
