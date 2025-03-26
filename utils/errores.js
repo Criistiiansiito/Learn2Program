@@ -8,14 +8,20 @@ class TestNoEncontradoError extends Error {
 }
 
 class PreguntaNoEncontradaError extends Error {
-    constructor(id) {
-        super(MENSAJES.PREGUNTA_NO_ENCONTRADA(id));
+    constructor(idTest, numero) {
+        super(MENSAJES.PREGUNTA_NO_ENCONTRADA(idTest, numero));
     }
 }
 
 class RespuestaNoEncontradaError extends Error {
     constructor(id) {
         super(MENSAJES.RESPUESTA_NO_ENCONTRADA(id));
+    }
+}
+
+class TestPreguntaError extends Error {
+    constructor(idTest, idPregunta) {
+        super(MENSAJES.PREGUNTA_NO_PERTENCE_TEST(idTest, idPregunta));
     }
 }
 
@@ -31,6 +37,12 @@ class IntentoTestNoEncontradoError extends Error {
     }
 }
 
+class IntentoPreguntaNoEncontradoError extends Error {
+    constructor(idIntentoTest, idPregunta) {
+        super(MENSAJES.INTENTO_PREGUNTA_NO_ENCONTRADO(idIntentoTest, idPregunta));
+    }
+}
+
 class PreguntaYaIntentadaError extends Error {
     constructor(idIntentoTest, idPregunta) {
         super(MENSAJES.PREGUNTA_YA_INTENTADA(idIntentoTest, idPregunta));
@@ -40,7 +52,9 @@ class PreguntaYaIntentadaError extends Error {
 module.exports = {
     PreguntaNoEncontradaError,
     RespuestaNoEncontradaError,
+    TestPreguntaError,
     PreguntaRespuestaError,
     IntentoTestNoEncontradoError,
+    IntentoPreguntaNoEncontradoError,
     PreguntaYaIntentadaError
 };

@@ -33,6 +33,6 @@ Tema.belongsTo(Curso, { foreignKey: "idCurso" });
 
 // Relacion 1:1 con Test
 Curso.hasOne(Test, { as: "test", foreignKey: "idCurso" });
-Test.belongsTo(Curso, { foreignKey: "idCurso" });
+Test.belongsTo(Curso, { as: "test", foreignKey: "idCurso" });
 
 module.exports = Curso;

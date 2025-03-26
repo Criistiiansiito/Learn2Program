@@ -8,11 +8,6 @@ const IntentoPregunta = sequelize.define("IntentoPregunta", {
         primaryKey: true,
         autoIncrement: true
     },
-    respondida: { // Momento en el que se realizó el intento
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    }
 },
     {
         tableName: "intentos_pregunta", // Nombre de la tabla en la BD

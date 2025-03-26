@@ -26,6 +26,6 @@ Pregunta.belongsTo(Test, { foreignKey: "idTest" });
 
 // Relacion 1:N con IntentoTest
 Test.hasMany(IntentoTest, { as: "intentos", foreignKey: "idTest", onDelete: "CASCADE" });
-IntentoTest.belongsTo(Test, { foreignKey: "idTest" });
+IntentoTest.belongsTo(Test, { as: "test", foreignKey: "idTest" });
 
 module.exports = Test;
