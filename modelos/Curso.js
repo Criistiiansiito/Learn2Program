@@ -2,6 +2,7 @@ const DataTypes = require('sequelize');
 const sequelize = require('../database/connection');
 const Tema = require('./Tema');
 const Test = require('./Test');
+const Logro = require('./Logros');
 
 const Curso = sequelize.define("Curso", {
     id: {
@@ -34,5 +35,8 @@ Tema.belongsTo(Curso, { foreignKey: "idCurso" });
 // Relacion 1:1 con Test
 Curso.hasOne(Test, { as: "test", foreignKey: "idCurso" });
 Test.belongsTo(Curso, { as: "test", foreignKey: "idCurso" });
+
+Curso.hasOne(Logro, { as:"logro", foreignKey: "idCurso" });
+Logro.belongsTo(Curso, { as: "logro", foreignKey: "idCurso", onDelete: "CASCADE" });
 
 module.exports = Curso;

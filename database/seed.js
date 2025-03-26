@@ -2,6 +2,7 @@ const sequelize = require('./connection');
 const Curso = require('../modelos/Curso');
 const Tema = require('../modelos/Tema');
 const Test = require('../modelos/Test');
+const Logro = require('../modelos/Logros');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
 
@@ -17,8 +18,15 @@ async function seedDatabase() {
             return;
         // Crea un curso junto a sus temas, test, preguntas, y respuestas
         await Curso.create({
+            
             titulo: "Introducción a la Programación en C++",
             descripcion: "si",
+            logro: {
+                mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
+                mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
+                imagen: '/images/logroCurso1.png',
+                fechaObtencion: '2025-03-22'
+            },
             temas: [
                 {
                     titulo: "Tema 1 - Introducción a C++",
@@ -402,6 +410,10 @@ async function seedDatabase() {
                 {
                     model: Tema,
                     as: "temas",
+                },
+                {
+                    model: Logro,
+                    as: "logro"
                 },
                 {
                     model: Test,
