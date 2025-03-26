@@ -86,25 +86,60 @@ app.get('/vista-test', (req, res) => {
 
 });
 
-//ver informacion entes de realizar test
+// Ver información antes de realizar el test
 app.get('/previsualizacion-de-test', async (req, res) => {
+  try {
+    // Obtener el ID del curso desde la URL
+    const idCurso = req.query.idCurso;
+    console.log("ID del curso recibido:", idCurso);
 
-  //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
-  const idCurso = req.query.idCurso;
+    if (!idCurso) {
+      return res.status(400).send("Error: Debes proporcionar un ID de curso.");
+    }
 
-  const curso = await Curso.findByPk(idCurso, {
-    include: [{
-      model: Test,
-      as: "test",
+    // Buscar el curso en la base de datos con sus relaciones
+    const curso = await Curso.findByPk(idCurso, {
       include: [{
-        model: IntentoTest,
-        as: "intentos"
+        model: Test,
+        as: "test",
+        include: [{
+          model: IntentoTest,
+          as: "intentos"
+        }]
       }]
-    }]
-  });
-  res.render('previsualizar-test', { idTest: curso.test.id, tituloTest: curso.test.titulo, numIntentos: curso.test.intentos.length, intentos: curso.test.intentos, preguntasAcertadas: curso.test.intentos[0].preguntasAcertadas });
+    });
 
+    console.log("Curso encontrado:", curso);
+
+    // Si no se encuentra el curso, devolver error
+    if (!curso) {
+      return res.status(404).send("Error: No se encontró un curso con ese ID.");
+    }
+
+    // Si el curso no tiene test, devolver error
+    if (!curso.test) {
+      return res.status(404).send("Error: El curso no tiene un test asociado.");
+    }
+
+    // Manejo seguro de intentos
+    const intentos = curso.test.intentos || []; // Si intentos es null, se asigna un array vacío
+    const preguntasAcertadas = intentos.length > 0 ? intentos[0].preguntasAcertadas : 0; // Evita errores si no hay intentos
+
+    // Renderizar la vista con los datos (incluso si no hay intentos)
+    res.render('previsualizar-test', { 
+      idTest: curso.test.id, 
+      tituloTest: curso.test.titulo, 
+      numIntentos: intentos.length, 
+      intentos: intentos, 
+      preguntasAcertadas: preguntasAcertadas 
+    });
+
+  } catch (error) {
+    console.error("Error en /previsualizacion-de-test:", error);
+    res.status(500).send("Error interno del servidor.");
+  }
 });
+
 
 //ver test
 app.get('/obtener-preguntas-test/:idTest/:numeroPregunta', async (req, res) => {
