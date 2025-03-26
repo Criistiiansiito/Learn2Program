@@ -443,10 +443,10 @@ async function seedDatabase() {
 
         // Creamos el recordatorio
         await Recordatorio.create({
-            fecha: '2025-03-30',  
-            email: 'ejemplo@email.com',  // El correo al que se enviará el recordatorio
-            mensaje: 'Este es un recordatorio de prueba para verificar la funcionalidad.',
-            asunto: 'Recordatorio Learn2Program'
+            fecha: '2025-03-26',  
+            email: 'prueba@ucm.es',  // El correo al que se enviará el recordatorio
+            mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test 🤓🤓.',
+            asunto: '🚨 RECORDATORIO 🚨 - Learn2Program'
         });
 
         console.log("Base de datos poblada");

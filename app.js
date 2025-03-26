@@ -15,7 +15,66 @@ const { PreguntaNoEncontradaError } = require('./utils/errores');
 const { off } = require('process');
 const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');  
+const nodemailer = require('nodemailer');
+const { Op } = require('sequelize');
+const Recordatorio = require('./modelos/Recordatorios');
 
+async function enviarRecordatorio(email, asunto, mensaje) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail', //Recordad que las variables del correo tienen que estar en el .env para evitar exponer la contraseña del correo
+        auth: {
+            user: process.env.GMAIL_USER, 
+            pass: process.env.GMAIL_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: email,
+        subject: asunto,
+        text: mensaje
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Recordatorio enviado a ${email}`);
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+    }
+}
+
+// Función que envía y elimina los recordatorios
+async function enviarRecordatorios() {
+    try {
+
+        const fechaActual = new Date().toISOString().split('T')[0]; 
+
+        // Buscamos si ya recordatorios para hoy
+        const recordatorios = await Recordatorio.findAll({
+            where: {
+                fecha: fechaActual
+            }
+        });
+
+        if (recordatorios.length > 0) {
+            for (const recordatorio of recordatorios) {
+                await enviarRecordatorio(
+                    recordatorio.email,
+                    recordatorio.asunto,
+                    recordatorio.mensaje
+                );
+                // Eliminar el recordatorio de la bbdd
+                await recordatorio.destroy();
+                console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
+            }
+        }
+    } catch (error) {
+        console.error('Error al enviar o eliminar recordatorios:', error);
+    }
+}
+
+// Esto se ejecuta cada 24 horas y lo que hace es que revisa si hay recordatorios que enviar ese día, y si los hay los envía y los borra de la base de datos
+setInterval(enviarRecordatorios, 10 * 1000); // 24 horas
 
 const app = express();
 const port = 8080;
