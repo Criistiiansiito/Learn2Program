@@ -76,6 +76,10 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
 });
 
 
+app.get('/nuevo-recordatorio', (req, res) => {
+  res.render("establecer-recordatorio");
+});
+
 // Ruta para mostrar la página de pregunta-test.ejs
 app.get('/obtenerPreguntasTest', (req, res) => {
   //se llamará cuando se implemente la vista intermedia entre el botón realizar test
