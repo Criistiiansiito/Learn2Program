@@ -69,7 +69,13 @@
         </div>
     </div>
     <div class="boton-test">
-       <!-- include('fragments/go_test_button') -->
+                    <form action="/previsualizacion-de-test" method="GET"> 
+                        <input type="hidden" name="idCurso" value="<%= curso.id %>"> <!--Vamos a necesitar este valor para luego buscar el test asociado al curso-->
+                        <button type="submit" class="btn btn-primary">
+                            Acceder al test <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>      
+                    
     </div>
 <% } else { %>
     <!--  Si el curso no está en revisión y no tiene temas, mostramos que el curso no está disponible  -->
