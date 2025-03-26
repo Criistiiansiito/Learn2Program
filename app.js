@@ -14,9 +14,14 @@ const StatusCodes = require('http-status-codes');
 const { PreguntaNoEncontradaError } = require('./utils/errores');
 const { off } = require('process');
 const IntentoTest = require('./modelos/IntentoTest');
+const moment = require('moment');  
+
 
 const app = express();
 const port = 8080;
+
+//Variable que almancenará el idCurso durante toda la ejecucion
+app.locals.idCurso = 1;
 
 // Configuración para que el servidor sepa redirigir correctamente a las plantillas
 app.set('view engine', 'ejs');
@@ -69,6 +74,7 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
     next(error); // Llamamos al (middleware) manejador de errores/excepciones
   }
 });
+
 
 // Ruta para mostrar la página de pregunta-test.ejs
 app.get('/obtenerPreguntasTest', (req, res) => {
@@ -173,6 +179,154 @@ app.use(manejadorErrores);
 // Poblamos y sincronizamos la base de datos con el modelo
 seedDatabase();
 
+
+app.get('/retroalimentacion', (req, res) => {
+  console.log("GET /retroalimentacion");
+  res.render('pregunta-test', {sol: true});
+});
+
+
+app.get('/vista-test', (req, res) => {
+  console.log("GET /vista-test");
+ 
+        console.log("Carga de la página para ver test");
+        res.render('vista-test');
+     
+  
+}); 
+
+//ver informacion entes de realizar test
+app.get('/previsualizacion-de-test', (req,res)=>{
+
+  //Renderizará a la vista dinámica de Cristian
+  //Renderizar los datos (idTest, intentosRealizados, fecha intentos, preguntas acertadas, preguntas totales, puntuacion sobre 10)
+  const idCurso=req.body.idCurso;
+
+  //tabla intentos(id, idTest, nota,preguntasAcertadas, fechaFin,)
+	//tabla test(id, titulo, idCurso)
+  //seleccionamos el test del curso
+  const consultaTestdeCurso = 'SELECT * FROM test WHERE idCurso = ?;';
+  const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
+
+  //AÑADIR SERGIO V : Implementar toda la lógica para obtener los intentos realizados por test.
+  pool.query(consultaTestdeCurso, [idCurso], (err, resultsTest) => {
+    if (err) {
+      console.error('Error en consulta de test:', err);
+      return;
+    }
+    // Aquí, resultsTest contendrá los resultados de la consulta del test
+    console.log('Resultado de la consulta del test:', resultsTest);
+  
+    // Ahora, usando el idTest de los resultados obtenidos en la consulta anterior
+    const test = resultsTest[0]; //cogemos el test
+    const idTest = test.id; // cogemos idTest que se usará para buscar las preguntas
+  
+    // Conusltar información del idTest
+    // Posible idea :)
+    pool.query(consultaIntentos, [idTest], (err, resultsIntentos) => {
+      if (err) {
+        console.error('Error en consulta de intentos:', err);
+        return;
+      }
+      // en este punto resultsIntentos contendrá los resultados de la consulta de intentos
+      res.render('previsualizar-test', { idTest: idTest, numIntentos: resultsIntentos.length, intentos: resultsIntentos , preguntasAcertadas : test.preguntasAcertadas});
+    });
+  });
+  //HACER RENDER A LA VISTA  DE ERIC Y CRISTIAN
+});
+
+
+//ver test
+app.get('/obtener-preguntas-test', (req, res) => {
+  const idTest = req.body.idTest; // El ID del test lo envías desde el frontend
+
+  if (!idTest) {
+      return res.status(400).json({ error: "El idTest es obligatorio" });
+  }
+
+  const consultaPreguntas = `SELECT p.id AS idPregunta, p.enunciado, o.idOpcion, o.respuesta1, o.respuesta2, o.respuesta3, o.respuesta4, r.respuestaCorrecta FROM Preguntas p JOIN Respuestas r ON p.id = r.idPregunta JOIN Opciones o ON r.idOpcion = o.idOpcion WHERE p.idTest = ?;`;
+
+  pool.query(consultaPreguntas, [idTest], (err, results) => {
+    if (err) {
+        console.error('Error en la consulta de preguntas:', err);
+        return res.status(500).send('Error interno del servidor');
+    }
+
+    // Si no hay preguntas para el test, renderizamos con un mensaje vacío
+    if (results.length === 0) {
+        return res.render('ver-test', { preguntas: [], mensaje: 'No hay preguntas disponibles para este test.' });
+    }
+
+    // Renderizar la vista 'ver-test' pasando la lista de preguntas con sus respuestas
+    res.render('pregunta-test', { preguntas: results });
+
+    /*esto va a devolver :  {
+    "idPregunta": 1,
+    "enunciado": "¿pregunta?",
+    "idOpcion": la q sea,
+    "respuesta1": "",
+    "respuesta2": "",
+    "respuesta3": "",
+    "respuesta4": "",
+    "respuestaCorrecta": ""
+    */
+  });
+});
+
+app.get('/obtener-logro-curso', (req, res) => {
+  
+  const consultarTestId = 'SELECT id from test where idCurso = ?;';
+  pool.query(consultarTestId, [app.locals.idCurso], (err, results) => {
+    if (err) {
+      console.error('Error en la consulta del id test:', err);
+      return res.status(500).send('Error interno del servidor');
+    }
+    let testId = results[0];
+
+    const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
+    pool.query(consultaIntentos, [testId], (err, resultsIntentos) => {
+      if (err) {
+        console.error('Error en consulta de intentos:', err);
+        return;
+      }
+      let intento = resultsIntentos[0];
+      let nota = intento.nota;
+
+      console.log(nota);
+      //a partir d aqui lo que ya estaba
+
+      const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
+      pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de logros:', err);
+        return res.status(500).send('Error interno del servidor');
+      }
+
+      let logro = results[0];
+
+      // Formatear la fecha de obtención del logro
+      if (logro && logro.fechaObtencion) {
+        logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
+      }
+      console.log(logro);    
+        const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
+        pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
+          if (err) {
+            return res.status(500).send('Error al obtener los datos: ' + err.message);
+          }
+          
+          console.log('p3');
+          res.render('obtencion-logros', { logro: logro, nota: nota,
+            nombreCurso: results2[0]?.nombre || 'Curso Desconocido' 
+          });
+        });
+      });
+    });
+  });
+});
+
+
+// Iniciar el servidor en el puerto
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });

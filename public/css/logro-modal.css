@@ -1,0 +1,37 @@
+.text {
+    font-size:1.2rem;
+    font-weight: bold;
+    color: rgb(7, 7, 34) !important;
+    animation: colorChange 3s linear infinite;
+}
+
+@keyframes colorChange {
+    0% { color: red; }
+    25% { color: orange; }
+    50% { color: green; }
+    75% { color: blue; }
+    100% { color: red; }
+}
+
+.modal-header{
+    background-color: #07063ad5;
+   
+}
+
+.modal-title{
+
+    font-size: 1rem !important;
+}
+
+/* Cambiar color de la cruz de cerrar a blanco */
+.modal-header .btn-close {
+    color: white !important; /* Cambiar color del icono de cerrar a blanco */
+    opacity: 1 !important; /* Asegura que el icono sea completamente opaco */
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    background-color: transparent !important; /* Evita el color de fondo cuando se pasa el ratón */
+    border: none !important; /* Elimina el borde */
+}
+
