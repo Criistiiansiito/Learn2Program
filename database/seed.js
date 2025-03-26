@@ -13,13 +13,6 @@ async function seedDatabase() {
         // Si no estamos en la fase de desarrollo poblamos la BD
         const enDesarrollo = (process.env.NODE_ENV || "development") === "development";
 
-        await Recordatorio.create({
-            fecha: '2025-03-30',  // Fecha en la que se debe hacer el recordatorio
-            email: 'ejemplo@email.com',  // El correo asociado al recordatorio
-            mensaje: 'Este es un recordatorio de prueba para verificar la funcionalidad.' ,
-            asunto: 'Recordatorio Learn2Program'
-        });
-
         // Sincroniza la BD con el modelo
         await sequelize.sync({ force: enDesarrollo }); // {force: true} borra y crea las tablas de nuevo (en producción no poblamos)
         if (!enDesarrollo)
@@ -446,6 +439,14 @@ async function seedDatabase() {
                     ]
                 }
             ]
+        });
+
+        // Creamos el recordatorio
+        await Recordatorio.create({
+            fecha: '2025-03-30',  
+            email: 'ejemplo@email.com',  // El correo al que se enviará el recordatorio
+            mensaje: 'Este es un recordatorio de prueba para verificar la funcionalidad.',
+            asunto: 'Recordatorio Learn2Program'
         });
 
         console.log("Base de datos poblada");
