@@ -7,6 +7,7 @@ const {
     PreguntaYaIntentadaError,
     IntentoPreguntaNoEncontradoError,
     TestNoEncontradoError,
+    IntentoTestNoEncontradoError,
 } = require("../utils/errores");
 const { where } = require("sequelize");
 
@@ -54,6 +55,56 @@ class ServicioIntentoTest {
             }
         );
         return intentoTest.id;
+    }
+
+    /**
+     * Termina un intento de test.
+     * 
+     * Inicia el número de preguntas acertadas, la nota, y la fecha, y guarda el intento
+     * actualizado
+     * 
+     * @param {Number} idIntentoTest - Id del intento de test a terminar
+     * @returns {Number} El id del curso al que pertenece el test
+     */
+    async terminarIntento(idIntentoTest) {
+        // Buscamos el intento de test por su id, con su test, y sus intentos de pregunta y respuestas
+        const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
+            include: [
+                {
+                    model: Test,
+                    as: "test"
+                },
+                {
+                    model: IntentoPregunta,
+                    as: "intentos_pregunta",
+                    include: [
+                        {
+                            model: Respuesta,
+                            as: "respuesta"
+                        }
+                    ]
+                }
+            ]
+        });
+        if (!intentoTest) {
+            // Si no existe el intento, lanzamos una excepción
+            throw new IntentoTestNoEncontradoError(idIntentoTest);
+        }
+        // Actualizamos los campos del intento
+        const numeroPreguntas = intentoTest.intentos_pregunta.length;
+        console.log("INTENTOS PREGUNTA:", JSON.stringify(intentoTest.intentos_pregunta));
+        const preguntasAcertadas = intentoTest.intentos_pregunta.filter(ip => ip.respuesta?.esCorrecta).length; // Contamos los intentos con respuestas correctas
+        const nota = ((preguntasAcertadas / numeroPreguntas) * 10).toFixed(2); // Nota con dos decimales
+        console.log("ACERTADAS:", preguntasAcertadas);
+        console.log("TOTAL:", numeroPreguntas);
+        console.log("NOTA:", nota);
+        intentoTest.preguntasAcertadas = preguntasAcertadas;
+        intentoTest.nota = nota;
+        intentoTest.terminado = true;
+        intentoTest.fechaFin = new Date();
+        // Guardamos el intento actualizado
+        await intentoTest.save();
+        return intentoTest.test.idCurso;
     }
 
     /**

@@ -10,6 +10,7 @@ const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');  
+const { serialize } = require('v8');
 
 
 const app = express();
@@ -78,6 +79,16 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
   }
 });
 
+// Termina un intento de test
+app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
+  try {
+    const idCurso = await servicioIntento.terminarIntento(req.params.idIntentoTest);
+    res.redirect(`/previsualizacion-de-test?idCurso=${idCurso}`);
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get('/nuevo-recordatorio', (req, res) => {
   res.render("establecer-recordatorio");
 });
@@ -105,7 +116,7 @@ app.get('/previsualizacion-de-test', async (req, res) => {
       }]
     });
 
-    console.log("Curso encontrado:", curso);
+    console.log("Curso encontrado:", JSON.stringify(curso));
 
     // Si no se encuentra el curso, devolver error
     if (!curso) {

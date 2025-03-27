@@ -12,6 +12,12 @@ class TestPreguntaError extends Error {
     }
 }
 
+class IntentoTestNoEncontradoError extends Error {
+    constructor(idTest) {
+        super(MENSAJES.INTENTO_TEST_NO_ENCONTRADO(idTest));
+    }
+}
+
 class IntentoPreguntaNoEncontradoError extends Error {
     constructor(idIntentoTest, idPregunta) {
         super(MENSAJES.INTENTO_PREGUNTA_NO_ENCONTRADO(idIntentoTest, idPregunta));
@@ -27,6 +33,7 @@ class PreguntaYaIntentadaError extends Error {
 module.exports = {
     TestNoEncontradoError,
     TestPreguntaError,
+    IntentoTestNoEncontradoError,
     IntentoPreguntaNoEncontradoError,
     PreguntaYaIntentadaError
 };
