@@ -175,37 +175,30 @@ class ServicioIntentoTest {
                 },
             ],
         });
+        // Definimos una funcion que busque una pregunta (excluyendo los atributos en excluyeP) con sus respuestas (excluyendo los atributos en excluyeR)
+        const encuentraPregunta = async (excluyeP, excluyeR) => {
+            return await Pregunta.findOne({
+                where: {
+                    idTest: intentoTest.idTest,
+                    numero: numeroPregunta,
+                },
+                include: [
+                    {
+                        model: Respuesta,
+                        as: "respuestas",
+                        attributes: { exclude: excluyeR },
+                    },
+                ],
+                attributes: { exclude: excluyeP },
+            });
+        }
         let pregunta;
         if (intentoPregunta.idRespuesta) {
             // Si la pregunta ya ha sido respondida, cargamos la pregunta con retroalimentación y respuestas con 'esCorrecta'
-            pregunta = await Pregunta.findOne({
-                where: {
-                    idTest: intentoTest.idTest,
-                    numero: numeroPregunta,
-                },
-                include: [
-                    {
-                        model: Respuesta,
-                        as: "respuestas",
-                    },
-                ],
-            });
+            pregunta = await encuentraPregunta([], []);
         } else {
             // Si no ha sido respondida, cargamos la pregunta excluyendo retroalimentacion y respuestas con 'esCorrecta'
-            pregunta = await Pregunta.findOne({
-                where: {
-                    idTest: intentoTest.idTest,
-                    numero: numeroPregunta,
-                },
-                include: [
-                    {
-                        model: Respuesta,
-                        as: "respuestas",
-                        attributes: { exclude: ["esCorrecta"] },
-                    },
-                ],
-                attributes: { exclude: ["retroalimentacion"] },
-            });
+            pregunta = await encuentraPregunta(["retroalimentacion"], ["esCorrecta"]);
         }
         // Añadimos la pregunta a intentoTest
         intentoTest.test.preguntas = [pregunta];
