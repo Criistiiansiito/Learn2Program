@@ -19,7 +19,10 @@ const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
 const Recordatorio = require('./modelos/Recordatorios');
 
-async function enviarRecordatorio(email, asunto, mensaje) {
+const enviarRecordatorio=require("./servicios/enviarRecordatorio");
+enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
+
+/*async function enviarRecordatorio(email, asunto, mensaje) {
     const transporter = nodemailer.createTransport({
         service: 'gmail', //Recordad que las variables del correo tienen que estar en el .env para evitar exponer la contraseña del correo
         auth: {
@@ -41,7 +44,7 @@ async function enviarRecordatorio(email, asunto, mensaje) {
     } catch (error) {
         console.error('Error al enviar el correo:', error);
     }
-}
+}*/
 
 // Función que envía y elimina los recordatorios
 async function enviarRecordatorios() {
