@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
-const Curso = require('./Curso');
 
 const Logro = sequelize.define("Logro", {
     id: {

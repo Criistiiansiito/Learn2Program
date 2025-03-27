@@ -11,6 +11,7 @@ const IntentoTest = sequelize.define("IntentoTest", {
     },
     preguntasAcertadas: {
         type: DataTypes.INTEGER,
+        defaultValue: 0,
         allowNull: false
     },
     terminado: {
@@ -29,7 +30,7 @@ const IntentoTest = sequelize.define("IntentoTest", {
 );
 
 // Relacion 1:N con IntentoPregunta
-IntentoTest.hasMany(IntentoPregunta, { as: "intentosPregunta", foreignKey: "idIntentoTest", onDelete: "CASCADE" });
+IntentoTest.hasMany(IntentoPregunta, { as: "intentos_pregunta", foreignKey: "idIntentoTest", onDelete: "CASCADE" });
 IntentoPregunta.belongsTo(IntentoTest, { foreignKey: "idIntentoTest" });
 
 module.exports = IntentoTest;

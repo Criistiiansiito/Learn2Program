@@ -1,85 +1,98 @@
-const Pregunta = require('../modelos/Pregunta');
-const Respuesta = require('../modelos/Respuesta');
-const Test = require('../modelos/Test');
-const IntentoTest = require('../modelos/IntentoTest');
-const IntentoPregunta = require('../modelos/IntentoPregunta');
+const Pregunta = require("../modelos/Pregunta");
+const Respuesta = require("../modelos/Respuesta");
+const Test = require("../modelos/Test");
+const IntentoTest = require("../modelos/IntentoTest");
+const IntentoPregunta = require("../modelos/IntentoPregunta");
 const {
-    PreguntaNoEncontradaError,
-    RespuestaNoEncontradaError,
-    PreguntaRespuestaError,
-    IntentoTestNoEncontradoError,
     PreguntaYaIntentadaError,
-    IntentoPreguntaNoEncontradoError
-} = require('../utils/errores');
+    IntentoPreguntaNoEncontradoError,
+    TestNoEncontradoError,
+} = require("../utils/errores");
+const { where } = require("sequelize");
 
 // Clase que maneja la lógica de negocio de los intentos de preguntas
 class ServicioIntentoTest {
 
     /**
-     * Impletementa la lógica de negocio del registro de intentos de preguntas
+     * Inicia un intento de test
      * 
+     * @param {Number} idTest - El id del test a intentar
+     * @returns {Promise<Number>} El id del intento de test creado
+     */
+    async intentarTest(idTest) {
+        // Obtenemos el test con sus preguntas
+        const test = await Test.findByPk(idTest, {
+            include: [
+                {
+                    model: Pregunta,
+                    as: "preguntas"
+                }
+            ]
+        });
+        // Si no se encuentra el test, lanzamos una excepcion
+        if (!test) {
+            throw new TestNoEncontradoError(idTest);
+        }
+        // Para cada pregunta del test creamos un intento de pregunta no realizado (con idRespuesta nulo)
+        const intentosPregunta = [];
+        test.preguntas.forEach((pregunta) => {
+            intentosPregunta.push({ idPregunta: pregunta.id });
+        });
+        // Creamos el intento de test con sus intentos de pregunta
+        const intentoTest = await IntentoTest.create(
+            {
+                idTest: idTest,
+                intentos_pregunta: intentosPregunta,
+            },
+            {
+                include: [
+                    {
+                        model: IntentoPregunta,
+                        as: "intentos_pregunta",
+                    },
+                ],
+            }
+        );
+        return intentoTest.id;
+    }
+
+    /**
+     * Impletementa la lógica de negocio de los intentos de preguntas.
+     * 
+     * A efectos de implementación, consideramos responder (intentar) una pregunta como
+     * actualizar el campo idPregunta (inicialmente nulo)
+     *
      * @param {Number} idIntentoTest - Id del intento de test asociado al intento de la pregunta
      * @param {Number} numeroPregunta - Id de la pregunta a intentar
      * @param {Number} idRespuesta - Id de la respuesta a la pregunta
-     * @returns {Object} El intento de test, intento de pregunta actualizado y la corrección de la pregunta
      */
     async intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta) {
-        const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
-            include: [{
-                model: Test, // Cargamos también el test correspondiente
-                as: "test" // Nombre del test obtenido en el objeto intentoTest
-            }]
-        });
-        if (!intentoTest) {
-            // Si no se encuentra el intento, lanzamos una excepción
-            throw new IntentoTestNoEncontradoError(idIntentoTest);
-        }
-        // Obtenemos la pregunta junto con sus respuestas
-        const pregunta = await Pregunta.findOne({
-            where: {
-                idTest: intentoTest.idTest,
-                numero: numeroPregunta
-            },
-            include: [{
-                model: Respuesta, // Para obtener las respuestas
-                as: "respuestas" // Nombre de la lista de respuestas en el objeto obtenido
-            }]
-        })
-        if (!pregunta) {
-            // Si no se encuentra la pregunta por su número, lanzamos una excepción
-            throw new PreguntaNoEncontradaError(intentoTest.idTest, numeroPregunta);
-        }
-        const respuesta = await Respuesta.findByPk(idRespuesta);
-        if (!respuesta) {
-            // Si no se encuentra la respuesta por su id, lanzamos una excepción
-            throw new RespuestaNoEncontradaError(idRespuesta);
-        }
-        if (pregunta.id != respuesta.idPregunta) {
-            // Si la respuesta no "pertenece" a la pregunta, lanzamos una excepción
-            throw new PreguntaRespuestaError(numeroPregunta, idRespuesta);
-        }
-        // Buscamos un intento de pregunta por idIntentoTest y idPregunta
         const intentoPregunta = await IntentoPregunta.findOne({
-            where: {
-                idIntentoTest: idIntentoTest,
-                idPregunta: pregunta.id
-            }
+            where: { idIntentoTest: idIntentoTest },
+            include: [
+                {
+                    model: Pregunta,
+                    as: "pregunta",
+                    where: { numero: numeroPregunta }
+                }
+            ]
         });
-        if (intentoPregunta.idRespuesta) {
-            // Si ya se ha realizado un intento para esta pregunta en este mismo intento de test, lanzamos una excepción
-            throw new PreguntaYaIntentadaError(idIntentoTest, numeroPregunta);
+        if (!intentoPregunta) {
+            // Si no se encuentra el intento, lanzamos una excepción
+            throw new IntentoPreguntaNoEncontradoError(idIntentoTest, numeroPregunta);
         }
-        // Si no se ha lanzado ninguna excepción, actualizamos el intento
-        intentoPregunta.update({ idRespuesta: idRespuesta });
-        // Construimos el intento test
-        intentoTest.intentos_pregunta = [intentoPregunta];
-        intentoTest.test.preguntas = [pregunta];
-        return intentoTest;
+        if (intentoPregunta.idRespuesta) {
+            // Si ya se ha respondido a la pregunta, lanzamos una excepción
+            throw new PreguntaYaIntentadaError(idIntentoTest, intentoPregunta.idPregunta);
+        }
+        // Actualizamos el intento de la pregunta
+        intentoPregunta.idRespuesta = idRespuesta;
+        await intentoPregunta.save(intentoPregunta);
     }
 
     /**
      * Obtiene el intento de una pregunta en el contexto del intento del test
-     * 
+     *
      * @param {Number} idIntentoTest - Id del intento de test asociado al intento de la pregunta
      * @param {Number} numeroPregunta - Id de la pregunta sobre la que queremos obtener el intento
      * @returns {Object} El intento de test, con el intento de pregunta
@@ -88,49 +101,65 @@ class ServicioIntentoTest {
         const intentoPregunta = await IntentoPregunta.findOne({
             where: {
                 idIntentoTest: idIntentoTest,
-                idPregunta: numeroPregunta
             },
+            include: [
+                {
+                    model: Pregunta,
+                    as: "pregunta",
+                    where: {
+                        numero: numeroPregunta,
+                    },
+                },
+            ],
         });
         if (!intentoPregunta) {
             // Si no se encuentra el intento, lanzamos una excepción
             throw new IntentoPreguntaNoEncontradoError(idIntentoTest, numeroPregunta);
         }
         const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
-            include: [{
-                model: Test,
-                as: "test",
-            }]
+            include: [
+                {
+                    model: Test,
+                    as: "test",
+                },
+            ],
         });
-        console.log(JSON.stringify(intentoTest));
         let pregunta;
         if (intentoPregunta.idRespuesta) {
             // Si la pregunta ya ha sido respondida, cargamos la pregunta con retroalimentación y respuestas con 'esCorrecta'
             pregunta = await Pregunta.findOne({
                 where: {
                     idTest: intentoTest.idTest,
-                    numero: numeroPregunta
+                    numero: numeroPregunta,
                 },
-                include: [{
-                    model: Respuesta,
-                    as: "respuestas"
-                }]
-            })
+                include: [
+                    {
+                        model: Respuesta,
+                        as: "respuestas",
+                    },
+                ],
+            });
         } else {
             // Si no ha sido respondida, cargamos la pregunta excluyendo retroalimentacion y respuestas con 'esCorrecta'
-            pregunta = await Pregunta.findByPk(numeroPregunta, {
-                attributes: { exclude: ['retroalimentacion'] },
-                include: [{
-                    model: Respuesta,
-                    as: "respuestas",
-                    attributes: { exclude: ['esCorrecta']}
-                }]
-            })
+            pregunta = await Pregunta.findOne({
+                where: {
+                    idTest: intentoTest.idTest,
+                    numero: numeroPregunta,
+                },
+                include: [
+                    {
+                        model: Respuesta,
+                        as: "respuestas",
+                        attributes: { exclude: ["esCorrecta"] },
+                    },
+                ],
+                attributes: { exclude: ["retroalimentacion"] },
+            });
         }
         // Añadimos la pregunta a intentoTest
         intentoTest.test.preguntas = [pregunta];
         return intentoTest;
     }
-
 }
 
 module.exports = new ServicioIntentoTest(); // Exportamos una instancia (singleton)

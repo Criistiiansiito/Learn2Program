@@ -90,7 +90,7 @@
                 
                 <!-- Realizar el test por primera vez -->
                 <div class="d-flex justify-content-center mt-4">
-                    <form action="/obtener-preguntas-test/<%= idTest %>/0" method="GET">
+                    <form action="/test/<%= idTest %>/intento-test" method="POST">
                         <input type="hidden" name="idTest" value="<%= idTest %>"> <!--Valor para asociar las preguntas que se muestran -->
                         <button class="btn btn-personalizado btn-lg boton-vista-test">
                             <i class="fas fa-play"></i> Comenzar Test  
