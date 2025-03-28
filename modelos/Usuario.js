@@ -35,4 +35,11 @@ Usuario.hasMany(IntentoTest, {
 IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
 Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario" });
 
+// Relacion 1:N con Recordatorio
+Usuario.hasMany(Recordatorio, {
+    as: "recordatorios",
+    foreignKey: "idUsuario",
+    onDelete: "CASCADE"
+});
+
 module.exports = Usuario;
