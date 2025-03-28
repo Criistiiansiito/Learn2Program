@@ -31,6 +31,12 @@ app.use(session({
   cookie: { secure: false }    
 }));
 
+// Middleware para pasar información de la sesión a la vista
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;  // Pasa el usuario actual a las vistas
+  next();
+});
+
 //Variable que almancenará el idCurso durante toda la ejecucion
 app.locals.idCurso = 1;
 
