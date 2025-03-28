@@ -26,6 +26,7 @@
 
     <div class="container contenido">
         <div class="container contenedor-principal mt-5">
+            
             <h1 class="mb-4 text-center titulos">Iniciar Sesión</h1>
             
             <div class="row justify-content-center">
@@ -59,11 +60,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Escuchar el evento submit del formulario
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
-          event.preventDefault(); // Evitar el comportamiento por defecto (enviar el formulario)
-      
-          // Obtener los datos del formulario
+          event.preventDefault();
+
           const correo = document.getElementById('correo').value;
           const password = document.getElementById('password').value;
       
@@ -73,22 +72,20 @@
             password: password
           };
       
-            // Realizar la solicitud POST utilizando fetch
             const response = await fetch('/login', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json' // Especificar que los datos son en formato JSON
+                'Content-Type': 'application/json'
               },
-              body: JSON.stringify(formData) // Enviar los datos del formulario como JSON
+              body: JSON.stringify(formData) 
             });
       
         
-            const result = await response.json(); // Suponiendo que el servidor devuelve una respuesta en formato JSON
+            const result = await response.json(); 
 
-// Limpiar mensajes previos
 document.getElementById('error-message-login').classList.add('d-none');
 
-// Si la respuesta es exitosa
+
 if (result.success) {
     // Redirigir a /index si el registro fue exitoso
     window.location.href = result.redirect;

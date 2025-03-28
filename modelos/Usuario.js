@@ -1,5 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/connection");
+const IntentoTest = require("./IntentoTest");
+const Recordatorio = require("./Recordatorios");
 
 const Usuario = sequelize.define("Usuario", {
     id: {
