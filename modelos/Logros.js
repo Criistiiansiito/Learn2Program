@@ -29,5 +29,11 @@ const Logro = sequelize.define("Logro", {
     timestamps: false
 });
 
+// Relacion N:M con Usuario
+Logro.belongsToMany(Curso, {
+    through: "usuario_logro",
+    foreignKey: "idLogro",
+    otherKey: "idCurso"
+});
 
 module.exports = Logro;
