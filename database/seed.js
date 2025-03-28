@@ -5,6 +5,9 @@ const Test = require('../modelos/Test');
 const Logro = require('../modelos/Logros');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
+const Usuario = require('../modelos/Usuario');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Número de rondas de encriptado
 
 // Función que puebla la base de datos
 async function seedDatabase() {
@@ -438,6 +441,12 @@ async function seedDatabase() {
                     ]
                 }
             ]
+        });
+        const encryptedPassword = await bcrypt.hash('123', saltRounds);
+
+        await Usuario.create({
+            correo: 'prueba@gmail.com',
+            contraseña: encryptedPassword // Aquí guardamos la contraseña encriptada
         });
 
         console.log("Base de datos poblada");
