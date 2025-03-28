@@ -35,4 +35,11 @@ Usuario.hasMany(IntentoTest, {
 IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
 Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario" });
 
+// Relacion N:M con Logro
+Usuario.belongsToMany(Logro, {
+    through: "usuario_logro",
+    foreignKey: "idUsuario",
+    otherKey: "idLogro"
+});
+
 module.exports = Usuario;
