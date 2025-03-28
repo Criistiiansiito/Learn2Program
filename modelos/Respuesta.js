@@ -25,7 +25,7 @@ const Respuesta = sequelize.define("Respuesta", {
 );
 
 // Relacion 1:N con IntentoPregunta
-Respuesta.hasMany(IntentoPregunta, { as: "intentos", foreignKey: "idRespuesta", onDelete: "CASCADE" });
+Respuesta.hasMany(IntentoPregunta, { as: "intentos_pregunta", foreignKey: "idRespuesta", onDelete: "CASCADE" });
 IntentoPregunta.belongsTo(Respuesta, { as: "respuesta", foreignKey: "idRespuesta" });
 
 module.exports = Respuesta;

@@ -8,6 +8,8 @@ const {
     IntentoPreguntaNoEncontradoError,
     TestNoEncontradoError,
     IntentoTestNoEncontradoError,
+    IntentoTestTerminadoError,
+    RespuestaNoEncontradaError,
 } = require("../utils/errores");
 const { where } = require("sequelize");
 
@@ -92,12 +94,8 @@ class ServicioIntentoTest {
         }
         // Actualizamos los campos del intento
         const numeroPreguntas = intentoTest.intentos_pregunta.length;
-        console.log("INTENTOS PREGUNTA:", JSON.stringify(intentoTest.intentos_pregunta));
         const preguntasAcertadas = intentoTest.intentos_pregunta.filter(ip => ip.respuesta?.esCorrecta).length; // Contamos los intentos con respuestas correctas
         const nota = ((preguntasAcertadas / numeroPreguntas) * 10).toFixed(2); // Nota con dos decimales
-        console.log("ACERTADAS:", preguntasAcertadas);
-        console.log("TOTAL:", numeroPreguntas);
-        console.log("NOTA:", nota);
         intentoTest.preguntasAcertadas = preguntasAcertadas;
         intentoTest.nota = nota;
         intentoTest.terminado = true;
@@ -118,27 +116,45 @@ class ServicioIntentoTest {
      * @param {Number} idRespuesta - Id de la respuesta a la pregunta
      */
     async intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta) {
-        const intentoPregunta = await IntentoPregunta.findOne({
-            where: { idIntentoTest: idIntentoTest },
+        // Buscamos la respuesta con su intento de pregunta y su intento de test correspondientes al parametro
+        const respuesta = await Respuesta.findByPk(idRespuesta, {
             include: [
                 {
                     model: Pregunta,
                     as: "pregunta",
-                    where: { numero: numeroPregunta }
+                    where: { numero: numeroPregunta },
+                    include: [
+                        {
+                            model: IntentoPregunta,
+                            as: "intentos_pregunta",
+                            include: [
+                                {
+                                    model: IntentoTest,
+                                    as: "intento_test",
+                                    where: { id: idIntentoTest }
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         });
-        if (!intentoPregunta) {
-            // Si no se encuentra el intento, lanzamos una excepción
-            throw new IntentoPreguntaNoEncontradoError(idIntentoTest, numeroPregunta);
+        if (!respuesta) {
+            // Si no se encuentra la respuesta, lanzamos una excepción
+            throw new RespuestaNoEncontradaError(idIntentoTest, numeroPregunta, idRespuesta);
+        }
+        const intentoPregunta = respuesta.pregunta.intentos_pregunta[0];
+        if (intentoPregunta.intento_test.terminado) {
+            // Si el intento de test, al que corresponde el intento de pregunta, ya se ha terminado, lanzamos una excepcion
+            throw new IntentoTestTerminadoError(idIntentoTest);
         }
         if (intentoPregunta.idRespuesta) {
             // Si ya se ha respondido a la pregunta, lanzamos una excepción
-            throw new PreguntaYaIntentadaError(idIntentoTest, intentoPregunta.idPregunta);
+            throw new PreguntaYaIntentadaError(idIntentoTest, numeroPregunta);
         }
         // Actualizamos el intento de la pregunta
         intentoPregunta.idRespuesta = idRespuesta;
-        await intentoPregunta.save(intentoPregunta);
+        await intentoPregunta.save();
     }
 
     /**
@@ -150,10 +166,18 @@ class ServicioIntentoTest {
      */
     async obtenerIntentoPregunta(idIntentoTest, numeroPregunta) {
         const intentoPregunta = await IntentoPregunta.findOne({
-            where: {
-                idIntentoTest: idIntentoTest,
-            },
             include: [
+                {
+                    model: IntentoTest,
+                    as: "intento_test",
+                    where: { id: idIntentoTest },
+                    include: [
+                        {
+                            model: Test,
+                            as: "test"
+                        }
+                    ]
+                },
                 {
                     model: Pregunta,
                     as: "pregunta",
@@ -167,19 +191,11 @@ class ServicioIntentoTest {
             // Si no se encuentra el intento, lanzamos una excepción
             throw new IntentoPreguntaNoEncontradoError(idIntentoTest, numeroPregunta);
         }
-        const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
-            include: [
-                {
-                    model: Test,
-                    as: "test",
-                },
-            ],
-        });
         // Definimos una funcion que busque una pregunta (excluyendo los atributos en excluyeP) con sus respuestas (excluyendo los atributos en excluyeR)
         const encuentraPregunta = async (excluyeP, excluyeR) => {
             return await Pregunta.findOne({
                 where: {
-                    idTest: intentoTest.idTest,
+                    idTest: intentoPregunta.intento_test.idTest,
                     numero: numeroPregunta,
                 },
                 include: [
@@ -200,9 +216,9 @@ class ServicioIntentoTest {
             // Si no ha sido respondida, cargamos la pregunta excluyendo retroalimentacion y respuestas con 'esCorrecta'
             pregunta = await encuentraPregunta(["retroalimentacion"], ["esCorrecta"]);
         }
-        // Añadimos la pregunta a intentoTest
-        intentoTest.test.preguntas = [pregunta];
-        return intentoTest;
+        // Añadimos la pregunta a intentoPregunta.intento_test
+        intentoPregunta.intento_test.test.preguntas = [pregunta];
+        return intentoPregunta.intento_test;
     }
 }
 

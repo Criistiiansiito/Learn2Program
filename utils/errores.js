@@ -18,22 +18,38 @@ class IntentoTestNoEncontradoError extends Error {
     }
 }
 
-class IntentoPreguntaNoEncontradoError extends Error {
-    constructor(idIntentoTest, idPregunta) {
-        super(MENSAJES.INTENTO_PREGUNTA_NO_ENCONTRADO(idIntentoTest, idPregunta));
+class IntentoTestTerminadoError extends Error {
+    constructor(idIntentoTest) {
+        super(MENSAJES.INTENTO_TEST_TERMINADO(idIntentoTest))
     }
 }
 
+class IntentoPreguntaNoEncontradoError extends Error {
+    constructor(idIntentoTest, numeroPregunta) {
+        super(MENSAJES.INTENTO_PREGUNTA_NO_ENCONTRADO(idIntentoTest, numeroPregunta));
+    }
+}
+
+class RespuestaNoEncontradaError extends Error {
+    constructor(idIntentoTest, numeroPregunta, idRespuesta) {
+        super(MENSAJES.RESPUESTA_NO_ENCONTRADA(idIntentoTest, numeroPregunta, idRespuesta));
+    }
+}
+
+
 class PreguntaYaIntentadaError extends Error {
-    constructor(idIntentoTest, idPregunta) {
-        super(MENSAJES.PREGUNTA_YA_INTENTADA(idIntentoTest, idPregunta));
+    constructor(idIntentoTest, numeroPregunta) {
+        super(MENSAJES.PREGUNTA_YA_INTENTADA(idIntentoTest, numeroPregunta));
     }
 }
 
 module.exports = {
     TestNoEncontradoError,
     TestPreguntaError,
+    RespuestaNoEncontradaError,
     IntentoTestNoEncontradoError,
     IntentoPreguntaNoEncontradoError,
+    RespuestaNoEncontradaError,
+    IntentoTestTerminadoError,
     PreguntaYaIntentadaError
 };
