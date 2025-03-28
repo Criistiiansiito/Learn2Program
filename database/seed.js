@@ -5,6 +5,7 @@ const Test = require('../modelos/Test');
 const Logro = require('../modelos/Logros');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
+const Recordatorio = require('../modelos/Recordatorios');
 const Usuario = require('../modelos/Usuario');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Número de rondas de encriptado
@@ -447,6 +448,14 @@ async function seedDatabase() {
         await Usuario.create({
             correo: 'prueba@gmail.com',
             contraseña: encryptedPassword // Aquí guardamos la contraseña encriptada
+        });
+
+        // Creamos el recordatorio
+        await Recordatorio.create({
+            fecha: '2025-03-26',  
+            email: 'prueba@ucm.es',  // El correo al que se enviará el recordatorio
+            mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test 🤓🤓.',
+            asunto: '🚨 RECORDATORIO 🚨 - Learn2Program'
         });
 
         console.log("Base de datos poblada");

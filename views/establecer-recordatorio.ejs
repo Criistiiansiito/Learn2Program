@@ -8,7 +8,7 @@
   </head>
 
   <body>
-    <%- include('fragments/header') %>
+    <%- include('fragments/navbar') %>
     <div class="form-container">
       <h2>Añadir un Recordatorio</h2>
       <form action="/recordatorios" method="POST">
@@ -20,17 +20,6 @@
             name="email"
             placeholder="ejemplo@email.com"
           />
-        </div>
-
-        <div class="form-group">
-          <label for="frequency">Frecuencia</label>
-          <select id="frequency" name="frequency" required>
-            <option value="">Seleccionar frecuencia</option>
-            <option value="once">Una vez</option>
-            <option value="daily">Diaria</option>
-            <option value="weekly">Semanal</option>
-            <option value="monthly">Mensual</option>
-          </select>
         </div>
 
         <div class="form-group date-time-group">
@@ -45,11 +34,11 @@
       </div>
 
         <div class="form-group">
-          <label for="name">Nombre</label>
+          <label for="name">Asunto</label>
           <input
             type="text"
-            id="name"
-            name="name"
+            id="asunto"
+            name="asunto"
             placeholder="Mi Recordatorio"
           />
         </div>
@@ -63,7 +52,7 @@
           ></textarea>
         </div>
 
-        <button type="submit">Añadir Recordatorio</button>
+        <button class="btn-personalizado" type="submit">Añadir Recordatorio</button>
       </form>
     </div>
     <%- include('fragments/footer') %>
