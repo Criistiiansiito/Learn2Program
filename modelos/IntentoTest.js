@@ -32,4 +32,8 @@ const IntentoTest = sequelize.define("IntentoTest", {
 IntentoTest.hasMany(IntentoPregunta, { as: "intentosPregunta", foreignKey: "idIntentoTest", onDelete: "CASCADE" });
 IntentoPregunta.belongsTo(IntentoTest, { foreignKey: "idIntentoTest" });
 
+// Relacion N:1 con Usuario
+IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
+Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario" });
+
 module.exports = IntentoTest;

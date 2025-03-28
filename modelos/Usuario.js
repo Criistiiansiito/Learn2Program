@@ -31,10 +31,6 @@ Usuario.hasMany(IntentoTest, {
     onDelete: "CASCADE"
 });
 
-// Relacion N:1 con Usuario
-IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
-Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario" });
-
 // Relacion N:M con Logro
 Usuario.belongsToMany(Logro, {
     through: "usuario_logro",
