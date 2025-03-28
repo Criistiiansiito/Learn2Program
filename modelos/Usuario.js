@@ -25,4 +25,14 @@ const Usuario = sequelize.define("Usuario", {
     timestamps: false
 });
 
+// Relacion 1:N con intententoTest
+Usuario.hasMany(IntentoTest, {
+    foreignKey: "idUsuario",
+    onDelete: "CASCADE"
+});
+
+// Relacion N:1 con Usuario
+IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
+Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario" });
+
 module.exports = Usuario;
