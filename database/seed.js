@@ -445,10 +445,28 @@ async function seedDatabase() {
         });
         const encryptedPassword = await bcrypt.hash('123', saltRounds);
 
-        await Usuario.create({
-            correo: 'prueba@gmail.com',
-            contraseña: encryptedPassword // Aquí guardamos la contraseña encriptada
-        });
+        await Usuario.create(
+            {
+                correo: 'prueba@gmail.com',
+                contraseña: encryptedPassword // Aquí guardamos la contraseña encriptada
+            },
+            {
+                correo: 'prueba@gmail.com',
+                contraseña: encryptedPassword
+            },
+            {
+                correo: 'usuario1@gmail.com',
+                contraseña: encryptedPassword
+            },
+            {
+                correo: 'usuario2@gmail.com',
+                contraseña: encryptedPassword
+            },
+            {
+                correo: 'usuario3@gmail.com',
+                contraseña: encryptedPassword
+            }
+        );
 
         // Creamos el recordatorio
         await Recordatorio.create({
