@@ -21,7 +21,7 @@ class ServicioIntentoTest {
      * @param {Number} idTest - El id del test a intentar
      * @returns {Promise<Number>} El id del intento de test creado
      */
-    async intentarTest(idTest) {
+    async intentarTest(idTest, idUsuario) {
         // Obtenemos el test con sus preguntas
         const test = await Test.findByPk(idTest, {
             include: [
@@ -44,6 +44,7 @@ class ServicioIntentoTest {
         const intentoTest = await IntentoTest.create(
             {
                 idTest: idTest,
+                idUsuario: idUsuario,
                 intentos_pregunta: intentosPregunta,
             },
             {

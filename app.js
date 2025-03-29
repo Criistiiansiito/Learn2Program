@@ -218,6 +218,9 @@ app.get('/previsualizacion-de-test', async (req, res) => {
   try {
     // Obtener el ID del curso desde la URL
     const idCurso = req.query.idCurso;
+    const idUsuario = req.session.user?.id;
+
+    console.log("ID del usuario:", idUsuario);
     console.log("ID del curso recibido:", idCurso);
 
     if (!idCurso) {
@@ -250,14 +253,15 @@ app.get('/previsualizacion-de-test', async (req, res) => {
 
     // Manejo seguro de intentos
     const intentos = curso.test.intentos || []; // Si intentos es null, se asigna un array vacío
-    const preguntasAcertadas = intentos.length > 0 ? intentos[0].preguntasAcertadas : 0; // Evita errores si no hay intentos
+    const intentosUsuario = intentos.filter(i => i.idUsuario === idUsuario);
+    const preguntasAcertadas = intentosUsuario.length > 0 ? intentosUsuario[0].preguntasAcertadas : 0; // Evita errores si no hay intentos
 
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {
       idTest: curso.test.id,
       tituloTest: curso.test.titulo,
       numIntentos: intentos.length,
-      intentos: intentos,
+      intentos: intentosUsuario,
       preguntasAcertadas: preguntasAcertadas
     });
 
