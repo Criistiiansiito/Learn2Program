@@ -58,7 +58,7 @@
                                     <td><%= index + 1 %></td>
                                     <td><%= new Date(intento.fechaFin).toLocaleDateString() %></td>
                                     <td><%= intento.preguntasAcertadas %></td>
-                                    <td><%= intento.nota %> / 10</td>
+                                    <td><%= intento.nota %> / 10.00 </td>
                                     <td>
                                         <% if (intento.nota > 5) { %>
                                             <i class="fas fa-thumbs-up" style="color: rgba(0, 128, 0, 0.671);"></i> 
@@ -90,7 +90,7 @@
                 
                 <!-- Realizar el test por primera vez -->
                 <div class="d-flex justify-content-center mt-4">
-                    <form action="/obtener-preguntas-test/<%= idTest %>/0" method="GET">
+                    <form action="/test/<%= idTest %>/intento-test" method="POST">
                         <input type="hidden" name="idTest" value="<%= idTest %>"> <!--Valor para asociar las preguntas que se muestran -->
                         <button class="btn btn-personalizado btn-lg boton-vista-test">
                             <i class="fas fa-play"></i> Comenzar Test  

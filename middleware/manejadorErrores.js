@@ -1,22 +1,26 @@
 const { StatusCodes, ReasonPhrases } = require('http-status-codes');
-const { PreguntaNoEncontradaError, RespuestaNoEncontradaError, PreguntaRespuestaError, PreguntaYaIntentadaError, IntentoTestNoEncontradoError } = require("../utils/errores");
+const { PreguntaYaIntentadaError, IntentoTestNoEncontradoError, RespuestaNoEncontradaError, IntentoPreguntaNoEncontradoError, TestNoEncontradoError, IntentoTestTerminadoError } = require("../utils/errores");
 
 // Gestiona las posibles excepciones
 function errorHandler(err, req, res, next) {
-  if (err instanceof PreguntaNoEncontradaError) {
-    return res.status(StatusCodes.NOT_FOUND).send(err.message);
-  }
-  if (err instanceof RespuestaNoEncontradaError) {
-    return res.status(StatusCodes.NOT_FOUND).send(err.message);
-  }
-  if (err instanceof PreguntaRespuestaError) {
-    return res.status(StatusCodes.CONFLICT).send(err.message);
-  }
+  const manejaError = (statusCode, mensaje) => res.status(statusCode).send(mensaje);
   if (err instanceof IntentoTestNoEncontradoError) {
-    return res.status(StatusCodes.NOT_FOUND).send(err.message);
+    return manejaError(StatusCodes.NOT_FOUND, err.message);
   }
   if (err instanceof PreguntaYaIntentadaError) {
-    return res.status(StatusCodes.CONFLICT).send(err.message);
+    return manejaError(StatusCodes.CONFLICT, err.message);
+  }
+  if (err instanceof IntentoPreguntaNoEncontradoError) {
+    return manejaError(StatusCodes.NOT_FOUND, err.message);
+  }
+  if (err instanceof TestNoEncontradoError) {
+    return manejaError(StatusCodes.NOT_FOUND, err.message);
+  }
+  if (err instanceof IntentoTestTerminadoError) {
+    return manejaError(StatusCodes.CONFLICT, err.message);
+  }
+  if (err instanceof RespuestaNoEncontradaError) {
+    return manejaError(StatusCodes.NOT_FOUND, err.message);
   }
   console.error("Error no manejado:", err);
   res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: ReasonPhrases.INTERNAL_SERVER_ERROR });
