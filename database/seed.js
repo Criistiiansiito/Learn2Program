@@ -13,7 +13,7 @@ async function seedDatabase() {
         const enDesarrollo = (process.env.NODE_ENV || "development") === "development";
 
         // Sincroniza la BD con el modelo
-        await sequelize.sync({ force: enDesarrollo }); // {force: true} borra y crea las tablas de nuevo (en producción no poblamos)
+        await sequelize.sync({ force: enDesarrollo, logging: false }); // {force: true} borra y crea las tablas de nuevo (en producción no poblamos)
         if (!enDesarrollo)
             return;
         // Crea un curso junto a sus temas, test, preguntas, y respuestas

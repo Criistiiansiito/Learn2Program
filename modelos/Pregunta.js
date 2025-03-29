@@ -1,4 +1,4 @@
-const DataTypes = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
 const Respuesta = require('./Respuesta');
 const IntentoPregunta = require('./IntentoPregunta');

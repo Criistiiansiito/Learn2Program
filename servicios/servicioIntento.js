@@ -8,10 +8,9 @@ const {
     IntentoPreguntaNoEncontradoError,
     TestNoEncontradoError,
     IntentoTestNoEncontradoError,
-    IntentoTestTerminadoError,
+    IntentoTestTerminadoError,  
     RespuestaNoEncontradaError,
 } = require("../utils/errores");
-const { where } = require("sequelize");
 
 // Clase que maneja la lógica de negocio de los intentos de preguntas
 class ServicioIntentoTest {

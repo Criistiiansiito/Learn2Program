@@ -9,12 +9,9 @@ const Test = require('./modelos/Test');
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const IntentoTest = require('./modelos/IntentoTest');
-const moment = require('moment');  
-const { serialize } = require('v8');
-
+const moment = require('moment');
 
 const app = express();
-const port = process.env.PORT || 8080;
 
 //Variable que almancenará el idCurso durante toda la ejecucion
 app.locals.idCurso = 1;
@@ -133,12 +130,12 @@ app.get('/previsualizacion-de-test', async (req, res) => {
     const preguntasAcertadas = intentos.length > 0 ? intentos[0].preguntasAcertadas : 0; // Evita errores si no hay intentos
 
     // Renderizar la vista con los datos (incluso si no hay intentos)
-    res.render('previsualizar-test', { 
-      idTest: curso.test.id, 
-      tituloTest: curso.test.titulo, 
-      numIntentos: intentos.length, 
-      intentos: intentos, 
-      preguntasAcertadas: preguntasAcertadas 
+    res.render('previsualizar-test', {
+      idTest: curso.test.id,
+      tituloTest: curso.test.titulo,
+      numIntentos: intentos.length,
+      intentos: intentos,
+      preguntasAcertadas: preguntasAcertadas
     });
 
   } catch (error) {
@@ -148,7 +145,7 @@ app.get('/previsualizacion-de-test', async (req, res) => {
 });
 
 app.get('/obtener-logro-curso', (req, res) => {
-  
+
   const consultarTestId = 'SELECT id from test where idCurso = ?;';
   pool.query(consultarTestId, [app.locals.idCurso], (err, results) => {
     if (err) {
@@ -171,27 +168,28 @@ app.get('/obtener-logro-curso', (req, res) => {
 
       const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
       pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
-      if (err) {
-        console.error('Error en la consulta de logros:', err);
-        return res.status(500).send('Error interno del servidor');
-      }
+        if (err) {
+          console.error('Error en la consulta de logros:', err);
+          return res.status(500).send('Error interno del servidor');
+        }
 
-      let logro = results[0];
+        let logro = results[0];
 
-      // Formatear la fecha de obtención del logro
-      if (logro && logro.fechaObtencion) {
-        logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
-      }
-      console.log(logro);    
+        // Formatear la fecha de obtención del logro
+        if (logro && logro.fechaObtencion) {
+          logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
+        }
+        console.log(logro);
         const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
         pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
           if (err) {
             return res.status(500).send('Error al obtener los datos: ' + err.message);
           }
-          
+
           console.log('p3');
-          res.render('obtencion-logros', { logro: logro, nota: nota,
-            nombreCurso: results2[0]?.nombre || 'Curso Desconocido' 
+          res.render('obtencion-logros', {
+            logro: logro, nota: nota,
+            nombreCurso: results2[0]?.nombre || 'Curso Desconocido'
           });
         });
       });
@@ -205,7 +203,4 @@ app.use(manejadorErrores);
 // Poblamos y sincronizamos la base de datos con el modelo
 seedDatabase();
 
-// Iniciar el servidor en el puerto
-app.listen(port, () => {
-  console.log(`Servidor escuchando en http://localhost:${port}`);
-});
+module.exports = app;
