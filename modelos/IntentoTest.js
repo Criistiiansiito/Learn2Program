@@ -1,4 +1,4 @@
-const DataTypes = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
 const IntentoPregunta = require('./IntentoPregunta');
 
@@ -11,7 +11,11 @@ const IntentoTest = sequelize.define("IntentoTest", {
     },
     preguntasAcertadas: {
         type: DataTypes.INTEGER,
+        defaultValue: 0,
         allowNull: false
+    },
+    nota: { // Nota sobre 10
+        type: DataTypes.DOUBLE
     },
     terminado: {
         type: DataTypes.BOOLEAN,
@@ -19,7 +23,7 @@ const IntentoTest = sequelize.define("IntentoTest", {
         allowNull: false,
     },
     fechaFin: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
     }
 },
     {
@@ -29,7 +33,7 @@ const IntentoTest = sequelize.define("IntentoTest", {
 );
 
 // Relacion 1:N con IntentoPregunta
-IntentoTest.hasMany(IntentoPregunta, { as: "intentosPregunta", foreignKey: "idIntentoTest", onDelete: "CASCADE" });
-IntentoPregunta.belongsTo(IntentoTest, { foreignKey: "idIntentoTest" });
+IntentoTest.hasMany(IntentoPregunta, { as: "intentos_pregunta", foreignKey: "idIntentoTest", onDelete: "CASCADE" });
+IntentoPregunta.belongsTo(IntentoTest, { as: "intento_test", foreignKey: "idIntentoTest" });
 
 module.exports = IntentoTest;

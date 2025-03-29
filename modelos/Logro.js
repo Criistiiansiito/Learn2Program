@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
-const Curso = require('./Curso');
 
 const Logro = sequelize.define("Logro", {
     id: {
@@ -25,9 +24,8 @@ const Logro = sequelize.define("Logro", {
         allowNull: false
     }
 }, {
-    tableName: "logros",
+    tableName: "logro",
     timestamps: false
 });
-
 
 module.exports = Logro;

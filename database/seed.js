@@ -1,10 +1,12 @@
 const sequelize = require('./connection');
+
 const Curso = require('../modelos/Curso');
 const Tema = require('../modelos/Tema');
 const Test = require('../modelos/Test');
-const Logro = require('../modelos/Logros');
+const Logro = require('../modelos/Logro');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
+const IntentoTest = require('../modelos/IntentoTest');
 
 // Función que puebla la base de datos
 async function seedDatabase() {
@@ -13,7 +15,7 @@ async function seedDatabase() {
         const enDesarrollo = (process.env.NODE_ENV || "development") === "development";
 
         // Sincroniza la BD con el modelo
-        await sequelize.sync({ force: enDesarrollo }); // {force: true} borra y crea las tablas de nuevo (en producción no poblamos)
+        await sequelize.sync({ force: enDesarrollo, logging: false }); // {force: true} borra y crea las tablas de nuevo (en producción no poblamos)
         if (!enDesarrollo)
             return;
         // Crea un curso junto a sus temas, test, preguntas, y respuestas
@@ -438,6 +440,15 @@ async function seedDatabase() {
                     ]
                 }
             ]
+        });
+
+        await IntentoTest.create({
+            id: 1,
+            preguntasAcertadas: 5,
+            nota: 8.5,
+            terminado: true,
+            fechaFin: new Date(),
+            idTest: 1
         });
 
         console.log("Base de datos poblada");
