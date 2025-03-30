@@ -64,6 +64,12 @@ jobs:
         run: unzip release.zip
 
       - name: Run tests
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_REMOTE: ${{ secrets.DB_REMOTE }}
         run: |
           npm test
       
