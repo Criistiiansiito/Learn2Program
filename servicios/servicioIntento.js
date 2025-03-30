@@ -68,6 +68,7 @@ class ServicioIntentoTest {
      * @returns {Number} El id del curso al que pertenece el test
      */
     async terminarIntento(idIntentoTest) {
+
         // Buscamos el intento de test por su id, con su test, y sus intentos de pregunta y respuestas
         const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
             include: [
@@ -91,6 +92,7 @@ class ServicioIntentoTest {
             // Si no existe el intento, lanzamos una excepción
             throw new IntentoTestNoEncontradoError(idIntentoTest);
         }
+    
         // Actualizamos los campos del intento
         const numeroPreguntas = intentoTest.intentos_pregunta.length;
         const preguntasAcertadas = intentoTest.intentos_pregunta.filter(ip => ip.respuesta?.esCorrecta).length; // Contamos los intentos con respuestas correctas
@@ -101,7 +103,10 @@ class ServicioIntentoTest {
         intentoTest.fechaFin = new Date();
         // Guardamos el intento actualizado
         await intentoTest.save();
-        return intentoTest.test.idCurso;
+
+        const idCurso = intentoTest.test ? intentoTest.test.idCurso : null;
+
+        return intentoTest.test ? intentoTest.test.idCurso : null;
     }
 
     /**

@@ -11,7 +11,7 @@
 
     <%- include('fragments/navbar') %>
     <% const pregunta = intentoTest.test.preguntas[0]; %>
-    <% const esUltimaPregunta = pregunta.numero === 5; %>
+    <% const esUltimaPregunta = pregunta.numero === 10; %>
     <% const idIntentoTest = intentoTest.id; %>
 
     <div class="container mt-5">
@@ -117,19 +117,20 @@
             document.getElementById('remove' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('d-none');
         }
         function finalizarIntento(idTest) {
-        fetch(`/intento-test/${idTest}/terminar-intento`, {
-            method: 'PATCH', // Usamos el método PATCH para terminar el intento
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
+             fetch(`/intento-test/${idTest}/terminar-intento`, {
+                  method: 'PATCH', 
+                  headers: { 'Content-Type': 'application/json' }
+             })
+            .then(response => response.json()) 
+            .then(data => {
+                if (data.redirectUrl) {
+                     window.location.href = data.redirectUrl; 
+                }
+            })
+            .catch(error => console.error('Error al finalizar intento:', error));
+        }
 
-
-
-
-    }
     </script>
-
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

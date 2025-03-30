@@ -10,6 +10,7 @@ const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');
+const { IntentoTestNoEncontradoError } = require('./utils/errores'); 
 
 const app = express();
 
@@ -81,16 +82,15 @@ app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next
   try {
     const idIntentoTest = req.params.idIntentoTest;
     
-    // Llamamos a la función del servicio para calcular la nota y terminar el intento
-    const { idCurso } = await servicioIntento.terminarIntento(idIntentoTest);
-    res.redirect(`/previsualizacion-de-test?idCurso=${idCurso}`);
-
-
+    // Llamamos a la función del servicio para obtener el intento de test
+    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+    res.json({ redirectUrl: `/previsualizacion-de-test?idCurso=${idCurso}` });
   } catch (error) {
-    console.error("Error al finalizar el test:", error);
     next(error);
   }
 });
+
+
 
 app.get('/nuevo-recordatorio', (req, res) => {
   res.render("establecer-recordatorio");

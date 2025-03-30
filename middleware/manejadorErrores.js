@@ -5,6 +5,7 @@ const { PreguntaYaIntentadaError, IntentoTestNoEncontradoError, RespuestaNoEncon
 function errorHandler(err, req, res, next) {
   const manejaError = (statusCode, mensaje) => res.status(statusCode).send(mensaje);
   if (err instanceof IntentoTestNoEncontradoError) {
+    console.log('Error IntentoTestNoEncontradoError'); // Depuración
     return manejaError(StatusCodes.NOT_FOUND, err.message);
   }
   if (err instanceof PreguntaYaIntentadaError) {
