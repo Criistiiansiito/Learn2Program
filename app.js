@@ -82,7 +82,7 @@ app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next
     const idIntentoTest = req.params.idIntentoTest;
     
     // Llamamos a la función del servicio para calcular la nota y terminar el intento
-    const { idCurso } = await servicioIntento.terminarIntentoTest(idIntentoTest);
+    const { idCurso } = await servicioIntento.terminarIntento(idIntentoTest);
     res.redirect(`/previsualizacion-de-test?idCurso=${idCurso}`);
 
 
