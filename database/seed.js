@@ -451,6 +451,15 @@ async function seedDatabase() {
             idTest: 1
         });
 
+        await IntentoTest.create({
+            id: 2,
+            preguntasAcertadas: 1,
+            nota: 4,
+            terminado: true,
+            fechaFin: new Date(),
+            idTest: 1
+        });
+
         console.log("Base de datos poblada");
     } catch (error) {
         console.error('Error al poblar la base de datos:', error);
