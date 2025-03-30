@@ -11,6 +11,8 @@
 
     <%- include('fragments/navbar') %>
     <% const pregunta = intentoTest.test.preguntas[0]; %>
+    <% const esUltimaPregunta = pregunta.numero === 5; %>
+    <% const idIntentoTest = intentoTest.id; %>
 
     <div class="container mt-5">
         <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
@@ -39,7 +41,11 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
+                    <% if (esUltimaPregunta) { %>
+                        <button type="button" class="btn btn-danger mt-3" onclick = "finalizarIntento('<%= idIntentoTest %>')" >Finalizar Test</button>
+                    <% } else { %>
+                        <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-primary mt-3">Siguiente Pregunta</a>
+                    <% } %>
                 </div>
             <% } else { %>
                 <div class="d-flex justify-content-end">
@@ -110,7 +116,21 @@
             document.getElementById(id).checked = false;
             document.getElementById('remove' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('d-none');
         }
+        function finalizarIntento(idTest) {
+        fetch(`/intento-test/${idTest}/terminar-intento`, {
+            method: 'PATCH', // Usamos el método PATCH para terminar el intento
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+
+
+
+
+    }
     </script>
+
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

@@ -79,9 +79,15 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
 // Termina un intento de test
 app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
   try {
-    const idCurso = await servicioIntento.terminarIntento(req.params.idIntentoTest);
+    const idIntentoTest = req.params.idIntentoTest;
+    
+    // Llamamos a la función del servicio para calcular la nota y terminar el intento
+    const { idCurso } = await servicioIntento.terminarIntentoTest(idIntentoTest);
     res.redirect(`/previsualizacion-de-test?idCurso=${idCurso}`);
+
+
   } catch (error) {
+    console.error("Error al finalizar el test:", error);
     next(error);
   }
 });
@@ -196,6 +202,7 @@ app.get('/obtener-logro-curso', (req, res) => {
     });
   });
 });
+
 
 // Añadimos el manejador de errores/excepciones
 app.use(manejadorErrores);
