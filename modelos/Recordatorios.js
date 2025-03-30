@@ -1,5 +1,3 @@
-// models/Recordatorio.js
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
 
@@ -10,7 +8,7 @@ const Recordatorio = sequelize.define("Recordatorio", {
     autoIncrement: true
   },
   fecha: {
-    type: DataTypes.DATEONLY, // Tipo de dato para solo fecha (sin hora)
+    type: DataTypes.DATE, // cambiado de DATEONLY a DATE para incluir la hora
     allowNull: false
   },
   email: {

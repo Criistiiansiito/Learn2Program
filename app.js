@@ -301,7 +301,6 @@ app.get('/previsualizacion-de-test', (req,res)=>{
   //HACER RENDER A LA VISTA  DE ERIC Y CRISTIAN
 });
 
-
 //ver test
 app.get('/obtener-preguntas-test', (req, res) => {
   const idTest = req.body.idTest; // El ID del test lo envías desde el frontend
@@ -389,6 +388,70 @@ app.get('/obtener-logro-curso', (req, res) => {
       });
     });
   });
+});
+
+app.get('/establecer-recordatorio', (req, res) => {
+  res.render('establecer-recordatorio', { 
+    mensajeError: null, 
+    mensajeExito: null 
+  });
+});
+
+app.post('/crear-recordatorio', (req, res) => {
+  const { fecha, email, mensaje, asunto, time } = req.body;
+
+  // Mostrar los datos recibidos para verificar
+  console.log(fecha);
+  console.log(time);
+  console.log(email);
+  console.log(mensaje);
+  console.log(asunto);
+
+  // Validar que todos los campos estén completos
+  if (!fecha || !time || !email || !mensaje || !asunto) {
+    return res.render('establecer-recordatorio', {
+      mensajeError: 'Todos los campos son obligatorios.',
+      mensajeExito: null
+    });
+  }
+
+  // Combinar la fecha y la hora seleccionadas en una sola fecha completa
+  const fechaHoraSeleccionada = new Date(`${fecha}T${time}:00`);
+
+  // Obtener la fecha y hora actual
+  const fechaHoy = new Date();
+  fechaHoy.setHours(0, 0, 0, 0); // Ajustar la hora de la fecha actual para compararla solo por el día
+
+  // Validar que la fecha no sea del pasado
+  if (fechaHoraSeleccionada < fechaHoy) {
+    return res.render('establecer-recordatorio', {
+      mensajeError: 'La fecha no puede ser del pasado.',
+      mensajeExito: null
+    });
+  }
+
+  // Crear el recordatorio en la base de datos
+  Recordatorio.create({
+    fecha: fechaHoraSeleccionada, // Guardar la fecha y hora completa
+    email,
+    mensaje,
+    asunto
+  })
+    .then(() => {
+      // Si el recordatorio se crea bien, renderiza la página con mensaje de éxito
+      res.render('establecer-recordatorio', {
+        mensajeError: null,
+        mensajeExito: 'Recordatorio creado exitosamente.'
+      });
+    })
+    .catch((error) => {
+      console.error('Error al crear recordatorio:', error);
+      // Si ocurre un error, renderiza la vista con mensaje de error
+      res.render('establecer-recordatorio', {
+        mensajeError: 'Hubo un problema al crear el recordatorio. Intenta de nuevo.',
+        mensajeExito: null
+      });
+    });
 });
 
 
