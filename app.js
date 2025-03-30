@@ -152,7 +152,7 @@ app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
     console.log(JSON.stringify(intento));
   
     res.render('obtencion-logros', {
-      nombreCurso: intento.test.curso.nombre,
+      nombreCurso: intento.test.curso.titulo,
       nota: intento.nota,
       logro: intento.test.curso.logro,
     }); 
