@@ -10,7 +10,7 @@ const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');
-const { IntentoTestNoEncontradoError } = require('./utils/errores'); 
+const Pregunta = require('./modelos/Pregunta');
 
 const app = express();
 
@@ -47,7 +47,27 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
-    res.render('pregunta-test', { intentoTest });
+
+    // Obtenemos todas las preguntas asociadas a este test, mediante las relaciones intentoTest-Test y Test-Preguntas 
+    const intentoTestAux = await IntentoTest.findByPk(idIntentoTest, {
+      include: [
+        {
+          model: Test,
+          as: 'test', 
+          include: [
+            {
+              model: Pregunta,
+              as: 'preguntas',  
+              order: [['numero', 'ASC']] 
+            }
+          ]
+        }
+      ]
+    });
+
+    const numeroPreguntas = intentoTestAux.test.preguntas.length;
+
+    res.render('pregunta-test', { intentoTest, numeroPreguntas});
   } catch (error) {
     next(error);
   }
