@@ -3,9 +3,12 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const servicioIntento = require('./servicios/servicioIntento');
+const servicioLogro = require('./servicios/servicioLogro');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
 const Test = require('./modelos/Test');
+const IntentoTest = require('./modelos/IntentoTest');
+
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const IntentoTest = require('./modelos/IntentoTest');
@@ -110,8 +113,6 @@ app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next
   }
 });
 
-
-
 app.get('/nuevo-recordatorio', (req, res) => {
   res.render("establecer-recordatorio");
 });
@@ -170,59 +171,20 @@ app.get('/previsualizacion-de-test', async (req, res) => {
   }
 });
 
-app.get('/obtener-logro-curso', (req, res) => {
-
-  const consultarTestId = 'SELECT id from test where idCurso = ?;';
-  pool.query(consultarTestId, [app.locals.idCurso], (err, results) => {
-    if (err) {
-      console.error('Error en la consulta del id test:', err);
-      return res.status(500).send('Error interno del servidor');
-    }
-    let testId = results[0];
-
-    const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
-    pool.query(consultaIntentos, [testId], (err, resultsIntentos) => {
-      if (err) {
-        console.error('Error en consulta de intentos:', err);
-        return;
-      }
-      let intento = resultsIntentos[0];
-      let nota = intento.nota;
-
-      console.log(nota);
-      //a partir d aqui lo que ya estaba
-
-      const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
-      pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
-        if (err) {
-          console.error('Error en la consulta de logros:', err);
-          return res.status(500).send('Error interno del servidor');
-        }
-
-        let logro = results[0];
-
-        // Formatear la fecha de obtención del logro
-        if (logro && logro.fechaObtencion) {
-          logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
-        }
-        console.log(logro);
-        const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
-        pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
-          if (err) {
-            return res.status(500).send('Error al obtener los datos: ' + err.message);
-          }
-
-          console.log('p3');
-          res.render('obtencion-logros', {
-            logro: logro, nota: nota,
-            nombreCurso: results2[0]?.nombre || 'Curso Desconocido'
-          });
-        });
-      });
-    });
-  });
+app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
+  try {
+    const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
+  
+    res.render('obtencion-logros', {
+      nombreCurso: intento.test.curso.titulo,
+      nota: intento.nota,
+      fecha: intento.fechaFin,
+      logro: intento.test.curso.logro,
+    }); 
+  } catch (error) {
+    next(error);
+  }
 });
-
 
 // Añadimos el manejador de errores/excepciones
 app.use(manejadorErrores);

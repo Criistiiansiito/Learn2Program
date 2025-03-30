@@ -92,7 +92,6 @@ class ServicioIntentoTest {
             // Si no existe el intento, lanzamos una excepción
             throw new IntentoTestNoEncontradoError(idIntentoTest);
         }
-    
         // Actualizamos los campos del intento
         const numeroPreguntas = intentoTest.intentos_pregunta.length;
         const preguntasAcertadas = intentoTest.intentos_pregunta.filter(ip => ip.respuesta?.esCorrecta).length; // Contamos los intentos con respuestas correctas

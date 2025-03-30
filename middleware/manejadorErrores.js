@@ -1,11 +1,18 @@
 const { StatusCodes, ReasonPhrases } = require('http-status-codes');
-const { PreguntaYaIntentadaError, IntentoTestNoEncontradoError, RespuestaNoEncontradaError, IntentoPreguntaNoEncontradoError, TestNoEncontradoError, IntentoTestTerminadoError } = require("../utils/errores");
+const { 
+  PreguntaYaIntentadaError, 
+  IntentoTestNoEncontradoError, 
+  RespuestaNoEncontradaError, 
+  IntentoPreguntaNoEncontradoError, 
+  TestNoEncontradoError, 
+  IntentoTestTerminadoError,
+  CursoNoEncontradoError
+ } = require("../utils/errores");
 
 // Gestiona las posibles excepciones
 function errorHandler(err, req, res, next) {
   const manejaError = (statusCode, mensaje) => res.status(statusCode).send(mensaje);
   if (err instanceof IntentoTestNoEncontradoError) {
-    console.log('Error IntentoTestNoEncontradoError'); // Depuración
     return manejaError(StatusCodes.NOT_FOUND, err.message);
   }
   if (err instanceof PreguntaYaIntentadaError) {
@@ -21,6 +28,9 @@ function errorHandler(err, req, res, next) {
     return manejaError(StatusCodes.CONFLICT, err.message);
   }
   if (err instanceof RespuestaNoEncontradaError) {
+    return manejaError(StatusCodes.NOT_FOUND, err.message);
+  }
+  if (err instanceof CursoNoEncontradoError) {
     return manejaError(StatusCodes.NOT_FOUND, err.message);
   }
   console.error("Error no manejado:", err);

@@ -22,7 +22,7 @@
             <h2 class="custom-title mb-4">Test completado <i class="fas fa-check-circle"></i></h2>
             <hr class="custom-line"> <!-- Línea horizontal -->
             <p class="custom-text mb-4"><strong>¡Enhorabuena por terminar el test! Haz clic en el siguiente botón para ver tus resultados.</strong></p>
-            <button type="button" class="btn btn-success btn-lg mt-3 custom-button" data-bs-toggle="modal" data-bs-target="#logro-modal">
+            <button type="button" class="btn btn-success btn-lg mt-3 custom-button" onClick="showLogroModal()">
                 Ver resultados <i class="fas fa-chevron-right"></i>
             </button>
             
@@ -46,7 +46,7 @@
             <h5 class="modal-title">
                 <i class="far fa-frown"></i>  Logro no obtenido
             </h5>
-            <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" id="boton-mostrar-resultados" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
             <% if (logro) { %>
@@ -87,7 +87,7 @@
                     alt="Logo-modal" >
                 </p>
                 <p class="p">Curso :   <strong><%= nombreCurso%></strong> superado</p>
-                <p class="p">Fecha de obtención :    <strong><%= logro.fechaObtencion %></strong></p>
+                <p class="p">Fecha de obtención :    <strong><%= new Date(fecha).toLocaleDateString() %></strong></p>
 
                 <% } else { %>
                 <p class="text-danger text"><i class="fas fa-times-circle"></i> No se ha encontrado un logro para este curso.</p>
@@ -108,6 +108,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       var logroModal = document.getElementById('logro-modal');
+      
+      // Método para mostrar el modal al hacer clic en el botón
+      function showLogroModal() {
+          var modal = new bootstrap.Modal(logroModal);
+          modal.show();
+      }
+
       logroModal.addEventListener('shown.bs.modal', function () {
         var audio = new Audio('/sonidos/logro-modal.mp3');
         audio.play();

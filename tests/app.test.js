@@ -90,3 +90,37 @@ describe("PATCH /intento-test/:idIntentoTest/terminar-intento", () => {
         expect(response.text).toBe(MENSAJES.INTENTO_TEST_NO_ENCONTRADO(idIntentoTest)); // Esperamos el mensaje correcto
       });
 });
+
+describe("GET /logro-curso/:idCurso", () => {
+
+    beforeAll((done) => {
+        server = app.listen(0, () => { // Usamos 0 para que el SO asigne un puerto libre
+            console.log('Test server running');
+            done();
+        });
+    });
+
+    afterAll((done) => {
+        server.close(done); // Cerramos la conexión al terminar los test
+    });
+
+    test("Deberia Obtener el logro", async () => {
+        // ## Given ##
+        const idIntentoTest = 1;
+        // ## When ##
+        const response = await request(app).get(`/logro-curso/${idIntentoTest}`);
+        // ## Then ##
+        expect(response.status).toBe(StatusCodes.OK);
+    });
+
+    test("Deberia no existir ningun logro", async () => {
+        // ## Given ##
+        const idIntentoTest = -1;
+        // ## When ##
+        const response = await request(app).get(`/logro-curso/${idIntentoTest}`);
+        // ## Then ##
+        expect(response.status).toBe(StatusCodes.NOT_FOUND);
+        expect(response.text).toBe(MENSAJES.INTENTO_TEST_NO_ENCONTRADO(idIntentoTest));
+    })
+
+});
