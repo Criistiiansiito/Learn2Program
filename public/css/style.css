@@ -335,6 +335,21 @@ hr.linea-separacion {
     height:150px;
 }
 
+#alertMessage .close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 2rem; /* Aumenta el tamaño */
+    opacity: 1;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+#alertMessage {
+    position: relative;
+    padding-right: 2.5rem; /* Asegura espacio suficiente a la derecha */
+}
+
 @media (max-width: 800px) {
     /* Contenido del acordeón oculto por defecto */
     .accordion-content {

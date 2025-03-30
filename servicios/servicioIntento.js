@@ -68,6 +68,7 @@ class ServicioIntentoTest {
      * @returns {Number} El id del curso al que pertenece el test
      */
     async terminarIntento(idIntentoTest) {
+
         // Buscamos el intento de test por su id, con su test, y sus intentos de pregunta y respuestas
         const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
             include: [
@@ -101,7 +102,10 @@ class ServicioIntentoTest {
         intentoTest.fechaFin = new Date();
         // Guardamos el intento actualizado
         await intentoTest.save();
-        return intentoTest.test.idCurso;
+
+        const idCurso = intentoTest.test ? intentoTest.test.idCurso : null;
+
+        return intentoTest.test ? intentoTest.test.idCurso : null;
     }
 
     /**

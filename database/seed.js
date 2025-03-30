@@ -1,10 +1,12 @@
 const sequelize = require('./connection');
+
 const Curso = require('../modelos/Curso');
 const Tema = require('../modelos/Tema');
 const Test = require('../modelos/Test');
-const Logro = require('../modelos/Logros');
+const Logro = require('../modelos/Logro');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
+const IntentoTest = require('../modelos/IntentoTest');
 
 // Función que puebla la base de datos
 async function seedDatabase() {
@@ -21,12 +23,6 @@ async function seedDatabase() {
             
             titulo: "Introducción a la Programación en C++",
             descripcion: "si",
-            logro: {
-                mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
-                mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
-                imagen: '/images/logroCurso1.png',
-                fechaObtencion: '2025-03-22'
-            },
             temas: [
                 {
                     titulo: "Tema 1 - Introducción a C++",
@@ -418,10 +414,6 @@ async function seedDatabase() {
                     as: "temas",
                 },
                 {
-                    model: Logro,
-                    as: "logro"
-                },
-                {
                     model: Test,
                     as: "test",
                     include: [
@@ -438,6 +430,32 @@ async function seedDatabase() {
                     ]
                 }
             ]
+        });
+
+        await Logro.create({
+            id: 1,
+            mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
+            mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
+            imagen: '/images/logroCurso1.png',
+            idCurso: 1
+        });
+
+        await IntentoTest.create({
+            id: 1,
+            preguntasAcertadas: 5,
+            nota: 8.5,
+            terminado: true,
+            fechaFin: new Date(2025, 2, 30), 
+            idTest: 1
+        });
+
+        await IntentoTest.create({
+            id: 2,
+            preguntasAcertadas: 1,
+            nota: 4,
+            terminado: true,
+            fechaFin: new Date(2025, 2, 30),
+            idTest: 1
         });
 
         console.log("Base de datos poblada");
