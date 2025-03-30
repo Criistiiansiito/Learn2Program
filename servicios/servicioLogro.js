@@ -39,9 +39,6 @@ class ServicioLogro {
             throw new IntentoTestNoEncontradoError(idIntentoTest);
         }
 
-        // Formatear la fecha de obtención del logro
-        intento.test.curso.logro.fechaObtencion = moment(intento.test.curso.logro.fechaObtencion).format('DD-MM-YYYY');
-
         return intento;
     }
 
