@@ -15,9 +15,7 @@ const moment = require('moment');
 const Pregunta = require('./modelos/Pregunta');
 const StatusCodes = require('http-status-codes');
 const { PreguntaNoEncontradaError } = require('./utils/errores');
-const { off } = require('process');
-const IntentoTest = require('./modelos/IntentoTest');
-const moment = require('moment');  
+const { off } = require('process');  
 const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
 const Recordatorio = require('./modelos/Recordatorios');
@@ -64,7 +62,9 @@ if (recordatorios.length > 0) {
     }
 }
 
-setInterval(enviarRecordatorios, 10 * 1000); 
+if (process.env.NODE_ENV !== "test") {
+  setInterval(enviarRecordatorios, 10 * 1000);
+}
 
 const app = express();
 
@@ -290,8 +290,7 @@ app.post('/crear-recordatorio', (req, res) => {
   console.log("Fecha seleccionada en España:", fechaHoraSeleccionada);
   
   // Obtener la fecha y hora actual
-  const fechaHoy = new Date();
-  fechaHoy.setHours(0, 0, 0, 0); // Ajustar la hora de la fecha actual para compararla solo por el día
+  const fechaHoy = new Date(); // Obtiene la fecha y hora actual
 
   // Validar que la fecha no sea del pasado
   if (fechaHoraSeleccionada < fechaHoy) {
@@ -310,7 +309,7 @@ app.post('/crear-recordatorio', (req, res) => {
   })
     .then(() => {
       // Si el recordatorio se crea bien, renderiza la página con mensaje de éxito
-      res.render('establecer-recordatorio', {
+      return res.render('establecer-recordatorio', {
         mensajeError: null,
         mensajeExito: 'Recordatorio creado exitosamente.'
       });
@@ -318,7 +317,7 @@ app.post('/crear-recordatorio', (req, res) => {
     .catch((error) => {
       console.error('Error al crear recordatorio:', error);
       // Si ocurre un error, renderiza la vista con mensaje de error
-      res.render('establecer-recordatorio', {
+      return res.render('establecer-recordatorio', {
         mensajeError: 'Hubo un problema al crear el recordatorio. Intenta de nuevo.',
         mensajeExito: null
       });

@@ -124,3 +124,46 @@ describe("GET /logro-curso/:idIntentoTest", () => {
 
 });
 
+describe('Prueba de integración de recordatorios', () => {
+   
+
+    test('Debe crear un nuevo recordatorio en la base de datos y renderizar la vista con éxito', async () => {
+        const nuevoRecordatorio = new URLSearchParams({
+            fecha: '2025-04-01',
+            time: '14:00',
+            email: 'test@email.com',
+            mensaje: 'Este es un mensaje de prueba',
+            asunto: 'Asunto de prueba'
+        });
+        
+        const response = await request(app).post('/crear-recordatorio').set('Content-Type', 'application/x-www-form-urlencoded').send(nuevoRecordatorio.toString()).expect(200);
+        expect(response.text).toContain('Recordatorio creado exitosamente.');
+    });    
+
+    test('Debe rechazar un recordatorio con una fecha en el pasado', async () => {
+        const nuevoRecordatorio = new URLSearchParams({
+            fecha: '2020-01-01', // Fecha en el pasado
+            time: '14:00',
+            email: 'test@email.com',
+            mensaje: 'Mensaje inválido',
+            asunto: 'Asunto inválido'
+        });
+    
+        const response = await request(app).post('/crear-recordatorio').set('Content-Type', 'application/x-www-form-urlencoded').send(nuevoRecordatorio.toString()).expect(200);
+        expect(response.text).toContain('La fecha no puede ser del pasado.');
+    });
+
+    test('Debe rechazar un recordatorio si falta algún campo', async () => {
+        const recordatorioIncompleto = new URLSearchParams({
+            fecha: '2025-04-01',
+            time: '14:00',
+            email: '', // Falta el email
+            mensaje: 'Mensaje de prueba',
+            asunto: 'Asunto de prueba'
+        });
+
+        const response = await request(app).post('/crear-recordatorio').set('Content-Type', 'application/x-www-form-urlencoded').send(recordatorioIncompleto.toString()).expect(200);
+        expect(response.text).toContain('Todos los campos son obligatorios.');
+    });
+});
+
