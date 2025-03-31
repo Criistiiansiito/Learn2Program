@@ -23,12 +23,6 @@ async function seedDatabase() {
             
             titulo: "Introducción a la Programación en C++",
             descripcion: "si",
-            logro: {
-                mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
-                mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
-                imagen: '/images/logroCurso1.png',
-                fechaObtencion: '2025-03-22'
-            },
             temas: [
                 {
                     titulo: "Tema 1 - Introducción a C++",
@@ -420,10 +414,6 @@ async function seedDatabase() {
                     as: "temas",
                 },
                 {
-                    model: Logro,
-                    as: "logro"
-                },
-                {
                     model: Test,
                     as: "test",
                     include: [
@@ -442,12 +432,29 @@ async function seedDatabase() {
             ]
         });
 
+        await Logro.create({
+            id: 1,
+            mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
+            mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
+            imagen: '/images/logroCurso1.png',
+            idCurso: 1
+        });
+
         await IntentoTest.create({
             id: 1,
             preguntasAcertadas: 5,
             nota: 8.5,
             terminado: true,
-            fechaFin: new Date(),
+            fechaFin: new Date(2025, 2, 30), 
+            idTest: 1
+        });
+
+        await IntentoTest.create({
+            id: 2,
+            preguntasAcertadas: 1,
+            nota: 4,
+            terminado: true,
+            fechaFin: new Date(2025, 2, 30),
             idTest: 1
         });
 

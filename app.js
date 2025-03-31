@@ -148,12 +148,11 @@ app.get('/previsualizacion-de-test', async (req, res) => {
 app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
   try {
     const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
-    
-    console.log(JSON.stringify(intento));
   
     res.render('obtencion-logros', {
       nombreCurso: intento.test.curso.titulo,
       nota: intento.nota,
+      fecha: intento.fechaFin,
       logro: intento.test.curso.logro,
     }); 
   } catch (error) {

@@ -18,10 +18,6 @@ const Logro = sequelize.define("Logro", {
     imagen: {
         type: DataTypes.STRING(255),
         allowNull: false
-    },
-    fechaObtencion: {
-        type: DataTypes.DATE,
-        allowNull: false
     }
 }, {
     tableName: "logro",
