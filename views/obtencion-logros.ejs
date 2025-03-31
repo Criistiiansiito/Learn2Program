@@ -124,7 +124,6 @@
       });
 
       function volverAIntentos(idIntentoTest) {
-        console.log("HOLA" + idIntentoTest)
         fetch(`/logro-curso/${idIntentoTest}/volver`, {
             method: 'PATCH', 
             headers: { 'Content-Type': 'application/json' }

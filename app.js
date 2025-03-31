@@ -103,7 +103,8 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
 app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest;
-    
+    // Llamamos a la función del servicio para obtener el intento de test
+    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
     res.json({ redirectUrl: `/logro-curso/${idIntentoTest}` });
 
   } catch (error) {

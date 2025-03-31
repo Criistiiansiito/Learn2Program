@@ -67,10 +67,9 @@ describe("PATCH /intento-test/:idIntentoTest/terminar-intento", () => {
             .send(); 
 
         // ## Then ##
-        expect(response.status).toBe(200); 
-        expect(response.body.redirectUrl).toBe(`/previsualizacion-de-test?idCurso=${idCursoSimulado}`);
-        
-        expect(response.body.redirectUrl).toMatch(/previsualizacion-de-test\?idCurso=\d+/);
+        expect(response.status).toBe(200);
+        expect(response.body.redirectUrl).toBe(`/logro-curso/${idCursoSimulado}`);
+        expect(response.body.redirectUrl).toMatch(/^\/logro-curso\/\d+$/); 
     });
 
     test("Debe devolver Not Found cuando el ID de intento de test no existe", async () => {
