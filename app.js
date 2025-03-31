@@ -11,55 +11,53 @@ const IntentoTest = require('./modelos/IntentoTest');
 
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
-const moment = require('moment');
 const Pregunta = require('./modelos/Pregunta');
 const StatusCodes = require('http-status-codes');
 const { PreguntaNoEncontradaError } = require('./utils/errores');
 const { off } = require('process');  
 const nodemailer = require('nodemailer');
-const { Op } = require('sequelize');
 const Recordatorio = require('./modelos/Recordatorios');
 
-const enviarRecordatorio=require("./servicios/enviarRecordatorio");
+const enviarRecordatorio = require("./servicios/enviarRecordatorio");
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
 // Función que envía y elimina los recordatorios
 async function enviarRecordatorios() {
-    try {
-  // Obtener la fecha y hora actuales en la zona horaria local
-const ahora = new Date();
-const offsetHoras = ahora.getTimezoneOffset() / -60; // Ajuste de zona horaria
+  try {
+    // Obtener la fecha y hora actuales en la zona horaria local
+    const ahora = new Date();
+    const offsetHoras = ahora.getTimezoneOffset() / -60; // Ajuste de zona horaria
 
-// Sumar 2 horas adicionales
-ahora.setHours(ahora.getHours() + offsetHoras + 2); // Aplica la diferencia horaria y suma 2 horas
+    // Sumar 2 horas adicionales
+    ahora.setHours(ahora.getHours() + offsetHoras + 2); // Aplica la diferencia horaria y suma 2 horas
 
-const fechaHoraActualLocal = ahora.toISOString().slice(0, 16) + ":00"; // Formato YYYY-MM-DD HH:mm:00
+    const fechaHoraActualLocal = ahora.toISOString().slice(0, 16) + ":00"; // Formato YYYY-MM-DD HH:mm:00
 
-console.log("Buscando recordatorios para:", fechaHoraActualLocal);
+    console.log("Buscando recordatorios para:", fechaHoraActualLocal);
 
-// Buscar los recordatorios con la fecha y hora exacta
-const recordatorios = await Recordatorio.findAll({
-    where: {
+    // Buscar los recordatorios con la fecha y hora exacta
+    const recordatorios = await Recordatorio.findAll({
+      where: {
         fecha: fechaHoraActualLocal
-    }
-});
+      }
+    });
 
-if (recordatorios.length > 0) {
-    for (const recordatorio of recordatorios) {
+    if (recordatorios.length > 0) {
+      for (const recordatorio of recordatorios) {
         await enviarRecordatorio(
-            recordatorio.email,
-            recordatorio.asunto,
-            recordatorio.mensaje
+          recordatorio.email,
+          recordatorio.asunto,
+          recordatorio.mensaje
         );
         // Eliminar el recordatorio de la base de datos
         await recordatorio.destroy();
         console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
+      }
     }
-}
 
-    } catch (error) {
-        console.error('Error al enviar o eliminar recordatorios:', error);
-    }
+  } catch (error) {
+    console.error('Error al enviar o eliminar recordatorios:', error);
+  }
 }
 
 if (process.env.NODE_ENV !== "test") {
@@ -107,12 +105,12 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
       include: [
         {
           model: Test,
-          as: 'test', 
+          as: 'test',
           include: [
             {
               model: Pregunta,
-              as: 'preguntas',  
-              order: [['numero', 'ASC']] 
+              as: 'preguntas',
+              order: [['numero', 'ASC']]
             }
           ]
         }
@@ -121,7 +119,7 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
 
     const numeroPreguntas = intentoTestAux.test.preguntas.length;
 
-    res.render('pregunta-test', { intentoTest, numeroPreguntas});
+    res.render('pregunta-test', { intentoTest, numeroPreguntas });
   } catch (error) {
     next(error);
   }
@@ -169,62 +167,31 @@ app.get('/nuevo-recordatorio', (req, res) => {
 });
 
 // Ver información antes de realizar el test
-app.get('/previsualizacion-de-test', async (req, res) => {
+app.get('/previsualizacion-de-test', async (req, res, next) => {
   try {
     // Obtener el ID del curso desde la URL
     const idCurso = req.query.idCurso;
     console.log("ID del curso recibido:", idCurso);
 
-    if (!idCurso) {
-      return res.status(400).send("Error: Debes proporcionar un ID de curso.");
-    }
-
-    // Buscar el curso en la base de datos con sus relaciones
-    const curso = await Curso.findByPk(idCurso, {
-      include: [{
-        model: Test,
-        as: "test",
-        include: [{
-          model: IntentoTest,
-          as: "intentos"
-        }]
-      }]
-    });
-
-    console.log("Curso encontrado:", JSON.stringify(curso));
-
-    // Si no se encuentra el curso, devolver error
-    if (!curso) {
-      return res.status(404).send("Error: No se encontró un curso con ese ID.");
-    }
-
-    // Si el curso no tiene test, devolver error
-    if (!curso.test) {
-      return res.status(404).send("Error: El curso no tiene un test asociado.");
-    }
-
-    // Manejo seguro de intentos
-    const intentos = curso.test.intentos || []; // Si intentos es null, se asigna un array vacío
-    const preguntasAcertadas = intentos.length > 0 ? intentos[0].preguntasAcertadas : 0; // Evita errores si no hay intentos
+    const curso = await servicioIntento.obtenerIntentosTest(idCurso)
 
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {
       idTest: curso.test.id,
       tituloTest: curso.test.titulo,
-      numIntentos: intentos.length,
-      intentos: intentos,
-      preguntasAcertadas: preguntasAcertadas
+      numIntentos: curso.test.intentos.length,
+      intentos: curso.test.intentos,
     });
 
   } catch (error) {
-    console.error("Error en /previsualizacion-de-test:", error);
-    res.status(500).send("Error interno del servidor.");
+    next(error);
   }
 });
+
 app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
   try {
     const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
-    
+
     // Pasar el idIntentoTest a la vista
     res.render('obtencion-logros', {
       idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
@@ -239,7 +206,7 @@ app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
 });
 
 // Termina un intento de test
-app.patch('/logro-curso/:idIntentoTest/volver',  async (req, res, next) => {
+app.patch('/logro-curso/:idIntentoTest/volver', async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest;
     // Llamamos a la función del servicio para obtener el intento de test
@@ -252,9 +219,9 @@ app.patch('/logro-curso/:idIntentoTest/volver',  async (req, res, next) => {
 });
 
 app.get('/establecer-recordatorio', (req, res) => {
-  res.render('establecer-recordatorio', { 
-    mensajeError: null, 
-    mensajeExito: null 
+  res.render('establecer-recordatorio', {
+    mensajeError: null,
+    mensajeExito: null
   });
 });
 
@@ -277,18 +244,18 @@ app.post('/crear-recordatorio', (req, res) => {
   }
   const [hora, minutos] = time.split(":").map(Number);
   const fechaPartes = fecha.split("-").map(Number);
-  
+
   let fechaHoraSeleccionada = new Date(
-    Date.UTC(fechaPartes[0], fechaPartes[1] - 1, fechaPartes[2], hora, minutos) 
+    Date.UTC(fechaPartes[0], fechaPartes[1] - 1, fechaPartes[2], hora, minutos)
   );
-  
+
   // Convertimos la fecha a la hora de Madrid
   fechaHoraSeleccionada = new Date(
     fechaHoraSeleccionada.toLocaleString("en-US", { timeZone: "Europe/Madrid" })
   );
-  
+
   console.log("Fecha seleccionada en España:", fechaHoraSeleccionada);
-  
+
   // Obtener la fecha y hora actual
   const fechaHoy = new Date(); // Obtiene la fecha y hora actual
 
