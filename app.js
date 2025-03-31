@@ -167,13 +167,9 @@ app.get('/nuevo-recordatorio', (req, res) => {
 });
 
 // Ver información antes de realizar el test
-app.get('/previsualizacion-de-test', async (req, res, next) => {
+app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
   try {
-    // Obtener el ID del curso desde la URL
-    const idCurso = req.query.idCurso;
-    console.log("ID del curso recibido:", idCurso);
-
-    const curso = await servicioIntento.obtenerIntentosTest(idCurso)
+    const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso);
 
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {

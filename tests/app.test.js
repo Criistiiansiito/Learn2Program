@@ -169,7 +169,7 @@ describe("GET /previsualizacion-de-test", () => {
     test("Deberia devolver 200 y renderizar intentos para un curso valido", async () => {
         const idCurso = 1;
 
-        const response = await request(app).get(`/previsualizacion-de-test?idCurso=${idCurso}`);
+        const response = await request(app).get(`/curso/${idCurso}/previsualizacion-de-test`);
 
         expect(response.status).toBe(StatusCodes.OK);
         intentos.forEach(intento => {
@@ -182,7 +182,7 @@ describe("GET /previsualizacion-de-test", () => {
     test("Deberia devolver 404 cuando no se encuentre el curso por id", async () => {
         const idCurso = 999;
 
-        const response = await request(app).get(`/previsualizacion-de-test?idCurso=${idCurso}`);
+        const response = await request(app).get(`/curso/${idCurso}/previsualizacion-de-test`);
 
         expect(response.status).toBe(StatusCodes.NOT_FOUND);
         expect(response.text).toBe(MENSAJES.CURSO_NO_ENCONTRADO(idCurso));
