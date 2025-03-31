@@ -90,7 +90,7 @@ describe("PATCH /intento-test/:idIntentoTest/terminar-intento", () => {
       });
 });
 
-describe("GET /logro-curso/:idCurso", () => {
+describe("GET /logro-curso/:idIntentoTest", () => {
 
     beforeAll((done) => {
         server = app.listen(0, () => { // Usamos 0 para que el SO asigne un puerto libre
@@ -105,7 +105,7 @@ describe("GET /logro-curso/:idCurso", () => {
 
     test("Deberia Obtener el logro", async () => {
         // ## Given ##
-        const idIntentoTest = 1;
+        const idIntentoTest = 1; // Asegúrate de que este ID exista en tu base de datos
         // ## When ##
         const response = await request(app).get(`/logro-curso/${idIntentoTest}`);
         // ## Then ##
@@ -114,7 +114,7 @@ describe("GET /logro-curso/:idCurso", () => {
 
     test("Deberia no existir ningun logro", async () => {
         // ## Given ##
-        const idIntentoTest = -1;
+        const idIntentoTest = -1; // Asegúrate de que este ID no exista en tu base de datos
         // ## When ##
         const response = await request(app).get(`/logro-curso/${idIntentoTest}`);
         // ## Then ##
@@ -123,3 +123,4 @@ describe("GET /logro-curso/:idCurso", () => {
     })
 
 });
+
