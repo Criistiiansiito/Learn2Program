@@ -173,9 +173,9 @@ describe("GET /previsualizacion-de-test", () => {
 
         expect(response.status).toBe(StatusCodes.OK);
         intentos.forEach(intento => {
-            expect(response.text).toContain(intento.preguntasAcertadas.toString());
-            expect(response.text).toContain(intento.nota.toString());
-            expect(response.text).toContain(intento.fechaFin.toLocaleDateString());
+            expect(response.text).toContain("<td>" + intento.preguntasAcertadas.toString() + "</td>");
+            expect(response.text).toContain("<td>" + intento.nota.toString() + " / 10.00 </td>");
+            expect(response.text).toContain("<td>" + intento.fechaFin.toLocaleDateString() + "</td>");
         })
     })
 
