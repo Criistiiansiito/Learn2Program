@@ -1,5 +1,5 @@
 html, body {
-    height: auto;
+    min-height: 100vh;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -8,7 +8,7 @@ html, body {
 }
 
 .contedor-principal{
-    height: auto; /* Ajusta la altura al contenido */
+    flex: 1; 
     min-height: 70vh; /* Opcionalmente, establece un mínimo */
 }
 
