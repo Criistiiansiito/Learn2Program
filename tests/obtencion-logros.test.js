@@ -1,16 +1,60 @@
-const request = require('supertest');
-const express = require('express');
+const fs = require("fs");
 const path = require('path');
-const pool = require('../database/connection');
-const app = require('../app'); // Assuming your Express app is exported from app.js
+const global = require('@jest/globals');
+const { JSDOM } = require('jsdom');
 
-jest.mock('../database/connection');
+// const pool = require('../database/connection');
+// const app = require('../app'); // Assuming your Express app is exported from app.js
+
+// jest.mock('../database/connection');
+
+if (typeof TextEncoder === 'undefined') {
+    global.TextEncoder = require('util').TextEncoder;
+    global.TextDecoder = require('util').TextDecoder;
+}
+
+describe('Comprobamos que presionar el boton "ver resultados" muestra el modal correspondiente', () =>{
+
+    let dom;
+    let document;
+
+    beforeAll(() => {
+        const html = fs.readFileSync(path.resolve(__dirname, '../views/obtencion-logros.ejs'), 'utf8');
+        dom = new JSDOM(html);
+        document = dom.window.document;
+    });
+
+    it('deberia mostrar el modal de logro al presionar el boton correspondiente', () => {
+        // Localizamos el boton y el modal mediante si OD
+        let button = document.getElementById('boton-mostrar-resultados');
+        let modal = document.getElementById('logro-modal');
+        
+        modal.show = jest.fn();
+        button.addEventListener('click', () => {
+            modal.show();  // Simulamos que se llama al método 'show' del modal
+        });
+
+        //Definimos el evento de click del boton
+        const clickEvent = document.createEvent('Event');
+        clickEvent.initEvent('click', true, true);
+
+        // El modal no se está mostrando al inicio
+        expect(modal.className).toBe("modal");
+        
+        // Disparar el evento click en el botón
+        button.dispatchEvent(clickEvent);
+
+        // comprobamos que se ha llamado correctamente a la función de mostrar el modal
+        expect(modal.show).toHaveBeenCalledTimes(1);
+    });
+
+});
 
 describe('Pruebas obtencion de logros', () => {
 
     afterAll(() => {
         // Cierra la conexión a la base de datos después de todas las pruebas
-        pool.end();
+        // pool.end();
     });
 
     test('El logro de 1 debe existir y su foto', () => {

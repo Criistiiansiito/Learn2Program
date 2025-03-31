@@ -43,6 +43,12 @@ class PreguntaYaIntentadaError extends Error {
     }
 }
 
+class CursoNoEncontradoError extends Error {
+    constructor(idCurso) {
+        super(MENSAJES.CURSO_NO_ENCONTRADO(idCurso));
+    }
+}
+
 module.exports = {
     TestNoEncontradoError,
     TestPreguntaError,
@@ -51,5 +57,6 @@ module.exports = {
     IntentoPreguntaNoEncontradoError,
     RespuestaNoEncontradaError,
     IntentoTestTerminadoError,
-    PreguntaYaIntentadaError
+    PreguntaYaIntentadaError,
+    CursoNoEncontradoError
 };

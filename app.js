@@ -3,77 +3,74 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const servicioIntento = require('./servicios/servicioIntento');
+const servicioLogro = require('./servicios/servicioLogro');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
 const Test = require('./modelos/Test');
+const IntentoTest = require('./modelos/IntentoTest');
+
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
-const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');  
 var cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
+const Pregunta = require('./modelos/Pregunta');
 const Recordatorio = require('./modelos/Recordatorios');
+
+const enviarRecordatorio = require("./servicios/enviarRecordatorio");
+// const StatusCodes = require('http-status-codes');
+// const { PreguntaNoEncontradaError } = require('./utils/errores');
+// const { off } = require('process');
+// const moment = require('moment');  
+// const nodemailer = require('nodemailer');
+// const { Op } = require('sequelize');
 
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
-/*async function enviarRecordatorio(email, asunto, mensaje) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail', //Recordad que las variables del correo tienen que estar en el .env para evitar exponer la contraseña del correo
-        auth: {
-            user: process.env.GMAIL_USER, 
-            pass: process.env.GMAIL_PASS
-        }
-    });
-
-    const mailOptions = {
-        from: process.env.GMAIL_USER,
-        to: email,
-        subject: asunto,
-        text: mensaje
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Recordatorio enviado a ${email}`);
-    } catch (error) {
-        console.error('Error al enviar el correo:', error);
-    }
-}*/
-
 // Función que envía y elimina los recordatorios
 async function enviarRecordatorios() {
-    try {
+  try {
+    // Obtener la fecha y hora actuales en la zona horaria local
+    const ahora = new Date();
+    const offsetHoras = ahora.getTimezoneOffset() / -60; // Ajuste de zona horaria
 
-        const fechaActual = new Date().toISOString().split('T')[0]; 
+    // Sumar 2 horas adicionales
+    ahora.setHours(ahora.getHours() + offsetHoras + 2); // Aplica la diferencia horaria y suma 2 horas
 
-        // Buscamos si ya recordatorios para hoy
-        const recordatorios = await Recordatorio.findAll({
-            where: {
-                fecha: fechaActual
-            }
-        });
+    const fechaHoraActualLocal = ahora.toISOString().slice(0, 16) + ":00"; // Formato YYYY-MM-DD HH:mm:00
 
-        if (recordatorios.length > 0) {
-            for (const recordatorio of recordatorios) {
-                await enviarRecordatorio(
-                    recordatorio.email,
-                    recordatorio.asunto,
-                    recordatorio.mensaje
-                );
-                // Eliminar el recordatorio de la bbdd
-                await recordatorio.destroy();
-                console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
-            }
-        }
-    } catch (error) {
-        console.error('Error al enviar o eliminar recordatorios:', error);
+    console.log("Buscando recordatorios para:", fechaHoraActualLocal);
+
+    // Buscar los recordatorios con la fecha y hora exacta
+    const recordatorios = await Recordatorio.findAll({
+      where: {
+        fecha: fechaHoraActualLocal
+      }
+    });
+
+    if (recordatorios.length > 0) {
+      for (const recordatorio of recordatorios) {
+        await enviarRecordatorio(
+          recordatorio.email,
+          recordatorio.asunto,
+          recordatorio.mensaje
+        );
+        // Eliminar el recordatorio de la base de datos
+        await recordatorio.destroy();
+        console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
+      }
     }
+
+  } catch (error) {
+    console.error('Error al enviar o eliminar recordatorios:', error);
+  }
 }
 
-// Esto se ejecuta cada 24 horas y lo que hace es que revisa si hay recordatorios que enviar ese día, y si los hay los envía y los borra de la base de datos
-setInterval(enviarRecordatorios, 10 * 1000); // 24 horas
+if (process.env.NODE_ENV !== "test") {
+  setInterval(enviarRecordatorios, 10 * 1000);
+}
 
 const app = express();
 const port = 3000;
@@ -169,7 +166,27 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
-    res.render('pregunta-test', { intentoTest });
+
+    // Obtenemos todas las preguntas asociadas a este test, mediante las relaciones intentoTest-Test y Test-Preguntas 
+    const intentoTestAux = await IntentoTest.findByPk(idIntentoTest, {
+      include: [
+        {
+          model: Test,
+          as: 'test',
+          include: [
+            {
+              model: Pregunta,
+              as: 'preguntas',
+              order: [['numero', 'ASC']]
+            }
+          ]
+        }
+      ]
+    });
+
+    const numeroPreguntas = intentoTestAux.test.preguntas.length;
+
+    res.render('pregunta-test', { intentoTest, numeroPreguntas });
   } catch (error) {
     next(error);
   }
@@ -202,8 +219,11 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
 // Termina un intento de test
 app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
   try {
-    const idCurso = await servicioIntento.terminarIntento(req.params.idIntentoTest);
-    res.redirect(`/previsualizacion-de-test?idCurso=${idCurso}`);
+    const idIntentoTest = req.params.idIntentoTest;
+    // Llamamos a la función del servicio para obtener el intento de test
+    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+    res.json({ redirectUrl: `/logro-curso/${idIntentoTest}` });
+
   } catch (error) {
     next(error);
   }
@@ -214,114 +234,124 @@ app.get('/nuevo-recordatorio', (req, res) => {
 });
 
 // Ver información antes de realizar el test
-app.get('/previsualizacion-de-test', async (req, res) => {
+app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
   try {
-    // Obtener el ID del curso desde la URL
-    const idCurso = req.query.idCurso;
-    const idUsuario = req.session.user?.id;
-
-    console.log("ID del usuario:", idUsuario);
-    console.log("ID del curso recibido:", idCurso);
-
-    if (!idCurso) {
-      return res.status(400).send("Error: Debes proporcionar un ID de curso.");
-    }
-
-    // Buscar el curso en la base de datos con sus relaciones
-    const curso = await Curso.findByPk(idCurso, {
-      include: [{
-        model: Test,
-        as: "test",
-        include: [{
-          model: IntentoTest,
-          as: "intentos"
-        }]
-      }]
-    });
-
-    console.log("Curso encontrado:", JSON.stringify(curso));
-
-    // Si no se encuentra el curso, devolver error
-    if (!curso) {
-      return res.status(404).send("Error: No se encontró un curso con ese ID.");
-    }
-
-    // Si el curso no tiene test, devolver error
-    if (!curso.test) {
-      return res.status(404).send("Error: El curso no tiene un test asociado.");
-    }
-
-    // Manejo seguro de intentos
-    const intentos = curso.test.intentos || []; // Si intentos es null, se asigna un array vacío
-    const intentosUsuario = intentos.filter(i => i.idUsuario === idUsuario);
-    const preguntasAcertadas = intentosUsuario.length > 0 ? intentosUsuario[0].preguntasAcertadas : 0; // Evita errores si no hay intentos
+    const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso);
 
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {
       idTest: curso.test.id,
       tituloTest: curso.test.titulo,
-      numIntentos: intentos.length,
-      intentos: intentosUsuario,
-      preguntasAcertadas: preguntasAcertadas
+      numIntentos: curso.test.intentos.length,
+      intentos: curso.test.intentos,
     });
 
   } catch (error) {
-    console.error("Error en /previsualizacion-de-test:", error);
-    res.status(500).send("Error interno del servidor.");
+    next(error);
   }
 });
 
-app.get('/obtener-logro-curso', (req, res) => {
+app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
+  try {
+    const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
 
-  const consultarTestId = 'SELECT id from test where idCurso = ?;';
-  pool.query(consultarTestId, [app.locals.idCurso], (err, results) => {
-    if (err) {
-      console.error('Error en la consulta del id test:', err);
-      return res.status(500).send('Error interno del servidor');
-    }
-    let testId = results[0];
+    // Pasar el idIntentoTest a la vista
+    res.render('obtencion-logros', {
+      idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
+      nombreCurso: intento.test.curso.titulo,
+      nota: intento.nota,
+      fecha: intento.fechaFin,
+      logro: intento.test.curso.logro,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
-    const consultaIntentos = 'SELECT * FROM intentos WHERE idTest = ?;';
-    pool.query(consultaIntentos, [testId], (err, resultsIntentos) => {
-      if (err) {
-        console.error('Error en consulta de intentos:', err);
-        return;
-      }
-      let intento = resultsIntentos[0];
-      let nota = intento.nota;
+// Termina un intento de test
+app.patch('/logro-curso/:idIntentoTest/volver', async (req, res, next) => {
+  try {
+    const idIntentoTest = req.params.idIntentoTest;
+    // Llamamos a la función del servicio para obtener el intento de test
+    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+    res.json({ redirectUrl: `/previsualizacion-de-test?idCurso=${idCurso}` });
 
-      console.log(nota);
-      //a partir d aqui lo que ya estaba
+  } catch (error) {
+    next(error);
+  }
+});
 
-      const consultarLogro = 'SELECT * FROM LOGROS WHERE idCurso = ?;';
-      pool.query(consultarLogro, [app.locals.idCurso], (err, results) => {
-        if (err) {
-          console.error('Error en la consulta de logros:', err);
-          return res.status(500).send('Error interno del servidor');
-        }
+app.get('/establecer-recordatorio', (req, res) => {
+  res.render('establecer-recordatorio', {
+    mensajeError: null,
+    mensajeExito: null
+  });
+});
 
-        let logro = results[0];
+app.post('/crear-recordatorio', (req, res) => {
+  const { fecha, email, mensaje, asunto, time } = req.body;
 
-        // Formatear la fecha de obtención del logro
-        if (logro && logro.fechaObtencion) {
-          logro.fechaObtencion = moment(logro.fechaObtencion).format('DD-MM-YYYY');
-        }
-        console.log(logro);
-        const consultarNombreCurso = 'SELECT nombre FROM cursos WHERE id = ?;';
-        pool.query(consultarNombreCurso, [app.locals.idCurso], (err, results2) => {
-          if (err) {
-            return res.status(500).send('Error al obtener los datos: ' + err.message);
-          }
+  // Mostrar los datos recibidos para verificar
+  console.log(fecha);
+  console.log(time);
+  console.log(email);
+  console.log(mensaje);
+  console.log(asunto);
 
-          console.log('p3');
-          res.render('obtencion-logros', {
-            logro: logro, nota: nota,
-            nombreCurso: results2[0]?.nombre || 'Curso Desconocido'
-          });
-        });
+  // Validar que todos los campos estén completos
+  if (!fecha || !time || !email || !mensaje || !asunto) {
+    return res.render('establecer-recordatorio', {
+      mensajeError: 'Todos los campos son obligatorios.',
+      mensajeExito: null
+    });
+  }
+  const [hora, minutos] = time.split(":").map(Number);
+  const fechaPartes = fecha.split("-").map(Number);
+
+  let fechaHoraSeleccionada = new Date(
+    Date.UTC(fechaPartes[0], fechaPartes[1] - 1, fechaPartes[2], hora, minutos)
+  );
+
+  // Convertimos la fecha a la hora de Madrid
+  fechaHoraSeleccionada = new Date(
+    fechaHoraSeleccionada.toLocaleString("en-US", { timeZone: "Europe/Madrid" })
+  );
+
+  console.log("Fecha seleccionada en España:", fechaHoraSeleccionada);
+
+  // Obtener la fecha y hora actual
+  const fechaHoy = new Date(); // Obtiene la fecha y hora actual
+
+  // Validar que la fecha no sea del pasado
+  if (fechaHoraSeleccionada < fechaHoy) {
+    return res.render('establecer-recordatorio', {
+      mensajeError: 'La fecha no puede ser del pasado.',
+      mensajeExito: null
+    });
+  }
+
+  // Crear el recordatorio en la base de datos
+  Recordatorio.create({
+    fecha: fechaHoraSeleccionada, // Guardar la fecha y hora completa
+    email,
+    mensaje,
+    asunto
+  })
+    .then(() => {
+      // Si el recordatorio se crea bien, renderiza la página con mensaje de éxito
+      return res.render('establecer-recordatorio', {
+        mensajeError: null,
+        mensajeExito: 'Recordatorio creado exitosamente.'
+      });
+    })
+    .catch((error) => {
+      console.error('Error al crear recordatorio:', error);
+      // Si ocurre un error, renderiza la vista con mensaje de error
+      return res.render('establecer-recordatorio', {
+        mensajeError: 'Hubo un problema al crear el recordatorio. Intenta de nuevo.',
+        mensajeExito: null
       });
     });
-  });
 });
 
 // Añadimos el manejador de errores/excepciones
@@ -331,3 +361,4 @@ app.use(manejadorErrores);
 seedDatabase();
 
 module.exports = app;
+

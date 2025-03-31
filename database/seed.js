@@ -1,13 +1,13 @@
 const sequelize = require('./connection');
+
 const Curso = require('../modelos/Curso');
 const Tema = require('../modelos/Tema');
 const Test = require('../modelos/Test');
-const Logro = require('../modelos/Logros');
+const Logro = require('../modelos/Logro');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
 const Recordatorios = require('../modelos/Recordatorios');
 const Usuario = require('../modelos/Usuario');
-
 
 // Función que puebla la base de datos
 async function seedDatabase() {
@@ -24,13 +24,6 @@ async function seedDatabase() {
             
             titulo: "Introducción a la Programación en C++",
             descripcion: "si",
-            logro: {
-
-                mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
-                mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
-                imagen: '/images/logroCurso1.png',
-                fechaObtencion: '2025-03-22'
-            },
             temas: [
                 {
                     titulo: "Tema 1 - Introducción a C++",
@@ -46,7 +39,8 @@ async function seedDatabase() {
                 },
                 {
                     titulo: "Tema 4 - Arrays",
-                    contenido: "<h1>4 - Arrays en C++</h1>\n<p>Un <strong>array</strong> es una estructura de datos que almacena una colección de elementos del mismo tipo. Los arrays permiten almacenar múltiples valores en una sola variable, lo que facilita la manipulación de datos de manera más eficiente que con variables individuales. En C++, los arrays tienen un tamaño fijo que se define en el momento de su declaración.</p>\n\n<h3>4.1 - Declaración de Arrays</h3>\n<p>Para declarar un array en C++, debes especificar el tipo de los elementos y el tamaño del array. Aquí tienes un ejemplo:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">int</span> <span class=\"numero\">numeros[5]</span>; <span class=\"comentario\">// Declaración de un array de 5 enteros</span></code></pre>\n</div>\n<p>En este ejemplo, se declara un array de 5 elementos del tipo <code>int</code>. El índice del array comienza desde 0, por lo que el array tendrá índices de 0 a 4.</p>\n\n<h3>4.2 - Inicialización de Arrays</h3>\n<p>Al declarar un array, puedes inicializar sus elementos en el mismo momento. Esto se hace colocando los valores entre llaves:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">int</span> <span class=\"numero\">numeros[5]</span> = <span class=\"numero\">{1, 2, 3, 4, 5}</span>; <span class=\"comentario\">// Inicialización de un array</span></code></pre>\n</div>\n<p>En este caso, los elementos del array <code>numeros</code> se inicializan con los valores <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code>, y <code>5</code>.</p>\n\n<h3>4.3 - Acceso a los Elementos de un Array</h3>\n<p>Los elementos de un array se acceden utilizando el índice del array. Recuerda que el índice comienza desde 0. Aquí tienes un ejemplo:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"incluir\">cout</span> << <span class=\"numero\">numeros[0]</span> << <span class=\"funcion\">endl</span>; <span class=\"comentario\">// Imprime el primer elemento del array (1)</span>\n<span class=\"incluir\">cout</span> << <span class=\"numero\">numeros[2]</span> << <span class=\"funcion\">endl</span>; <span class=\"comentario\">// Imprime el tercer elemento del array (3)</span></code></pre>\n</div>\n<p>En este ejemplo, <code>numeros[0]</code> devuelve el primer elemento, que es <code>1</>, y <code>numeros[2]</code> devuelve el tercer elemento, que es <code>3</>.</p>\n\n<h3>4.4 - Arrays Multidimensionales</h3>\n<p>Los arrays pueden ser de más de una dimensión, lo que permite trabajar con tablas o matrices. Aquí tienes un ejemplo de un array bidimensional (matriz):</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">int</span> <span class=\"numero\">matriz[2][3]</span> = <span class=\"numero\">{{1, 2, 3}, {4, 5, 6}}</span>;</code></pre>\n</div>\n<p>Este array tiene 2 filas y 3 columnas, lo que forma una matriz de 2x3. Para acceder a un elemento de la matriz, se especifican dos índices: uno para la fila y otro para la columna:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"incluir\">cout</span> << <span class=\"numero\">matriz[0][1]</span> << <span class=\"funcion\">endl</span>; <span class=\"comentario\">// Imprime el elemento en la primera fila y segunda columna (2)</span></code></pre>\n</div>\n\n<h3>4.5 - Iteración a través de un Array</h3>\n<p>Para recorrer los elementos de un array, se suelen utilizar bucles. Aquí tienes un ejemplo usando un bucle <code>for</code> para imprimir todos los elementos de un array:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">for</span> (<span class=\"palabra_clave\">int</span> <span class=\"numero\">i</span> = <span class=\"numero\">0</span>; <span class=\"numero\">i</span> < <span class=\"numero\">5</span>; <span class=\"numero\">i</span>++) {\n <span class=\"incluir\">cout</span> << <span class=\"numero\">numeros[i]</span> << <span class=\"funcion\">endl</span>;\n}\n</code></pre>\n</div>\n<p>Este código imprimirá todos los elementos del array <code>numeros</code> desde el índice 0 hasta el 4.</p>\n\n<h3>4.6 - Conclusión</h3>\n<p>Los arrays son fundamentales en C++ para manejar colecciones de datos de manera eficiente. Aunque C++ no permite cambiar el tamaño de los arrays una vez que han sido declarados, puedes usar <code>std::vector</code> si necesitas un tamaño dinámico. Los arrays proporcionan una forma rápida y eficiente de almacenar y acceder a grandes cantidades de datos en tu programa.</p>"
+                    contenido: "<p>Un <strong>array</strong> es una estructura de datos que almacena una colección de elementos del mismo tipo. Los arrays permiten almacenar múltiples valores en una sola variable, lo que facilita la manipulación de datos de manera más eficiente que con variables individuales. En C++, los arrays tienen un tamaño fijo que se define en el momento de su declaración.</p>\n\n<h3>4.1 - Declaración de Arrays</h3>\n<p>Para declarar un array en C++, debes especificar el tipo de los elementos y el tamaño del array. Aquí tienes un ejemplo:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">int</span> <span class=\"numero\">numeros[5]</span>; <span class=\"comentario\">// Declaración de un array de 5 enteros</span></code></pre>\n</div>\n<p>En este ejemplo, se declara un array de 5 elementos del tipo <code>int</code>. El índice del array comienza desde 0, por lo que el array tendrá índices de 0 a 4.</p>\n\n<h3>4.2 - Inicialización de Arrays</h3>\n<p>Al declarar un array, puedes inicializar sus elementos en el mismo momento. Esto se hace colocando los valores entre llaves:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">int</span> <span class=\"numero\">numeros[5]</span> = <span class=\"numero\">{1, 2, 3, 4, 5}</span>; <span class=\"comentario\">// Inicialización de un array</span></code></pre>\n</div>\n<p>En este caso, los elementos del array <code>numeros</code> se inicializan con los valores <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code>, y <code>5</code>.</p>\n\n<h3>4.3 - Acceso a los Elementos de un Array</h3>\n<p>Los elementos de un array se acceden utilizando el índice del array. Recuerda que el índice comienza desde 0. Aquí tienes un ejemplo:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"incluir\">cout</span> << <span class=\"numero\">numeros[0]</span> << <span class=\"funcion\">endl</span>; <span class=\"comentario\">// Imprime el primer elemento del array (1)</span>\n<span class=\"incluir\">cout</span> << <span class=\"numero\">numeros[2]</span> << <span class=\"funcion\">endl</span>; <span class=\"comentario\">// Imprime el tercer elemento del array (3)</span></code></pre>\n</div>\n<p>En este ejemplo, <code>numeros[0]</code> devuelve el primer elemento, que es <code>1</code>, y <code>numeros[2]</code> devuelve el tercer elemento, que es <code>3</code>.</p>\n\n<h3>4.4 - Arrays Multidimensionales</h3>\n<p>Los arrays pueden ser de más de una dimensión, lo que permite trabajar con tablas o matrices. Aquí tienes un ejemplo de un array bidimensional (matriz):</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">int</span> <span class=\"numero\">matriz[2][3]</span> = <span class=\"numero\">{{1, 2, 3}, {4, 5, 6}}</span>;</code></pre>\n</div>\n<p>Este array tiene 2 filas y 3 columnas, lo que forma una matriz de 2x3. Para acceder a un elemento de la matriz, se especifican dos índices: uno para la fila y otro para la columna:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"incluir\">cout</span> << <span class=\"numero\">matriz[0][1]</span> << <span class=\"funcion\">endl</span>; <span class=\"comentario\">// Imprime el elemento en la primera fila y segunda columna (2)</span></code></pre>\n</div>\n\n<h3>4.5 - Iteración a través de un Array</h3>\n<p>Para recorrer los elementos de un array, se suelen utilizar bucles. Aquí tienes un ejemplo usando un bucle <code>for</code> para imprimir todos los elementos de un array:</p>\n<div class=\"bloque-codigo\">\n <pre><code><span class=\"palabra_clave\">for</span> (<span class=\"palabra_clave\">int</span> <span class=\"numero\">i</span> = <span class=\"numero\">0</span>; <span class=\"numero\">i</span> < <span class=\"numero\">5</span>; <span class=\"numero\">i</span>++) {\n <span class=\"incluir\">cout</span> << <span class=\"numero\">numeros[i]</span> << <span class=\"funcion\">endl</span>;\n}\n</code></pre>\n</div>\n<p>Este código imprimirá todos los elementos del array <code>numeros</code> desde el índice 0 hasta el 4.</p>\n\n<h3>4.6 - Conclusión</h3>\n<p>Los arrays son fundamentales en C++ para manejar colecciones de datos de manera eficiente. Aunque C++ no permite cambiar el tamaño de los arrays una vez que han sido declarados, puedes usar <code>std::vector</code> si necesitas un tamaño dinámico. Los arrays proporcionan una forma rápida y eficiente de almacenar y acceder a grandes cantidades de datos en tu programa.</p>",
+                    id:4
                 },
                 {
                     titulo: "Tema 5 - Punteros",
@@ -416,10 +410,6 @@ async function seedDatabase() {
                     as: "temas",
                 },
                 {
-                    model: Logro,
-                    as: "logro"
-                },
-                {
                     model: Test,
                     as: "test",
                     include: [
@@ -441,6 +431,40 @@ async function seedDatabase() {
         const usuario = await Usuario.create({
             correo: 'usuario@example.com',
             contraseña: '123456', 
+        });
+        
+        await Logro.create({
+            id: 1,
+            mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
+            mensajeMotivacionalCursoKO: 'Lo intentaste, pero no alcanzaste el objetivo, ¡sigue intentándolo!',
+            imagen: '/images/logroCurso1.png',
+            idCurso: 1
+        });
+
+        await IntentoTest.create({
+            id: 1,
+            preguntasAcertadas: 5,
+            nota: 8.5,
+            terminado: true,
+            fechaFin: new Date(2025, 2, 30), 
+            idTest: 1
+        });
+
+        await IntentoTest.create({
+            id: 2,
+            preguntasAcertadas: 1,
+            nota: 4,
+            terminado: true,
+            fechaFin: new Date(2025, 2, 30),
+            idTest: 1
+        });
+        
+        // Creamos el recordatorio
+        await Recordatorio.create({
+            fecha: '2025-03-26',  
+            email: 'prueba@ucm.es',  // El correo al que se enviará el recordatorio
+            mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test 🤓🤓.',
+            asunto: '🚨 RECORDATORIO 🚨 - Learn2Program'
         });
 
         // Crear recordatorio asociado al usuario

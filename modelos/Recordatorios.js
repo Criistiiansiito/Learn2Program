@@ -1,15 +1,14 @@
-const DataTypes = require("sequelize");
-const sequelize = require("../database/connection");
-const Usuario = require("./Usuario"); // Asegúrate de que la ruta es correcta
+const { DataTypes } = require('sequelize');
+const sequelize = require('../database/connection');
 
-const Recordatorios = sequelize.define("Recordatorio", {
+const Recordatorio = sequelize.define("Recordatorio", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
   fecha: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATE, // cambiado de DATEONLY a DATE para incluir la hora
     allowNull: false
   },
   email: {

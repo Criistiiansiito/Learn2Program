@@ -7,6 +7,8 @@ describe("Pruebas de enviarRecordatorio", () => {
     let sendMailMock;
 
     beforeEach(() => {
+        process.env.GMAIL_USER = "test@email.com";
+        process.env.GMAIL_PASS = "password123";
         sendMailMock = jest.fn().mockResolvedValue("Correo enviado");
         nodemailer.createTransport.mockReturnValue({ sendMail: sendMailMock });
     });

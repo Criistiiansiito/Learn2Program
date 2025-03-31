@@ -1,122 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pregunta Test</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+<%- include('fragments/navbar') %>
+<% const pregunta = intentoTest.test.preguntas[0]; %>
+<% const idIntentoTest = intentoTest.id; %>
 
-    <%- include('fragments/navbar') %>
-    <% const pregunta = intentoTest.test.preguntas[0]; %>
+<div class="container mt-5">
+    <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
+        <h5 class="text mb-3">Pregunta <%= pregunta.numero %></h5>
+        <div class="card">
+            <div class="card-body pregunta">
+                <p class="card-title"><%= pregunta.enunciado %></p>
+                <% for (let i = 0; i < 4; i++) { %>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="idRespuesta" id="opcion<%= i + 1 %>" value="<%= pregunta.respuestas[i].id %>" <%= (pregunta.retroalimentacion && pregunta.respuestas[i].esCorrecta) ? 'disabled checked' : (pregunta.retroalimentacion ? 'disabled' : '') %>>
+                    <label class="form-check-label" for="opcion<%= i + 1 %>">
+                        <%= pregunta.respuestas[i].texto %>
+                    </label>
+                </div>
+                <% } %>
+                <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion1" onclick="removeSelection('opcion1')">Quitar</button>
+                <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion2" onclick="removeSelection('opcion2')">Quitar</button>
+                <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion3" onclick="removeSelection('opcion3')">Quitar</button>
+                <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion4" onclick="removeSelection('opcion4')">Quitar</button>
+            </div>
+        </div>
 
-    <div class="container mt-5">
-        <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
-            <h5 class="text mb-3">Pregunta <%= pregunta.numero %></h5>
-            <div class="card">
-                <div class="card-body pregunta">
-                    <p class="card-title"><p class="card-title"><%= pregunta.enunciado %></p></p>
-                    <% for (let i = 0; i < 4; i++) { %>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="idRespuesta" id="opcion1" value="<%= pregunta.respuestas[i].id %>" <%= (pregunta.retroalimentacion && pregunta.respuestas[i].esCorrecta) ? 'disabled checked' : (pregunta.retroalimentacion ? 'disabled' : '') %>>
-                        <label class="form-check-label" for="opcion1">
-                            <%= pregunta.respuestas[i].texto %>
-                        </label>
-                    </div>
-                    <% } %>
-                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion1" onclick="removeSelection('opcion1')">Quitar</button>
-                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion2" onclick="removeSelection('opcion2')">Quitar</button>
-                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion3" onclick="removeSelection('opcion3')">Quitar</button>
-                    <button type="button" class="btn btn-link btn-sm d-none" id="removeOpcion4" onclick="removeSelection('opcion4')">Quitar</button>
+        <% if (pregunta.retroalimentacion) { %>
+            <div class="card mt-3">
+                <div class="card-body retroalimentacion">
+                    <p><strong>La respuesta correcta es:</strong> <%= pregunta.respuestas.find(r => r.esCorrecta).texto %></p>
+                    <p><%= pregunta.retroalimentacion %></p>
                 </div>
             </div>
-            <% if (pregunta.retroalimentacion) { %>
-                <div class="card mt-3">
-                    <div class="card-body retroalimentacion">
-                        <p><%= pregunta.retroalimentacion %></p>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-personalizado mt-3">Siguiente pregunta</a>
-                </div>
-            <% } else { %>
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-personalizado mt-3">Responder</button>
-                </div>
-            <% } %>
-        </form>
-    </div>
+            <div class="d-flex justify-content-end">
+                <% if (pregunta.numero === numeroPreguntas) { %> <!-- Verifica si esta es la última pregunta según el número total -->
+                    <button type="button" class="btn btn-danger mt-3" onclick="finalizarIntento('<%= idIntentoTest %>')">Finalizar Test</button>
+                <% } else { %>
+                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-primary mt-3">Siguiente Pregunta</a>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-personalizado mt-3">Responder</button>
+            </div>
+        <% } %>
+    </form>
+</div>
 
-    <script>
-      function validateForm() {
-    const options = document.querySelectorAll('.form-check-input');
-    for (let option of options) {
-        if (option.checked) {
-            return true;
+<script>
+    function validateForm() {
+        const options = document.querySelectorAll('.form-check-input');
+        for (let option of options) {
+            if (option.checked) {
+                return true;
+            }
         }
-    }
 
-    let alertMessage = document.getElementById('alertMessage');
+        let alertMessage = document.getElementById('alertMessage');
 
-    if (!alertMessage) {
-        alertMessage = document.createElement('div');
-        alertMessage.id = 'alertMessage';
-        alertMessage.className = 'alert alert-danger alert-dismissible fade show mt-3';
-        alertMessage.textContent = 'Por favor, seleccione una opción antes de enviar.';
+        if (!alertMessage) {
+            alertMessage = document.createElement('div');
+            alertMessage.id = 'alertMessage';
+            alertMessage.className = 'alert alert-danger alert-dismissible fade show mt-3';
+            alertMessage.textContent = 'Por favor, seleccione una opción antes de enviar.';
 
-        const closeButton = document.createElement('button');
-        closeButton.type = 'button';
-        closeButton.className = 'close';
-        closeButton.setAttribute('data-dismiss', 'alert');
-        closeButton.setAttribute('aria-label', 'Close');
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'close';
+            closeButton.setAttribute('data-dismiss', 'alert');
+            closeButton.setAttribute('aria-label', 'Close');
 
-        const closeSpan = document.createElement('span');
-        closeSpan.setAttribute('aria-hidden', 'true');
-        closeSpan.innerHTML = '&times;';
+            const closeSpan = document.createElement('span');
+            closeSpan.setAttribute('aria-hidden', 'true');
+            closeSpan.innerHTML = '&times;';
 
-        closeButton.appendChild(closeSpan);
-        alertMessage.appendChild(closeButton);
+            closeButton.appendChild(closeSpan);
+            alertMessage.appendChild(closeButton);
 
-        document.querySelector('.card').after(alertMessage);
-    } else {
-        alertMessage.classList.remove('d-none'); // Mostrarla si ya existe
-    }
-
-    // Ocultar la alerta después de 5 segundos
-    setTimeout(() => {
-        if (alertMessage) {
-            alertMessage.classList.add('d-none');
+            document.querySelector('.card').after(alertMessage);
+        } else {
+            alertMessage.classList.remove('d-none'); // Mostrarla si ya existe
         }
-    }, 5000);
 
-    return false;
-}
+        // Ocultar la alerta después de 5 segundos
+        setTimeout(() => {
+            if (alertMessage) {
+                alertMessage.classList.add('d-none');
+            }
+        }, 5000);
 
-    </script>
+        return false;
+    }
+</script>
 
-    <script>
-        document.querySelectorAll('.form-check-input').forEach(input => {
-            input.addEventListener('change', function() {
-                document.querySelectorAll('.btn-link').forEach(button => button.classList.add('d-none'));
-                if (this.checked) {
-                    document.getElementById('remove' + this.id.charAt(0).toUpperCase() + this.id.slice(1)).classList.remove('d-none');
-                }
-            });
+<script>
+    document.querySelectorAll('.form-check-input').forEach(input => {
+        input.addEventListener('change', function() {
+            document.querySelectorAll('.btn-link').forEach(button => button.classList.add('d-none'));
+            if (this.checked) {
+                document.getElementById('remove' + this.id.charAt(0).toUpperCase() + this.id.slice(1)).classList.remove('d-none');
+            }
         });
+    });
 
-        function removeSelection(id) {
-            document.getElementById(id).checked = false;
-            document.getElementById('remove' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('d-none');
-        }
-    </script>
+    function removeSelection(id) {
+        document.getElementById(id).checked = false;
+        document.getElementById('remove' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('d-none');
+    }
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-    <%- include('fragments/footer') %>
-    
+    function finalizarIntento(idTest) {
+        fetch(`/intento-test/${idTest}/terminar-intento`, {
+            method: 'PATCH', 
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json()) 
+        .then(data => {
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl; 
+            }
+        })
+        .catch(error => console.error('Error al finalizar intento:', error));
+    }
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<%- include('fragments/footer') %>
+
 </body>
-</html></div>
+</html>
