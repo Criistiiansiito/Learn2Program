@@ -7,6 +7,7 @@ const Logro = require('../modelos/Logro');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
 const IntentoTest = require('../modelos/IntentoTest');
+const Recordatorio = require('../modelos/Recordatorios');
 
 // Función que puebla la base de datos
 async function seedDatabase() {
@@ -456,6 +457,14 @@ async function seedDatabase() {
             terminado: true,
             fechaFin: new Date(2025, 2, 30),
             idTest: 1
+        });
+        
+        // Creamos el recordatorio
+        await Recordatorio.create({
+            fecha: '2025-03-26',  
+            email: 'prueba@ucm.es',  // El correo al que se enviará el recordatorio
+            mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test 🤓🤓.',
+            asunto: '🚨 RECORDATORIO 🚨 - Learn2Program'
         });
 
         console.log("Base de datos poblada");
