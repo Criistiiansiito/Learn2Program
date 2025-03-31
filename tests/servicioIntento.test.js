@@ -1,9 +1,10 @@
 const servicioIntento = require('../servicios/servicioIntento');
+const Curso = require('../modelos/Curso');
 const Test = require('../modelos/Test');
 const Pregunta = require('../modelos/Pregunta');
 const IntentoTest = require('../modelos/IntentoTest');
 const IntentoPregunta = require('../modelos/IntentoPregunta');
-const { TestNoEncontradoError, IntentoTestNoEncontradoError } = require('../utils/errores');
+const { TestNoEncontradoError, IntentoTestNoEncontradoError, CursoNoEncontradoError } = require('../utils/errores');
 
 jest.mock("../modelos/Test", () => ({
     findByPk: jest.fn() // Indicamos que la llamada a findByPk debe ser similada
@@ -12,6 +13,10 @@ jest.mock("../modelos/Test", () => ({
 jest.mock("../modelos/IntentoTest", () => ({
     create: jest.fn(), // La llamada a create será simulada
     findByPk: jest.fn(),
+}));
+
+jest.mock("../modelos/Curso", () => ({
+    findByPk: jest.fn()
 }));
 
 describe("intentarTest", () => {
@@ -103,5 +108,63 @@ describe("terminarIntento", () => {
             .toThrow(new IntentoTestNoEncontradoError(idIntentoTest));
 
         expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
+    })
+})
+
+describe("obtenerIntentosTest", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
+
+    test("deberia obtener el curso con su test y sus intentos", async () => {
+        // ## Given ##
+        const idCurso = 1;
+        const mockCurso = {
+            id: idCurso,
+            test: { intentos: [] }
+        };
+        Curso.findByPk.mockResolvedValue(mockCurso);
+        // ## When ##
+        const curso = await servicioIntento.obtenerIntentosTest(idCurso);
+        // ## Then ##
+        expect(curso).toBe(mockCurso);
+        expect(Curso.findByPk).toHaveBeenCalledWith(idCurso, {
+            include: [
+                {
+                    model: Test,
+                    as: "test",
+                    include: [
+                        {
+                            model: IntentoTest,
+                            as: "intentos"
+                        }
+                    ]
+                }
+            ]
+        });
+    })
+
+    test("deberia lanzar una excepcion cuando no se encuentre el curso", async () => {
+        // ## Given ##
+        const idCurso = 1;
+        Curso.findByPk.mockResolvedValue(null);
+        // ## When & Then
+        await expect(servicioIntento.obtenerIntentosTest(idCurso))
+            .rejects
+            .toThrow(new CursoNoEncontradoError(idCurso));
+        expect(Curso.findByPk).toHaveBeenCalledWith(idCurso, {
+            include: [
+                {
+                    model: Test,
+                    as: "test",
+                    include: [
+                        {
+                            model: IntentoTest,
+                            as: "intentos"
+                        }
+                    ]
+                }
+            ]
+        });
     })
 })

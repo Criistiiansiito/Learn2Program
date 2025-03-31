@@ -1,3 +1,4 @@
+const Curso = require("../modelos/Curso");
 const Pregunta = require("../modelos/Pregunta");
 const Respuesta = require("../modelos/Respuesta");
 const Test = require("../modelos/Test");
@@ -5,6 +6,7 @@ const IntentoTest = require("../modelos/IntentoTest");
 const IntentoPregunta = require("../modelos/IntentoPregunta");
 const {
     PreguntaYaIntentadaError,
+    CursoNoEncontradoError,
     IntentoPreguntaNoEncontradoError,
     TestNoEncontradoError,
     IntentoTestNoEncontradoError,
@@ -223,6 +225,35 @@ class ServicioIntentoTest {
         intentoPregunta.intento_test.test.preguntas = [pregunta];
         return intentoPregunta.intento_test;
     }
+
+    /**
+     * Obtiene un curso junto con su test y sus intentos
+     * 
+     * @param {Number} idCurso - El id del curso al que pertenece el test al que pertenecen los intentos
+     * @returns {Object} El curso con el id proporcionado y su test con sus intentos
+     * @throws {CursoNoEncontradoError} Si no se encuentra ningún curso con el id indicado
+     */
+    async obtenerIntentosTest(idCurso) {
+        const curso = await Curso.findByPk(idCurso, {
+            include: [
+                {
+                    model: Test,
+                    as: "test",
+                    include: [
+                        {
+                            model: IntentoTest,
+                            as: "intentos"
+                        }
+                    ]
+                }
+            ]
+        })
+        if (!curso) {
+            throw new CursoNoEncontradoError(idCurso);
+        }
+        return curso;
+    }
+
 }
 
 module.exports = new ServicioIntentoTest(); // Exportamos una instancia (singleton)

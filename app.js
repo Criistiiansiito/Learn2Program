@@ -11,7 +11,6 @@ const IntentoTest = require('./modelos/IntentoTest');
 
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
-const IntentoTest = require('./modelos/IntentoTest');
 const moment = require('moment');
 const Pregunta = require('./modelos/Pregunta');
 
