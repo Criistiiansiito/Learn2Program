@@ -1,16 +1,15 @@
-// models/Recordatorio.js
+const DataTypes = require("sequelize");
+const sequelize = require("../database/connection");
+const Usuario = require("./Usuario"); // Asegúrate de que la ruta es correcta
 
-const { DataTypes } = require('sequelize');
-const sequelize = require('../database/connection');
-
-const Recordatorio = sequelize.define("Recordatorio", {
+const Recordatorios = sequelize.define("Recordatorio", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
   fecha: {
-    type: DataTypes.DATEONLY, // Tipo de dato para solo fecha (sin hora)
+    type: DataTypes.DATE,
     allowNull: false
   },
   email: {
@@ -22,12 +21,21 @@ const Recordatorio = sequelize.define("Recordatorio", {
     allowNull: false
   },
   asunto: {
-    type: DataTypes.STRING(100), // Título para el recordatorio (asunto del correo)
+    type: DataTypes.STRING(100),
     allowNull: false
+  },
+  idUsuario: { // Clave foránea que se refiere al modelo Usuario
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Usuario, // Referencia al modelo Usuario
+      key: 'id'  // Usamos la clave primaria del modelo Usuario
+    },
+    onDelete: 'CASCADE' // Si el usuario se elimina, también se eliminan los recordatorios asociados
   }
 }, {
-  tableName: "recordatorios", // Nombre de la tabla en la BD
-  timestamps: false // Evita que sequelize añada createdAt y updatedAt automáticamente
+  tableName: "recordatorios",
+  timestamps: false
 });
 
-module.exports = Recordatorio;
+module.exports = Recordatorios;

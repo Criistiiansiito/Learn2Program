@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/connection");
 const IntentoTest = require("./IntentoTest");
-const Recordatorio = require("./Recordatorios");
+const Recordatorios = require("./Recordatorios"); // Asegúrate de que el nombre coincide con el modelo
 
 const Usuario = sequelize.define("Usuario", {
     id: {
@@ -27,21 +27,18 @@ const Usuario = sequelize.define("Usuario", {
     timestamps: false
 });
 
-// Relacion 1:N con intententoTest
-Usuario.hasMany(IntentoTest, {
-    foreignKey: "idUsuario",
-    onDelete: "CASCADE"
-});
-
-// Relacion N:1 con Usuario
+// Relación 1:N con IntentoTest
+Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario", onDelete: "CASCADE" });
 IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
-Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario" });
 
-// Relacion 1:N con Recordatorio
-Usuario.hasMany(Recordatorio, {
-    as: "recordatorios",
-    foreignKey: "idUsuario",
-    onDelete: "CASCADE"
-});
+// Relación 1:N con Recordatorios
+
+// Relación 1:N con Recordatorios
+Usuario.hasMany(Recordatorios, { 
+    foreignKey: "idUsuario",  // Relación a través de la clave foránea en Recordatorios
+    as: "recordatorios",      // Alias para acceder a los recordatorios de un usuario
+    onDelete: "CASCADE"       // Si el usuario se elimina, se eliminan sus recordatorios
+  });
+Recordatorios.belongsTo(Usuario, { foreignKey: "idUsuario", as: "usuario" });
 
 module.exports = Usuario;
