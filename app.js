@@ -12,13 +12,17 @@ const IntentoTest = require('./modelos/IntentoTest');
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const Pregunta = require('./modelos/Pregunta');
-const StatusCodes = require('http-status-codes');
-const { PreguntaNoEncontradaError } = require('./utils/errores');
-const { off } = require('process');  
-const nodemailer = require('nodemailer');
 const Recordatorio = require('./modelos/Recordatorios');
 
 const enviarRecordatorio = require("./servicios/enviarRecordatorio");
+// const StatusCodes = require('http-status-codes');
+// const { PreguntaNoEncontradaError } = require('./utils/errores');
+// const { off } = require('process');
+// const moment = require('moment');  
+// const nodemailer = require('nodemailer');
+// const { Op } = require('sequelize');
+
+const enviarRecordatorio=require("./servicios/enviarRecordatorio");
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
 // Función que envía y elimina los recordatorios

@@ -11,7 +11,7 @@ const { JSDOM } = require('jsdom');
 if (typeof TextEncoder === 'undefined') {
     global.TextEncoder = require('util').TextEncoder;
     global.TextDecoder = require('util').TextDecoder;
-  }
+}
 
 describe('Comprobamos que presionar el boton "ver resultados" muestra el modal correspondiente', () =>{
 
