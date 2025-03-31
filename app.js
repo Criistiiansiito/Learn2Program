@@ -11,6 +11,57 @@ const IntentoTest = require('./modelos/IntentoTest');
 
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
+// const StatusCodes = require('http-status-codes');
+// const { PreguntaNoEncontradaError } = require('./utils/errores');
+// const { off } = require('process');
+// const moment = require('moment');  
+// const nodemailer = require('nodemailer');
+// const { Op } = require('sequelize');
+const Recordatorio = require('./modelos/Recordatorios');
+
+const enviarRecordatorio=require("./servicios/enviarRecordatorio");
+enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
+
+// Función que envía y elimina los recordatorios
+async function enviarRecordatorios() {
+    try {
+  // Obtener la fecha y hora actuales en la zona horaria local
+const ahora = new Date();
+const offsetHoras = ahora.getTimezoneOffset() / -60; // Ajuste de zona horaria
+
+// Sumar 2 horas adicionales
+ahora.setHours(ahora.getHours() + offsetHoras + 2); // Aplica la diferencia horaria y suma 2 horas
+
+const fechaHoraActualLocal = ahora.toISOString().slice(0, 16) + ":00"; // Formato YYYY-MM-DD HH:mm:00
+
+console.log("Buscando recordatorios para:", fechaHoraActualLocal);
+
+// Buscar los recordatorios con la fecha y hora exacta
+const recordatorios = await Recordatorio.findAll({
+    where: {
+        fecha: fechaHoraActualLocal
+    }
+});
+
+if (recordatorios.length > 0) {
+    for (const recordatorio of recordatorios) {
+        await enviarRecordatorio(
+            recordatorio.email,
+            recordatorio.asunto,
+            recordatorio.mensaje
+        );
+        // Eliminar el recordatorio de la base de datos
+        await recordatorio.destroy();
+        console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
+    }
+}
+
+    } catch (error) {
+        console.error('Error al enviar o eliminar recordatorios:', error);
+    }
+}
+
+setInterval(enviarRecordatorios, 10 * 1000); 
 
 const app = express();
 
