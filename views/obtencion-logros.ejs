@@ -26,10 +26,10 @@
                 Ver resultados <i class="fas fa-chevron-right"></i>
             </button>
             
-            <button type="button" class="btn btn-secondary btn-lg mt-3 custom-button d-block mx-auto" onclick="volverAIntentos('<%= idIntentoTest %>')">
+            <button type="button" class="btn btn-secondary btn-lg mt-3 custom-button d-block mx-auto" onclick="volverAIntentos('<%= idCurso %>')">
                 Volver <i class="fas fa-chevron-right"></i>
             </button>
-            
+
         </div>
         
         <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
@@ -123,19 +123,8 @@
         audio.play();
       });
 
-      function volverAIntentos(idIntentoTest) {
-        fetch(`/logro-curso/${idIntentoTest}/volver`, {
-            method: 'PATCH', 
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json()) 
-        .then(data => {
-            if (data.redirectUrl) {
-                window.location.href = data.redirectUrl; 
-            }
-        })
-        .catch(error => console.error('Error al finalizar intento:', error));
-    
+      function volverAIntentos(idCurso) {
+        window.location.href = `/curso/${idCurso}/previsualizacion-de-test`;
         }
 
     </script>

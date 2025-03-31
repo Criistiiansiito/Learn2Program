@@ -188,23 +188,11 @@ app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
     res.render('obtencion-logros', {
       idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
       nombreCurso: intento.test.curso.titulo,
+      idCurso: intento.test.curso.id,
       nota: intento.nota,
       fecha: intento.fechaFin,
       logro: intento.test.curso.logro,
     });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Termina un intento de test
-app.patch('/logro-curso/:idIntentoTest/volver', async (req, res, next) => {
-  try {
-    const idIntentoTest = req.params.idIntentoTest;
-    // Llamamos a la función del servicio para obtener el intento de test
-    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
-    res.json({ redirectUrl: `/previsualizacion-de-test?idCurso=${idCurso}` });
-
   } catch (error) {
     next(error);
   }
