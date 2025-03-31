@@ -104,9 +104,8 @@ app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next
   try {
     const idIntentoTest = req.params.idIntentoTest;
     
-    // Llamamos a la función del servicio para obtener el intento de test
-    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
-    res.json({ redirectUrl: `/previsualizacion-de-test?idCurso=${idCurso}` });
+    res.json({ redirectUrl: `/logro-curso/${idIntentoTest}` });
+
   } catch (error) {
     next(error);
   }
@@ -169,17 +168,31 @@ app.get('/previsualizacion-de-test', async (req, res) => {
     res.status(500).send("Error interno del servidor.");
   }
 });
-
 app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
   try {
     const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
-  
+    
+    // Pasar el idIntentoTest a la vista
     res.render('obtencion-logros', {
+      idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
       nombreCurso: intento.test.curso.titulo,
       nota: intento.nota,
       fecha: intento.fechaFin,
       logro: intento.test.curso.logro,
-    }); 
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Termina un intento de test
+app.patch('/logro-curso/:idIntentoTest/volver',  async (req, res, next) => {
+  try {
+    const idIntentoTest = req.params.idIntentoTest;
+    // Llamamos a la función del servicio para obtener el intento de test
+    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+    res.json({ redirectUrl: `/previsualizacion-de-test?idCurso=${idCurso}` });
+
   } catch (error) {
     next(error);
   }
