@@ -33,12 +33,6 @@ IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
 
 // Relación 1:N con Recordatorios
 
-// Relación 1:N con Recordatorios
-Usuario.hasMany(Recordatorios, { 
-    foreignKey: "idUsuario",  // Relación a través de la clave foránea en Recordatorios
-    as: "recordatorios",      // Alias para acceder a los recordatorios de un usuario
-    onDelete: "CASCADE"       // Si el usuario se elimina, se eliminan sus recordatorios
-  });
-Recordatorios.belongsTo(Usuario, { foreignKey: "idUsuario", as: "usuario" });
+
 
 module.exports = Usuario;
