@@ -22,62 +22,46 @@ const Recordatorio = require('./modelos/Recordatorios');
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
-/*async function enviarRecordatorio(email, asunto, mensaje) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail', //Recordad que las variables del correo tienen que estar en el .env para evitar exponer la contraseña del correo
-        auth: {
-            user: process.env.GMAIL_USER, 
-            pass: process.env.GMAIL_PASS
-        }
-    });
-
-    const mailOptions = {
-        from: process.env.GMAIL_USER,
-        to: email,
-        subject: asunto,
-        text: mensaje
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Recordatorio enviado a ${email}`);
-    } catch (error) {
-        console.error('Error al enviar el correo:', error);
-    }
-}*/
-
 // Función que envía y elimina los recordatorios
 async function enviarRecordatorios() {
     try {
+  // Obtener la fecha y hora actuales en la zona horaria local
+const ahora = new Date();
+const offsetHoras = ahora.getTimezoneOffset() / -60; // Ajuste de zona horaria
 
-        const fechaActual = new Date().toISOString().split('T')[0]; 
+// Sumar 2 horas adicionales
+ahora.setHours(ahora.getHours() + offsetHoras + 2); // Aplica la diferencia horaria y suma 2 horas
 
-        // Buscamos si ya recordatorios para hoy
-        const recordatorios = await Recordatorio.findAll({
-            where: {
-                fecha: fechaActual
-            }
-        });
+const fechaHoraActualLocal = ahora.toISOString().slice(0, 16) + ":00"; // Formato YYYY-MM-DD HH:mm:00
 
-        if (recordatorios.length > 0) {
-            for (const recordatorio of recordatorios) {
-                await enviarRecordatorio(
-                    recordatorio.email,
-                    recordatorio.asunto,
-                    recordatorio.mensaje
-                );
-                // Eliminar el recordatorio de la bbdd
-                await recordatorio.destroy();
-                console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
-            }
-        }
+console.log("Buscando recordatorios para:", fechaHoraActualLocal);
+
+// Buscar los recordatorios con la fecha y hora exacta
+const recordatorios = await Recordatorio.findAll({
+    where: {
+        fecha: fechaHoraActualLocal
+    }
+});
+
+if (recordatorios.length > 0) {
+    for (const recordatorio of recordatorios) {
+        await enviarRecordatorio(
+            recordatorio.email,
+            recordatorio.asunto,
+            recordatorio.mensaje
+        );
+        // Eliminar el recordatorio de la base de datos
+        await recordatorio.destroy();
+        console.log(`Recordatorio enviado y eliminado para ${recordatorio.email}`);
+    }
+}
+
     } catch (error) {
         console.error('Error al enviar o eliminar recordatorios:', error);
     }
 }
 
-// Esto se ejecuta cada 24 horas y lo que hace es que revisa si hay recordatorios que enviar ese día, y si los hay los envía y los borra de la base de datos
-setInterval(enviarRecordatorios, 10 * 1000); // 24 horas
+setInterval(enviarRecordatorios, 10 * 1000); 
 
 const app = express();
 const port = 8080;
@@ -414,10 +398,20 @@ app.post('/crear-recordatorio', (req, res) => {
       mensajeExito: null
     });
   }
-
-  // Combinar la fecha y la hora seleccionadas en una sola fecha completa
-  const fechaHoraSeleccionada = new Date(`${fecha}T${time}:00`);
-
+  const [hora, minutos] = time.split(":").map(Number);
+  const fechaPartes = fecha.split("-").map(Number);
+  
+  let fechaHoraSeleccionada = new Date(
+    Date.UTC(fechaPartes[0], fechaPartes[1] - 1, fechaPartes[2], hora, minutos) 
+  );
+  
+  // Convertimos la fecha a la hora de Madrid
+  fechaHoraSeleccionada = new Date(
+    fechaHoraSeleccionada.toLocaleString("en-US", { timeZone: "Europe/Madrid" })
+  );
+  
+  console.log("Fecha seleccionada en España:", fechaHoraSeleccionada);
+  
   // Obtener la fecha y hora actual
   const fechaHoy = new Date();
   fechaHoy.setHours(0, 0, 0, 0); // Ajustar la hora de la fecha actual para compararla solo por el día
