@@ -22,7 +22,6 @@ const enviarRecordatorio = require("./servicios/enviarRecordatorio");
 // const nodemailer = require('nodemailer');
 // const { Op } = require('sequelize');
 
-const enviarRecordatorio=require("./servicios/enviarRecordatorio");
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
 // Función que envía y elimina los recordatorios
