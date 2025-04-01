@@ -108,7 +108,7 @@ describe('Prueba de integración de recordatorios', () => {
 
     test('Debe crear un nuevo recordatorio en la base de datos y renderizar la vista con éxito', async () => {
         const nuevoRecordatorio = new URLSearchParams({
-            fecha: '2025-04-01',
+            fecha: '2025-10-01',
             time: '14:00',
             email: 'test@email.com',
             mensaje: 'Este es un mensaje de prueba',

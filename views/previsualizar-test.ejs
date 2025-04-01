@@ -60,7 +60,7 @@
                                     <td><%= intento.preguntasAcertadas %></td>
                                     <td><%= intento.nota %> / 10.00 </td>
                                     <td>
-                                        <% if (intento.nota > 5) { %>
+                                        <% if (intento.nota >= 7) { %>
                                             <i class="fas fa-thumbs-up" style="color: rgba(0, 128, 0, 0.671);"></i> 
                                         <% } else { %>
                                             <i class="fas fa-thumbs-down" style="color: rgba(255, 0, 0, 0.733);"></i> 

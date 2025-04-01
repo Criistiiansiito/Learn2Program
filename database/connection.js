@@ -12,8 +12,7 @@ const sequelize = new Sequelize({
             require: true, 
             rejectUnauthorized: process.env.DB_REMOTE === "true"
         }
-    } 
-
+    }   
 });
 
 module.exports = sequelize;
