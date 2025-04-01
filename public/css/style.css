@@ -255,6 +255,7 @@ nav {
     background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
     color: white;
     padding-left: 0rem;
+    width: 100%;
 }
 
 .logo {
