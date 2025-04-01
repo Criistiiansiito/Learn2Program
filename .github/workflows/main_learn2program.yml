@@ -70,6 +70,8 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_REMOTE: ${{ secrets.DB_REMOTE }}
+          GMAIL_USER : ${{ secrets.GMAIL_USER}}
+          GMAIL_PASS : ${{ secrets.GMAIL_PASS}}
         run: |
           npm test
       
