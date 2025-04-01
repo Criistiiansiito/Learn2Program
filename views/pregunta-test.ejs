@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pregunta Test</title>
+    <title>L2P Pregunta Test</title>
+
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -19,6 +23,7 @@
         <div class="card">
             <div class="card-body pregunta">
                 <p class="card-title"><%= pregunta.enunciado %></p>
+                <p class="card-title">Selecciona una:</p>
                 <% for (let i = 0; i < 4; i++) { %>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="idRespuesta" id="opcion<%= i + 1 %>" value="<%= pregunta.respuestas[i].id %>" <%= (pregunta.retroalimentacion && pregunta.respuestas[i].esCorrecta) ? 'disabled checked' : (pregunta.retroalimentacion ? 'disabled' : '') %>>
