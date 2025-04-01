@@ -23,7 +23,7 @@ const IntentoTest = sequelize.define("IntentoTest", {
         allowNull: false,
     },
     fechaFin: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
     }
 },
     {
