@@ -3,6 +3,8 @@ html, body {
     margin: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .contedor-principal{
@@ -242,10 +244,11 @@ a:hover {
 
 footer {
     background: linear-gradient(to right, rgb(11, 26, 36), rgb(19, 45, 54)); /* degradado de izquierda a derecha */
-    color: white; /* Color del texto */
+    color: white;
     padding: 1rem;
     font-size:100%;
-    text-align: center; /* centra el contenido */
+    text-align: center; 
+    width: 100vw; /* Fuerza el ancho completo */
 }
 
 nav {
@@ -334,6 +337,92 @@ hr.linea-separacion {
     font-size: 1.2rem; 
     height:150px;
 }
+
+.form-container {
+    margin-top:2%;
+    background-color: #f5f5f5;
+    padding: 30px;
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    width: 100%;
+    max-width: 600px;
+}
+
+.form-content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #666;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #aaa;
+}
+
+select {
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="%23333" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+    background-size: 12px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.date-time-group {
+    display: flex;
+    gap: 20px; /* Adjust spacing between date and time fields */
+}
+
+.input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="date"]:disabled {
+    background-color: #f0f0f0;
+    opacity: 0.6;
+}
+
+button {
+    display: block; 
+    margin: 20px auto; 
+    color: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 
 @media (max-width: 800px) {
     /* Contenido del acordeón oculto por defecto */
