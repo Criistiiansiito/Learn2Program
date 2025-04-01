@@ -6,6 +6,8 @@ const servicioIntento = require('../servicios/servicioIntento');
 const { IntentoTestNoEncontradoError, IntentoPreguntaNoEncontradoError } = require('../utils/errores');
 const IntentoTest = require('../modelos/IntentoTest');
 const { beforeAll, afterAll } = require('@jest/globals');
+const IntentoPregunta = require('../modelos/IntentoPregunta');
+const Pregunta = require('../modelos/Pregunta');
 
 beforeAll((done) => {
     server = app.listen(0, () => { // Usamos 0 para que el SO asigne un puerto libre
@@ -104,7 +106,7 @@ describe("GET /logro-curso/:idIntentoTest", () => {
 });
 
 describe('Prueba de integración de recordatorios', () => {
-   
+
 
     test('Debe crear un nuevo recordatorio en la base de datos y renderizar la vista con éxito', async () => {
         const nuevoRecordatorio = new URLSearchParams({
@@ -114,10 +116,10 @@ describe('Prueba de integración de recordatorios', () => {
             mensaje: 'Este es un mensaje de prueba',
             asunto: 'Asunto de prueba'
         });
-        
+
         const response = await request(app).post('/crear-recordatorio').set('Content-Type', 'application/x-www-form-urlencoded').send(nuevoRecordatorio.toString()).expect(200);
         expect(response.text).toContain('Recordatorio creado exitosamente.');
-    });    
+    });
 
     test('Debe rechazar un recordatorio con una fecha en el pasado', async () => {
         const nuevoRecordatorio = new URLSearchParams({
@@ -127,7 +129,7 @@ describe('Prueba de integración de recordatorios', () => {
             mensaje: 'Mensaje inválido',
             asunto: 'Asunto inválido'
         });
-    
+
         const response = await request(app).post('/crear-recordatorio').set('Content-Type', 'application/x-www-form-urlencoded').send(nuevoRecordatorio.toString()).expect(200);
         expect(response.text).toContain('La fecha no puede ser del pasado.');
     });
@@ -186,6 +188,72 @@ describe("GET /previsualizacion-de-test", () => {
 
         expect(response.status).toBe(StatusCodes.NOT_FOUND);
         expect(response.text).toBe(MENSAJES.CURSO_NO_ENCONTRADO(idCurso));
+    })
+
+})
+
+describe("GET /intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta", () => {
+
+    let intentoTest;
+
+    beforeAll(async () => {
+        // Insertamos datos de prueba
+        intentoTest = await IntentoTest.create({
+            terminado: false,
+            idTest: 1,
+            intentos_pregunta: [
+                { idPregunta: 1, idRespuesta: 2 },
+                { idPregunta: 3 }
+            ]
+        },
+            {
+                include: [
+                    {
+                        model: IntentoPregunta,
+                        as: "intentos_pregunta"
+                    }
+                ]
+            }
+        );
+    })
+
+    afterAll(async () => {
+        // Limpiamos la bd
+        await IntentoTest.destroy({
+            where: { id: intentoTest.id }
+        })
+    })
+
+    test("Deberia devolver 404 y enviar mensaje de error", async () => {
+        const idIntentoTest = 999;
+        const numeroPregunta = 99;
+        
+        const response = await request(app).get(`/intento-test/${idIntentoTest}/pregunta/${numeroPregunta}/intento-pregunta`);
+        
+        expect(response.status).toBe(StatusCodes.NOT_FOUND);
+        expect(response.text).toBe(MENSAJES.INTENTO_PREGUNTA_NO_ENCONTRADO(idIntentoTest, numeroPregunta));
+    })
+
+    test("Deberia devolver 200 y renderizar el intento de pregunta con retroalimentacion", async () => {
+        const pregunta = await Pregunta.findByPk(intentoTest.intentos_pregunta[0].idPregunta);
+
+        const response = await request(app).get(`/intento-test/${intentoTest.id}/pregunta/${pregunta.numero}/intento-pregunta`);
+
+        expect(response.status).toBe(StatusCodes.OK);
+        expect(response.text).toContain("/" + intentoTest.id + "/");
+        expect(response.text).toContain("Pregunta " + pregunta.numero);
+        expect(response.text).toContain(pregunta.retroalimentacion);
+    })
+
+    test("Deberia devolver 200 y renderizar el intento de pregunta sin retroalimentacion", async () => {
+        const pregunta = await Pregunta.findByPk(intentoTest.intentos_pregunta[1].idPregunta);
+
+        const response = await request(app).get(`/intento-test/${intentoTest.id}/pregunta/${pregunta.numero}/intento-pregunta`);
+
+        expect(response.status).toBe(StatusCodes.OK);
+        expect(response.text).toContain("/" + intentoTest.id + "/");
+        expect(response.text).toContain("Pregunta " + pregunta.numero);
+        expect(response.text).not.toContain(pregunta.retroalimentacion);
     })
 
 })
