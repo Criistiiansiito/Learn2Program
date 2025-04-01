@@ -13,7 +13,7 @@ const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const Pregunta = require('./modelos/Pregunta');
 const Recordatorio = require('./modelos/Recordatorios');
-const enviarRecordatorio = require("./servicios/enviarRecordatorio");
+const enviarRecordatorio=require("./servicios/enviarRecordatorio");
 
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
@@ -257,4 +257,6 @@ app.use(manejadorErrores);
 seedDatabase();
 
 module.exports = app;
+
+
 

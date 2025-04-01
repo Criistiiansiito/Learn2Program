@@ -463,8 +463,8 @@ async function seedDatabase() {
         await Recordatorio.create({
             fecha: '2025-03-26',  
             email: 'prueba@ucm.es',  // El correo al que se enviará el recordatorio
-            mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test 🤓🤓.',
-            asunto: '🚨 RECORDATORIO 🚨 - Learn2Program'
+            mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test .',
+            asunto: ' RECORDATORIO  - Learn2Program'
         });
 
         console.log("Base de datos poblada");
