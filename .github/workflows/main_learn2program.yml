@@ -72,6 +72,7 @@ jobs:
           DB_REMOTE: ${{ secrets.DB_REMOTE }}
           GMAIL_USER : ${{ secrets.GMAIL_USER}}
           GMAIL_PASS : ${{ secrets.GMAIL_PASS}}
+          SSL : ${{ secrets.SSL}}
         run: |
           npm test
       
