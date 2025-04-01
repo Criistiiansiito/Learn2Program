@@ -13,7 +13,6 @@ const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const Pregunta = require('./modelos/Pregunta');
 const Recordatorio = require('./modelos/Recordatorios');
-const Respuesta = require('./modelos/Respuesta');
 const enviarRecordatorio = require("./servicios/enviarRecordatorio");
 
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
@@ -78,6 +77,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Home en primera historia de usuario
 app.get('/', async (req, res) => {
+
   // Carga un curso junto con sus temas
   const curso = await Curso.findOne({
     include: [{
@@ -86,20 +86,15 @@ app.get('/', async (req, res) => {
     }]
   });
   console.log("Carga de la página principal");
-  console.log(curso);
   res.render('ver-teoria-curso', { curso: curso });
 
 });
 
-// se encarga de mostrar la pregunta actual y sus respuestas
 app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
-    const { idRespuesta } = req.query; // Capturamos el idRespuesta desde la URL
-    console.log('Respuesta ID: ', idRespuesta);
-    console.log('Pregunta ID: ', numeroPregunta);
 
     // Obtenemos todas las preguntas asociadas a este test, mediante las relaciones intentoTest-Test y Test-Preguntas 
     const intentoTestAux = await IntentoTest.findByPk(idIntentoTest, {
@@ -119,29 +114,8 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
     });
 
     const numeroPreguntas = intentoTestAux.test.preguntas.length;
-    let esCorrecta = false;
-    console.log('LLEGA1');
-    let respuestaSeleccionada;
 
-    if(idRespuesta!= undefined && idRespuesta!=null){
-      console.log('LLEGA2');
-
-      respuestaSeleccionada = await Respuesta.findOne({
-        where: {
-          id: idRespuesta,       // ID de la respuesta seleccionada
-          idPregunta: numeroPregunta // ID de la pregunta actual
-        }
-      }); 
-      console.log('LLEGA3');
-      console.log('RESPUESTA ES CORRECTA?? : VALOR =', respuestaSeleccionada.esCorrecta)
-    }
-    if(respuestaSeleccionada){
-      esCorrecta=respuestaSeleccionada.esCorrecta;
-    }
-    console.log('LLEGA4');
-    console.log('FINALMENTE LA RESPUESTA ES ', esCorrecta);
-    res.render('pregunta-test', { intentoTest, numeroPreguntas, esCorrecta });
-
+    res.render('pregunta-test', { intentoTest, numeroPreguntas });
   } catch (error) {
     next(error);
   }
@@ -154,10 +128,8 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const idRespuesta = req.body.idRespuesta; // Rescatamos el id de la respuesta seleccionada del cuerpo de la petición
     // Delegamos a la capa de servicio
-    console.log('HOLA');
-    console.log('RESPUESTA ID: ', idRespuesta);
     await servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta);
-    res.redirect(`/intento-test/${idIntentoTest}/pregunta/${numeroPregunta}/intento-pregunta?idRespuesta=${idRespuesta}`);
+    res.redirect(`/intento-test/${idIntentoTest}/pregunta/${numeroPregunta}/intento-pregunta`);
   } catch (error) {
     next(error); // Llamamos al (middleware) manejador de errores/excepciones
   }
