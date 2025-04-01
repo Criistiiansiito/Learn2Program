@@ -10,7 +10,7 @@ const sequelize = new Sequelize({
     dialectOptions: {
         ssl: {
             require: true, 
-            rejectUnauthorized:  process.env.DB_HOST === "localhost" ? false : true
+            rejectUnauthorized: process.env.DB_HOST !== "localhost"
         }
     }   
 });

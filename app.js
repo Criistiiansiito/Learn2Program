@@ -56,9 +56,7 @@ async function enviarRecordatorios() {
   }
 }
 
-if (process.env.NODE_ENV !== "test") {
-  setInterval(enviarRecordatorios, 10 * 1000);
-}
+setInterval(enviarRecordatorios, 10 * 1000);
 
 const app = express();
 
