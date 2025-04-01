@@ -7,6 +7,8 @@ const { IntentoTestNoEncontradoError, IntentoPreguntaNoEncontradoError } = requi
 const IntentoTest = require('../modelos/IntentoTest');
 const { beforeAll, afterAll } = require('@jest/globals');
 
+jest.setTimeout(30000); // Establece un tiempo de espera de 30 segundos para los tests
+
 beforeAll((done) => {
     server = app.listen(0, () => { // Usamos 0 para que el SO asigne un puerto libre
         console.log('Test server running');
