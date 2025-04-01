@@ -96,26 +96,7 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
 
-    // Obtenemos todas las preguntas asociadas a este test, mediante las relaciones intentoTest-Test y Test-Preguntas 
-    const intentoTestAux = await IntentoTest.findByPk(idIntentoTest, {
-      include: [
-        {
-          model: Test,
-          as: 'test',
-          include: [
-            {
-              model: Pregunta,
-              as: 'preguntas',
-              order: [['numero', 'ASC']]
-            }
-          ]
-        }
-      ]
-    });
-
-    const numeroPreguntas = intentoTestAux.test.preguntas.length;
-
-    res.render('pregunta-test', { intentoTest, numeroPreguntas });
+    res.render('pregunta-test', { intentoTest });
   } catch (error) {
     next(error);
   }

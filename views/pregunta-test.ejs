@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end">
-                <% if (pregunta.numero === numeroPreguntas) { %> <!-- Verifica si esta es la última pregunta según el número total -->
+                <% if (pregunta.numero === intentoTest.test.numeroPreguntas) { %> <!-- Verifica si esta es la última pregunta según el número total -->
                     <button type="button" class="btn btn-danger mt-3" onclick="finalizarIntento('<%= idIntentoTest %>')">Finalizar Test</button>
                 <% } else { %>
                     <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-primary mt-3">Siguiente Pregunta</a>

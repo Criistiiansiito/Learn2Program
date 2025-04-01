@@ -179,7 +179,13 @@ class ServicioIntentoTest {
                     include: [
                         {
                             model: Test,
-                            as: "test"
+                            as: "test",
+                            include: [
+                                {
+                                    model: Pregunta,
+                                    as: "preguntas"
+                                }
+                            ]
                         }
                     ]
                 },
@@ -222,6 +228,7 @@ class ServicioIntentoTest {
             pregunta = await encuentraPregunta(["retroalimentacion"], ["esCorrecta"]);
         }
         // Añadimos la pregunta a intentoPregunta.intento_test
+        intentoPregunta.intento_test.test.numeroPreguntas = intentoPregunta.intento_test.test.preguntas.length;
         intentoPregunta.intento_test.test.preguntas = [pregunta];
         return intentoPregunta.intento_test;
     }
