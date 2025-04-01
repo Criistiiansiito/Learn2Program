@@ -43,7 +43,7 @@
             <div class="card mt-3">
                 <div class="card-body retroalimentacion">
                     <p><strong>La respuesta correcta es:</strong> <%= pregunta.respuestas.find(r => r.esCorrecta).texto %></p>
-                    <p><%= pregunta.retroalimentacion %></p>
+                    <p><%- pregunta.retroalimentacion %></p>
                 </div>
             </div>
             <div class="d-flex justify-content-end">
