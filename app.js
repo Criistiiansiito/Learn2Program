@@ -56,7 +56,9 @@ if (recordatorios.length > 0) {
     }
 }
 
-setInterval(enviarRecordatorios, 10 * 1000); 
+if (process.env.NODE_ENV !== 'test') {
+  recordatorioIntervalo = setInterval(enviarRecordatorios, 10 * 1000);
+}
 
 const app = express();
 

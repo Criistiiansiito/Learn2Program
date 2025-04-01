@@ -16,13 +16,13 @@ const Recordatorio = sequelize.define("Recordatorio", {
     allowNull: false
   },
   mensaje: {
-    type: DataTypes.STRING(200),
+    type: DataTypes.STRING(1000),  // Aumentar tamaño si es necesario
     allowNull: false
   },
   asunto: {
-    type: DataTypes.STRING(100), // Título para el recordatorio (asunto del correo)
+    type: DataTypes.STRING(255),  // Ajuste de tamaño según lo que necesites
     allowNull: false
-  }
+  }  
 }, {
   tableName: "recordatorios", // Nombre de la tabla en la BD
   timestamps: false // Evita que sequelize añada createdAt y updatedAt automáticamente
