@@ -19,7 +19,6 @@ async function enviarRecordatorio(email, asunto, mensaje) {
     try {
         await transporter.sendMail(mailOptions);
     } catch (error) {
-        console.error('Error al enviar el correo:', error);
         throw error; // Para que el test pueda detectar errores
     }
 }

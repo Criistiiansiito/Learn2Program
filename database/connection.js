@@ -11,7 +11,8 @@ const sequelize = new Sequelize({
         ssl: {
             require: true, 
             rejectUnauthorized: process.env.DB_REMOTE === "true"
-        }
+        },
+        connectTimeout: 60000
     }   
 });
 
