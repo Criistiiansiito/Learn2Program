@@ -15,8 +15,6 @@
 
     <!-- FONT AWESOME (Para iconos) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-    <link rel="stylesheet" href="/css/style.css">
     
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 
@@ -48,7 +46,8 @@
     <!-- Si el curso no está en revisión y tiene temas, mostramos los temas -->
     <div class="container contenido">
         <div class="container contenedor-principal mt-5">
-            <h1 class="mb-4 text-center titulos"><%= curso.nombre %></h1>
+            <h1 class="mb-4 text-center"><%= curso.titulo %></h1>
+            
             <div class="container">
                 <div class="accordion">
                     <% curso.temas.forEach(function(tema, index) { %>

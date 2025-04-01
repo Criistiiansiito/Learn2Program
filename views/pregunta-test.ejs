@@ -1,6 +1,7 @@
 <%- include('fragments/navbar') %>
 <% const pregunta = intentoTest.test.preguntas[0]; %>
 <% const idIntentoTest = intentoTest.id; %>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <div class="container mt-5">
     <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
@@ -23,13 +24,26 @@
             </div>
         </div>
 
-        <% if (pregunta.retroalimentacion) { %>
+        <% if (pregunta.retroalimentacion) { %>            
+            
             <div class="card mt-3">
+                <% if (esCorrecta) { %>
+                    <div class="d-flex align-items-center text-success">
+                        <i class="fas fa-check-circle p-2"></i>
+                        <span><strong>Respuesta correcta</strong></span>
+                    </div>
+                <% } else { %>
+                    <div class="d-flex align-items-center text-danger">
+                        <i class="fas fa-times-circle p-2"></i>
+                        <span><strong>Respuesta incorrecta</strong></span>
+                    </div>
+                <% } %>
                 <div class="card-body retroalimentacion">
                     <p><strong>La respuesta correcta es:</strong> <%= pregunta.respuestas.find(r => r.esCorrecta).texto %></p>
                     <p><%= pregunta.retroalimentacion %></p>
                 </div>
             </div>
+            
             <div class="d-flex justify-content-end">
                 <% if (pregunta.numero === numeroPreguntas) { %> <!-- Verifica si esta es la última pregunta según el número total -->
                     <button type="button" class="btn btn-danger mt-3" onclick="finalizarIntento('<%= idIntentoTest %>')">Finalizar Test</button>
