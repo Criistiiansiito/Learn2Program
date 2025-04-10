@@ -11,6 +11,10 @@ const IntentoTest = require('./modelos/IntentoTest');
 
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
+const moment = require('moment');  
+var cookieParser = require('cookie-parser');
+const nodemailer = require('nodemailer');
+const { Op } = require('sequelize');
 const Pregunta = require('./modelos/Pregunta');
 const Recordatorio = require('./modelos/Recordatorios');
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
@@ -59,19 +63,36 @@ async function enviarRecordatorios() {
 setInterval(enviarRecordatorios, 10 * 1000);
 
 const app = express();
+const port = 3000;
+const session = require('express-session'); 
+
+const bcrypt = require('bcrypt');
+const Usuario = require('./modelos/Usuario');
+
+app.use(session({
+  secret: 'mi_clave_secreta',  
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }    
+}));
+
+// Middleware para pasar información de la sesión a la vista
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;  // Pasa el usuario actual a las vistas
+  next();
+});
 
 //Variable que almancenará el idCurso durante toda la ejecucion
 app.locals.idCurso = 1;
 
-// Configuración para que el servidor sepa redirigir correctamente a las plantillas
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // sirve para que en tiempo de ejecución el servidor sepa acceder a la carpeta public para imagenes, etc
 app.use(express.static(path.join(__dirname, 'public')));
-// (Middleware que) covierte los cuerpos x-www-form-urlencoded de las peticiones en objetos javascript
-// Necesario para los intentos de las preguntas del test
-app.use(express.urlencoded({ extended: true }));
 
 // Home en primera historia de usuario
 app.get('/', async (req, res) => {
@@ -87,6 +108,48 @@ app.get('/', async (req, res) => {
   res.render('ver-teoria-curso', { curso: curso });
 
 });
+
+app.get('/inicio-sesion', async (req, res) => {
+  console.log("Carga de la página principal");
+  res.render('inicio-sesion');
+});
+
+app.post('/login', async (req, res) => {
+  try {
+    const correo = req.body.correo;
+    const password = req.body.password;
+ 
+    const user = await Usuario.findOne({ where: { correo: correo } });
+
+    if (!user) {
+      return res.status(400).json({ message_error: '¡No hay ninguna cuenta con este correo!' });
+    }
+
+    // Comparamos las contraseñas
+    const isMatch = await bcrypt.compare(password, user.contraseña); 
+    if (!isMatch) {
+      return res.status(400).json({ message_error: 'Contraseña incorrecta' });
+    }
+
+    // Guardar la información del usuario en la sesión
+    req.session.user = {
+      id: user.id,
+      correo: user.correo,  
+      password: user.contraseña,
+    };
+
+    console.log(`Usuario autenticado: ${req.session.user.correo}`);
+
+    res.json({ success: true, redirect: '/' });
+
+  } catch (err) {
+    console.error('Error en el inicio de sesión:', err);
+    res.status(500).json({ message_error: 'Error interno del servidor' });
+  }
+});
+
+
+//HASTA AQUI LO NUEVO
 
 app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
   try {

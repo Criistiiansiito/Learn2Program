@@ -40,11 +40,7 @@ Logro.belongsTo(Curso, {
 });
 
 // Relacion 1:N con Tema
-Curso.hasMany(Tema, {
-    as: "temas", // Nombre que se le dará a los temas de un test en el objeto (con eager load)
-    foreignKey: "idCurso",
-    onDelete: "CASCADE"
-});
+Curso.hasMany(Tema, {as: "temas", foreignKey: "idCurso",onDelete: "CASCADE"});
 Tema.belongsTo(Curso, { foreignKey: "idCurso" });
 
 // Relacion 1:1 con Test
