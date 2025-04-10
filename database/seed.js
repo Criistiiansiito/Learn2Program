@@ -10,6 +10,11 @@ const IntentoTest = require('../modelos/IntentoTest');
 const Recordatorio = require('../modelos/Recordatorios');
 const Usuario = require('../modelos/Usuario');
 
+const bcrypt = require('bcrypt');
+
+const contraseñaPlana = '123456';
+const saltRounds = 10;
+
 // Función que puebla la base de datos
 async function seedDatabase() {
     try {
@@ -468,9 +473,11 @@ async function seedDatabase() {
             asunto: ' RECORDATORIO  - Learn2Program'
         });
 
+        const hash = await bcrypt.hash(contraseñaPlana, saltRounds);
+
         await Usuario.create({
             correo: 'usuario@example.com',
-            contraseña: '123456', 
+            contraseña: hash, 
         });
 
         console.log("Base de datos poblada");

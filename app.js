@@ -142,6 +142,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/registro', async (req, res) => {
+  console.log("Carga de la página de registro");
+  res.render('registro');
+});
 
 //HASTA AQUI LO NUEVO
 
