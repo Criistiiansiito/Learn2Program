@@ -90,13 +90,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Nuevo Home es inicio de sesión
 app.get('/', async (req, res) => {
-  console.log("Carga de la página principal");
-  res.render('inicio-sesion');
+  console.log("Carga de la página de inicio de sesión");
+  
+  // Cogemos mensaje de la sesion si lo hay
+  const message = req.session.message || '';
+
+  // Lo eliminamos para que si recargamos no salga
+  delete req.session.message;
+  res.render('inicio-sesion', { message });
 });
 
 app.get('/inicio-sesion', async (req, res) => {
-  console.log("Carga de la página principal");
-  res.render('inicio-sesion');
+  console.log("Carga de la página de inicio de sesión");
+
+  // Cogemos mensaje de la sesion si lo hay
+  const message = req.session.message || '';
+
+  // Lo eliminamos para que si recargamos no salga
+  delete req.session.message;
+  res.render('inicio-sesion', { message });
 });
 
 app.post('/login', async (req, res) => {
@@ -136,6 +148,29 @@ app.post('/login', async (req, res) => {
 app.get('/registro', async (req, res) => {
   console.log("Carga de la página de registro");
   res.render('registro');
+});
+app.post('/register', async (req, res) => {
+  try {
+    const correo = req.body.correo;
+    const password = req.body.password;
+
+    // Ciframos la contraseña antes de guardarla
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await Usuario.create({
+      correo: correo,
+      contraseña: hashedPassword,
+    });
+
+    console.log(`Usuario registrado correctamente: ${correo}`);
+
+    req.session.message = '¡Registro completado! Inicia sesión para acceder.';
+    res.json({ success: true, redirect: '/inicio-sesion' });
+
+  } catch (err) {
+    console.error('Error en el registro:', err);
+    res.status(500).json({ message_error: 'Error interno del servidor' });
+  }
 });
 
 //Ver teoria curso

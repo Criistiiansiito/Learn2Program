@@ -28,11 +28,18 @@
         <div class="container contenedor-principal mt-5">
             
             <h1 class="mb-4 text-center titulos">Iniciar Sesión</h1>
-            
+
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <!-- Mensaje de error -->
                     <div id="error-message-login" class="alert alert-danger mt-3 d-none"></div>
+
+                    <!-- Mensaje de exito -->
+                    <% if (message) { %>
+                        <div class="alert alert-success mt-3">
+                            <%= message %>
+                        </div>
+                    <% } %>
 
                     <!-- Formulario con AJAX -->
                     <form id="loginForm" method="POST">
@@ -83,18 +90,17 @@
         
             const result = await response.json(); 
 
-document.getElementById('error-message-login').classList.add('d-none');
+            document.getElementById('error-message-login').classList.add('d-none');
 
-
-if (result.success) {
-    // Redirigir a /index si el registro fue exitoso
-    window.location.href = result.redirect;
-} else {
-// Si hay un error, mostrar el mensaje de error
-document.getElementById('error-message-login').textContent = result.message_error;
-document.getElementById('error-message-login').classList.remove('d-none');
-}
-});
+            if (result.success) {
+                // Redirigir a /index si el registro fue exitoso
+                window.location.href = result.redirect;
+            } else {
+            // Si hay un error, mostrar el mensaje de error
+            document.getElementById('error-message-login').textContent = result.message_error;
+            document.getElementById('error-message-login').classList.remove('d-none');
+            }
+            });
       </script>
 
 </body>
