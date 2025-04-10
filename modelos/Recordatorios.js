@@ -28,6 +28,4 @@ const Recordatorio = sequelize.define("Recordatorio", {
   timestamps: false
 });
 
-Recordatorios.belongsTo(Usuario, { foreignKey: "idUsuario", as: "usuario" });
-
-module.exports = Recordatorios;
+module.exports = Recordatorio;

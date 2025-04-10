@@ -6,16 +6,11 @@ const servicioIntento = require('./servicios/servicioIntento');
 const servicioLogro = require('./servicios/servicioLogro');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
-const Test = require('./modelos/Test');
-const IntentoTest = require('./modelos/IntentoTest');
 
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const moment = require('moment');  
 var cookieParser = require('cookie-parser');
-const nodemailer = require('nodemailer');
-const { Op } = require('sequelize');
-const Pregunta = require('./modelos/Pregunta');
 const Recordatorio = require('./modelos/Recordatorios');
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
 
@@ -63,7 +58,6 @@ async function enviarRecordatorios() {
 setInterval(enviarRecordatorios, 10 * 1000);
 
 const app = express();
-const port = 3000;
 const session = require('express-session'); 
 
 const bcrypt = require('bcrypt');
