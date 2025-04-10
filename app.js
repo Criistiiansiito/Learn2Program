@@ -88,19 +88,10 @@ app.use(cookieParser());
 // sirve para que en tiempo de ejecución el servidor sepa acceder a la carpeta public para imagenes, etc
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Home en primera historia de usuario
+// Nuevo Home es inicio de sesión
 app.get('/', async (req, res) => {
-
-  // Carga un curso junto con sus temas
-  const curso = await Curso.findOne({
-    include: [{
-      model: Tema,
-      as: "temas"
-    }]
-  });
   console.log("Carga de la página principal");
-  res.render('ver-teoria-curso', { curso: curso });
-
+  res.render('inicio-sesion');
 });
 
 app.get('/inicio-sesion', async (req, res) => {
@@ -134,7 +125,7 @@ app.post('/login', async (req, res) => {
 
     console.log(`Usuario autenticado: ${req.session.user.correo}`);
 
-    res.json({ success: true, redirect: '/' });
+    res.json({ success: true, redirect: '/ver-teoria-curso' });
 
   } catch (err) {
     console.error('Error en el inicio de sesión:', err);
@@ -145,6 +136,21 @@ app.post('/login', async (req, res) => {
 app.get('/registro', async (req, res) => {
   console.log("Carga de la página de registro");
   res.render('registro');
+});
+
+//Ver teoria curso
+app.get('/ver-teoria-curso', async (req, res) => {
+
+  // Carga un curso junto con sus temas
+  const curso = await Curso.findOne({
+    include: [{
+      model: Tema,
+      as: "temas"
+    }]
+  });
+  console.log("Carga de la página principal");
+  res.render('ver-teoria-curso', { curso: curso });
+
 });
 
 //HASTA AQUI LO NUEVO
