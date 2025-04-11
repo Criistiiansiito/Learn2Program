@@ -121,6 +121,11 @@
           modal.show();
       }
 
+      window.onload = function() {
+          var modal = new bootstrap.Modal(logroModal);
+          modal.show();
+      };
+
       logroModal.addEventListener('shown.bs.modal', function () {
         var audio = new Audio('/sonidos/logro-modal.mp3');
         audio.play();
