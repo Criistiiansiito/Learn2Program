@@ -230,6 +230,7 @@ class ServicioIntentoTest {
         // Añadimos la pregunta a intentoPregunta.intento_test
         intentoPregunta.intento_test.test.numeroPreguntas = intentoPregunta.intento_test.test.preguntas.length;
         intentoPregunta.intento_test.test.preguntas = [pregunta];
+        intentoPregunta.intento_test.test.preguntas[0].idRespuestaSeleccionada = intentoPregunta.idRespuesta;
         return intentoPregunta.intento_test;
     }
 
