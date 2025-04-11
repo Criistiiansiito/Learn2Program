@@ -399,6 +399,14 @@ textarea {
     color: #666;
 }
 
+.bg-correct {
+    background-color: #abcd8c; 
+}
+
+.bg-incorrect {
+    background-color: #eb9892; 
+}
+
 input::placeholder,
 textarea::placeholder {
     color: #aaa;
@@ -529,4 +537,5 @@ button {
         margin-left: 3%;
         font-size: 2vh; 
     }
+
 }

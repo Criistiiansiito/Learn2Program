@@ -41,7 +41,8 @@
 
         <% if (pregunta.retroalimentacion) { %>
             <div class="card mt-3">
-                <div class="card-body retroalimentacion">
+                <div class="card-body retroalimentacion <%= pregunta.idRespuestaSeleccionada === pregunta.respuestas.find(r => r.esCorrecta)?.id ? 'bg-correct' : 'bg-incorrect' %>">
+                   
                     <p><strong>La respuesta correcta es:</strong> <%= pregunta.respuestas.find(r => r.esCorrecta).texto %></p>
                     <p><%- pregunta.retroalimentacion %></p>
                 </div>
