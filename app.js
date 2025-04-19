@@ -6,27 +6,14 @@ const servicioIntento = require('./servicios/servicioIntento');
 const servicioLogro = require('./servicios/servicioLogro');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
-const Test = require('./modelos/Test');
-const IntentoTest = require('./modelos/IntentoTest');
 
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const moment = require('moment');  
 var cookieParser = require('cookie-parser');
-const nodemailer = require('nodemailer');
-const { Op } = require('sequelize');
-const Pregunta = require('./modelos/Pregunta');
 const Recordatorio = require('./modelos/Recordatorios');
-
-const enviarRecordatorio = require("./servicios/enviarRecordatorio");
-// const StatusCodes = require('http-status-codes');
-// const { PreguntaNoEncontradaError } = require('./utils/errores');
-// const { off } = require('process');
-// const moment = require('moment');  
-// const nodemailer = require('nodemailer');
-// const { Op } = require('sequelize');
-
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
+
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
 // Función que envía y elimina los recordatorios
@@ -68,12 +55,9 @@ async function enviarRecordatorios() {
   }
 }
 
-if (process.env.NODE_ENV !== "test") {
-  setInterval(enviarRecordatorios, 10 * 1000);
-}
+setInterval(enviarRecordatorios, 10 * 1000);
 
 const app = express();
-const port = 3000;
 const session = require('express-session'); 
 
 const bcrypt = require('bcrypt');
@@ -104,24 +88,27 @@ app.use(cookieParser());
 // sirve para que en tiempo de ejecución el servidor sepa acceder a la carpeta public para imagenes, etc
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Home en primera historia de usuario
+// Nuevo Home es inicio de sesión
 app.get('/', async (req, res) => {
+  console.log("Carga de la página de inicio de sesión");
+  
+  // Cogemos mensaje de la sesion si lo hay
+  const message = req.session.message || '';
 
-  // Carga un curso junto con sus temas
-  const curso = await Curso.findOne({
-    include: [{
-      model: Tema,
-      as: "temas"
-    }]
-  });
-  console.log("Carga de la página principal");
-  res.render('ver-teoria-curso', { curso: curso });
-
+  // Lo eliminamos para que si recargamos no salga
+  delete req.session.message;
+  res.render('inicio-sesion', { message });
 });
 
 app.get('/inicio-sesion', async (req, res) => {
-  console.log("Carga de la página principal");
-  res.render('inicio-sesion');
+  console.log("Carga de la página de inicio de sesión");
+
+  // Cogemos mensaje de la sesion si lo hay
+  const message = req.session.message || '';
+
+  // Lo eliminamos para que si recargamos no salga
+  delete req.session.message;
+  res.render('inicio-sesion', { message });
 });
 
 app.post('/login', async (req, res) => {
@@ -150,7 +137,7 @@ app.post('/login', async (req, res) => {
 
     console.log(`Usuario autenticado: ${req.session.user.correo}`);
 
-    res.json({ success: true, redirect: '/' });
+    res.json({ success: true, redirect: '/ver-teoria-curso' });
 
   } catch (err) {
     console.error('Error en el inicio de sesión:', err);
@@ -158,6 +145,48 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/registro', async (req, res) => {
+  console.log("Carga de la página de registro");
+  res.render('registro');
+});
+app.post('/register', async (req, res) => {
+  try {
+    const correo = req.body.correo;
+    const password = req.body.password;
+
+    // Ciframos la contraseña antes de guardarla
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await Usuario.create({
+      correo: correo,
+      contraseña: hashedPassword,
+    });
+
+    console.log(`Usuario registrado correctamente: ${correo}`);
+
+    req.session.message = '¡Registro completado! Inicia sesión para acceder.';
+    res.json({ success: true, redirect: '/inicio-sesion' });
+
+  } catch (err) {
+    console.error('Error en el registro:', err);
+    res.status(500).json({ message_error: 'Error interno del servidor' });
+  }
+});
+
+//Ver teoria curso
+app.get('/ver-teoria-curso', async (req, res) => {
+
+  // Carga un curso junto con sus temas
+  const curso = await Curso.findOne({
+    include: [{
+      model: Tema,
+      as: "temas"
+    }]
+  });
+  console.log("Carga de la página principal");
+  res.render('ver-teoria-curso', { curso: curso });
+
+});
 
 //HASTA AQUI LO NUEVO
 
@@ -167,26 +196,7 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
 
-    // Obtenemos todas las preguntas asociadas a este test, mediante las relaciones intentoTest-Test y Test-Preguntas 
-    const intentoTestAux = await IntentoTest.findByPk(idIntentoTest, {
-      include: [
-        {
-          model: Test,
-          as: 'test',
-          include: [
-            {
-              model: Pregunta,
-              as: 'preguntas',
-              order: [['numero', 'ASC']]
-            }
-          ]
-        }
-      ]
-    });
-
-    const numeroPreguntas = intentoTestAux.test.preguntas.length;
-
-    res.render('pregunta-test', { intentoTest, numeroPreguntas });
+    res.render('pregunta-test', { intentoTest });
   } catch (error) {
     next(error);
   }
@@ -209,7 +219,7 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
 // Comienza un intento de test
 app.post('/test/:idTest/intento-test', async (req, res, next) => {
   try {
-    const idIntentoTest = await servicioIntento.intentarTest(req.params.idTest);
+    const idIntentoTest = await servicioIntento.intentarTest(req.params.idTest, req.session.user.id);
     res.redirect(`/intento-test/${idIntentoTest}/pregunta/1/intento-pregunta`)
   } catch (error) {
     next(error);
@@ -237,13 +247,18 @@ app.get('/nuevo-recordatorio', (req, res) => {
 app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
   try {
     const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso);
+    const idUsuario=req.session.user?.id;
+    let intentosPorUsuario=curso.test.intentos;
 
+    if(idUsuario){
+      intentosPorUsuario=curso.test.intentos.filter(intento=>intento.idUsuario===idUsuario);
+    }
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {
       idTest: curso.test.id,
       tituloTest: curso.test.titulo,
-      numIntentos: curso.test.intentos.length,
-      intentos: curso.test.intentos,
+      numIntentos: intentosPorUsuario.length,
+      intentos: intentosPorUsuario,
     });
 
   } catch (error) {
@@ -259,23 +274,11 @@ app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
     res.render('obtencion-logros', {
       idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
       nombreCurso: intento.test.curso.titulo,
+      idCurso: intento.test.curso.id,
       nota: intento.nota,
       fecha: intento.fechaFin,
       logro: intento.test.curso.logro,
     });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Termina un intento de test
-app.patch('/logro-curso/:idIntentoTest/volver', async (req, res, next) => {
-  try {
-    const idIntentoTest = req.params.idIntentoTest;
-    // Llamamos a la función del servicio para obtener el intento de test
-    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
-    res.json({ redirectUrl: `/previsualizacion-de-test?idCurso=${idCurso}` });
-
   } catch (error) {
     next(error);
   }
@@ -361,4 +364,6 @@ app.use(manejadorErrores);
 seedDatabase();
 
 module.exports = app;
+
+
 
