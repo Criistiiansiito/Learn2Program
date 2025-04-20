@@ -242,6 +242,14 @@ class ServicioIntentoTest {
      * @throws {CursoNoEncontradoError} Si no se encuentra ningún curso con el id indicado
      */
     async obtenerIntentosTest(idCurso) {
+
+        // Eliminamos los intentos no terminados
+        await IntentoTest.destroy({
+            where: {
+                terminado: false
+            }
+        });
+
         const curso = await Curso.findByPk(idCurso, {
             include: [
                 {
@@ -255,10 +263,12 @@ class ServicioIntentoTest {
                     ]
                 }
             ]
-        })
+        });
+
         if (!curso) {
             throw new CursoNoEncontradoError(idCurso);
         }
+
         return curso;
     }
 

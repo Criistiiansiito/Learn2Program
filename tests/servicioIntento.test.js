@@ -130,8 +130,11 @@ describe("obtenerIntentosTest", () => {
             test: { intentos: [] }
         };
         Curso.findByPk.mockResolvedValue(mockCurso);
+        IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
+
         // ## When ##
         const curso = await servicioIntento.obtenerIntentosTest(idCurso);
+
         // ## Then ##
         expect(curso).toBe(mockCurso);
         expect(Curso.findByPk).toHaveBeenCalledWith(idCurso, {
@@ -148,13 +151,20 @@ describe("obtenerIntentosTest", () => {
                 }
             ]
         });
-    })
+        expect(IntentoTest.destroy).toHaveBeenCalledWith({
+            where: {
+                terminado: false
+            }
+        });
+    });
 
     test("deberia lanzar una excepcion cuando no se encuentre el curso", async () => {
         // ## Given ##
         const idCurso = 1;
         Curso.findByPk.mockResolvedValue(null);
-        // ## When & Then
+        IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
+
+        // ## When & Then ##
         await expect(servicioIntento.obtenerIntentosTest(idCurso))
             .rejects
             .toThrow(new CursoNoEncontradoError(idCurso));
@@ -172,7 +182,12 @@ describe("obtenerIntentosTest", () => {
                 }
             ]
         });
-    })
+        expect(IntentoTest.destroy).toHaveBeenCalledWith({
+            where: {
+                terminado: false
+            }
+        });
+    });
 })
 
 /*describe("obtenerIntentoPregunta", () => {
