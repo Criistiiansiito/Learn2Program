@@ -269,8 +269,22 @@ app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
 app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
   try {
     const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
-
+    const idUsuario=req.session.user?.id;
+    const idLogro=intento.test.curso.logro.id;
     // Pasar el idIntentoTest a la vista
+    
+    if (intento.nota >= 5 && idUsuario) {
+      await LogroUsuario.findOrCreate({
+        where: {
+          idUsuario: idUsuario,
+          idLogro: idLogro
+        },
+        defaults: {
+          fecha: new Date()
+        }
+      });
+    }
+    
     res.render('obtencion-logros', {
       idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
       nombreCurso: intento.test.curso.titulo,
