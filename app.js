@@ -149,12 +149,31 @@ app.get('/registro', async (req, res) => {
   console.log("Carga de la página de registro");
   res.render('registro');
 });
+
 app.post('/register', async (req, res) => {
   try {
     const correo = req.body.correo;
     const password = req.body.password;
 
-    // Ciframos la contraseña antes de guardarla
+    // Para poder validar el correo y que sea con una terminacion válida
+    const correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|es|org|net)$/;
+
+    if (!correoValido.test(correo)) {
+      return res.status(400).json({
+        success: false,
+        message_error: 'Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)'
+      });
+    }
+
+    // Verificar si ya existe el usuario
+    const usuarioExistente = await Usuario.findOne({ where: { correo } });
+
+    if (usuarioExistente) {
+      return res.status(400).json({
+        success: false,
+        message_error: '¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.'
+      });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await Usuario.create({
@@ -162,9 +181,7 @@ app.post('/register', async (req, res) => {
       contraseña: hashedPassword,
     });
 
-    console.log(`Usuario registrado correctamente: ${correo}`);
-
-    req.session.message = '¡Registro completado! Inicia sesión para acceder.';
+    req.session.message = '¡Registro completado! Inicia sesión para acceder a la teoría.';
     res.json({ success: true, redirect: '/inicio-sesion' });
 
   } catch (err) {
