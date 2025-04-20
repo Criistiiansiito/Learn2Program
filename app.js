@@ -88,11 +88,12 @@ app.use(cookieParser());
 // sirve para que en tiempo de ejecución el servidor sepa acceder a la carpeta public para imagenes, etc
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Nuevo Home es inicio de sesión
+// Cuando no se pone ninguna ruta, se redirige automaticamente al inicio de sesión, actuando como página principal.
 app.get('/', async (req, res) => {
   console.log("Carga de la página de inicio de sesión");
   
   // Cogemos mensaje de la sesion si lo hay
+  //Esto se usa por ejemplo cuando haya un registro exitoso, este es el mensaje que se mostrará en verde.
   const message = req.session.message || '';
 
   // Lo eliminamos para que si recargamos no salga
@@ -100,6 +101,7 @@ app.get('/', async (req, res) => {
   res.render('inicio-sesion', { message });
 });
 
+//Maneja la petición para mostrar la vista del formulario de inicio de sesión
 app.get('/inicio-sesion', async (req, res) => {
   console.log("Carga de la página de inicio de sesión");
 
@@ -111,6 +113,8 @@ app.get('/inicio-sesion', async (req, res) => {
   res.render('inicio-sesion', { message });
 });
 
+// Maneja el formulario de inicio de sesión de un usuario existente, y muestra mensajes de alerta en caso de haber error,
+// y en caso de exito redirije a la vista de la teoría del curso que tenemos actualmente.
 app.post('/login', async (req, res) => {
   try {
     const correo = req.body.correo;
@@ -145,11 +149,14 @@ app.post('/login', async (req, res) => {
   }
 });
 
+//Maneja la petición para mostrar la vista del formulario de registro
 app.get('/registro', async (req, res) => {
   console.log("Carga de la página de registro");
   res.render('registro');
 });
 
+// Maneja el formulario de registro de un nuevo usuario, y muestra mensajes de alerta en caso de haber error
+// y en caso de exito redirije a la vista de inicio de sesión, mostrando un mensaje de registro exitoso.
 app.post('/register', async (req, res) => {
   try {
     const correo = req.body.correo;
