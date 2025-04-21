@@ -3,8 +3,9 @@ const Curso = require('../modelos/Curso');
 const Test = require('../modelos/Test');
 const Pregunta = require('../modelos/Pregunta');
 const IntentoTest = require('../modelos/IntentoTest');
+const Respuesta = require('../modelos/Respuesta');
 const IntentoPregunta = require('../modelos/IntentoPregunta');
-const { TestNoEncontradoError, IntentoTestNoEncontradoError, CursoNoEncontradoError } = require('../utils/errores');
+const { TestNoEncontradoError, IntentoTestNoEncontradoError, CursoNoEncontradoError, RespuestaNoEncontradaError, IntentoTestTerminadoError, PreguntaYaIntentadaError } = require('../utils/errores');
 
 jest.mock("../modelos/Test", () => ({
     findByPk: jest.fn() // Indicamos que la llamada a findByPk debe ser similada
@@ -18,6 +19,14 @@ jest.mock("../modelos/IntentoTest", () => ({
 jest.mock("../modelos/Curso", () => ({
     findByPk: jest.fn()
 }));
+
+jest.mock("../modelos/Respuesta", () => ({
+    findByPk: jest.fn()
+}))
+
+jest.mock("../modelos/Pregunta", () => {
+
+})
 
 /*jest.mock("../modelos/IntentoPregunta", () => ({
     findOne: jest.fn(),
@@ -188,6 +197,132 @@ describe("obtenerIntentosTest", () => {
             }
         });
     });
+})
+
+describe("intentarPregunta", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
+
+    test("deberia lanzar una excepcion si no se encuentra la respuesta", async () => {
+        // ## Given ##
+        const idIntentoTest = 99;
+        const numeroPregunta = 99;
+        const idRespuesta = 99;
+
+        Respuesta.findByPk.mockResolvedValue(null);
+        // ## When & Then ##
+        await expect(servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta))
+            .rejects
+            .toThrow(new RespuestaNoEncontradaError(idIntentoTest, numeroPregunta, idRespuesta));
+        expect(Respuesta.findByPk).toHaveBeenCalledWith(idRespuesta, expect.any(Object));
+    })
+
+    test("deberia lanzar una excepcion si el intento de test ya se ha terminado", async () => {
+        // ## Given ##
+        const idIntentoTest = 99;
+        const idRespuesta = 1;
+
+        Respuesta.findByPk.mockResolvedValue({
+            pregunta: {
+                intentos_pregunta: [{
+                    intento_test: {
+                        id: idIntentoTest,
+                        terminado: true
+                    }
+                }]
+            }
+        })
+        // ## When & Then ##
+        await expect(servicioIntento.intentarPregunta(idIntentoTest, 1, idRespuesta))
+            .rejects
+            .toThrow(new IntentoTestTerminadoError(idIntentoTest));
+        expect(Respuesta.findByPk).toHaveBeenCalledWith(idRespuesta, expect.any(Object));
+    })
+
+    test("deberia lanzar una excepcion cuando la pregunta ya se haya intentado", async () => {
+        // ## Given ##
+        const idIntentoTest = 1;
+        const numeroPregunta = 1;
+        const idRespuesta = 1;
+
+        Respuesta.findByPk.mockResolvedValue({
+            pregunta: {
+                intentos_pregunta: [{
+                    idRespuesta: 1,
+                    intento_test: {
+                        terminado: false
+                    }
+                }]
+            }
+        })
+        // ## When & Then ##
+        await expect(servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta))
+            .rejects
+            .toThrow(new PreguntaYaIntentadaError(idIntentoTest, numeroPregunta));
+        expect(Respuesta.findByPk).toHaveBeenCalledWith(idRespuesta, expect.any(Object));
+    })
+
+    test("deberia actualizar el intento de pregunta y el intento de test con preguntasAcertadas incrementado cuando se acierta la respuesta", async () => {
+        // ## Given ##
+        const idRespuesta = 1;
+        const preguntasAcertadas = 0;
+        const mockIntentoTest = {
+            preguntasAcertadas: preguntasAcertadas,
+            terminado: false,
+            save: jest.fn().mockResolvedValue(true)
+        }
+        const mockIntentoPregunta = {
+            idRespuesta: null,
+            intento_test: mockIntentoTest,
+            save: jest.fn().mockResolvedValue(true)
+        }
+
+        Respuesta.findByPk.mockResolvedValue({
+            esCorrecta: true, // Acertamos la respuesta
+            pregunta: {
+                intentos_pregunta: [mockIntentoPregunta]
+            }
+        })
+        // ## When ##
+        await servicioIntento.intentarPregunta(1, 1, idRespuesta);
+        // ## Then ##
+        expect(mockIntentoTest.preguntasAcertadas).toBe(preguntasAcertadas + 1);
+        expect(mockIntentoTest.save).toHaveBeenCalled();
+        expect(mockIntentoPregunta.idRespuesta).toBe(idRespuesta);
+        expect(mockIntentoPregunta.save).toHaveBeenCalled();
+    })
+
+    test("deberia actualizar el intento de pregunta y el intento de test con preguntasAcertadas constante cuando no se acierta la respuesta", async () => {
+        // ## Given ##
+        const idRespuesta = 1;
+        const preguntasAcertadas = 0;
+        const mockIntentoTest = {
+            preguntasAcertadas: preguntasAcertadas,
+            terminado: false,
+            save: jest.fn().mockResolvedValue(true)
+        }
+        const mockIntentoPregunta = {
+            idRespuesta: null,
+            intento_test: mockIntentoTest,
+            save: jest.fn().mockResolvedValue(true)
+        }
+
+        Respuesta.findByPk.mockResolvedValue({
+            esCorrecta: false, // No acertamos la respuesta
+            pregunta: {
+                intentos_pregunta: [mockIntentoPregunta]
+            }
+        })
+        // ## When ##
+        await servicioIntento.intentarPregunta(1, 1, idRespuesta);
+        // ## Then ##
+        expect(mockIntentoTest.preguntasAcertadas).toBe(preguntasAcertadas);
+        expect(mockIntentoTest.save).toHaveBeenCalled();
+        expect(mockIntentoPregunta.idRespuesta).toBe(idRespuesta);
+        expect(mockIntentoPregunta.save).toHaveBeenCalled();
+    })
+
 })
 
 /*describe("obtenerIntentoPregunta", () => {
