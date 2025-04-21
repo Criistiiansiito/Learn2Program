@@ -14,6 +14,11 @@ const IntentoTest = sequelize.define("IntentoTest", {
         defaultValue: 0,
         allowNull: false
     },
+    preguntasIntentadas: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: false
+    },
     nota: { // Nota sobre 10
         type: DataTypes.DOUBLE
     },
