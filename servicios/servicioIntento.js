@@ -157,6 +157,12 @@ class ServicioIntentoTest {
             // Si ya se ha respondido a la pregunta, lanzamos una excepción
             throw new PreguntaYaIntentadaError(idIntentoTest, numeroPregunta);
         }
+        // Actualizamos la puntuación del test
+        if (respuesta.esCorrecta) {
+            const intentoTest = intentoPregunta.intento_test;
+            intentoTest.preguntasAcertadas++;
+            await intentoTest.save();
+        }
         // Actualizamos el intento de la pregunta
         intentoPregunta.idRespuesta = idRespuesta;
         await intentoPregunta.save();
