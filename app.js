@@ -55,7 +55,10 @@ async function enviarRecordatorios() {
   }
 }
 
-setInterval(enviarRecordatorios, 10 * 1000);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(enviarRecordatorios, 10 * 1000);
+  enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
+}
 
 const app = express();
 const session = require('express-session'); 
