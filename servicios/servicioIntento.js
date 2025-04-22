@@ -94,14 +94,16 @@ class ServicioIntentoTest {
             // Si no existe el intento, lanzamos una excepción
             throw new IntentoTestNoEncontradoError(idIntentoTest);
         }
-        // Actualizamos los campos del intento
-        const numeroPreguntas = intentoTest.intentos_pregunta.length;
-        const preguntasAcertadas = intentoTest.intentos_pregunta.filter(ip => ip.respuesta?.esCorrecta).length; // Contamos los intentos con respuestas correctas
-        const nota = ((preguntasAcertadas / numeroPreguntas) * 10).toFixed(2); // Nota con dos decimales
-        intentoTest.preguntasAcertadas = preguntasAcertadas;
-        intentoTest.nota = nota;
+        
+        //guardamos los campos de la nota y la fecha de fin
+        const totalPreguntas = intentoTest.intentos_pregunta.length
         intentoTest.terminado = true;
         intentoTest.fechaFin = new Date();
+        
+        intentoTest.nota = ((intentoTest.preguntasAcertadas / totalPreguntas) * 10).toFixed(2);
+        
+        await intentoTest.save();
+        
         // Guardamos el intento actualizado
         await intentoTest.save();
 

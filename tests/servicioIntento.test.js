@@ -93,6 +93,7 @@ describe("terminarIntento", () => {
         // ## Given ##
         const idIntentoTest = 1;
         const mockIntentoTest = {
+            preguntasAcertadas: 2, // Ahora las preguntas acertadas no se calculan en terminar intento
             test: { idCurso: 5 },
             intentos_pregunta: [
                 { respuesta: { esCorrecta: false } },
