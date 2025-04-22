@@ -36,6 +36,18 @@
                                 <i class="bi bi-bell" style="font-size: 0.9em;"></i> Recordatorio
                             </a>
                         </li>
+                        <div class="d-flex align-items-center ms-3">
+                            <div class="d-flex align-items-center ms-3">
+                                <div class="rounded-circle text-white d-flex justify-content-center align-items-center shadow-sm"
+                                     style="width: 42px; height: 42px;
+                                            background-color: #cf832c;  /* Azul suave */
+                                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                            font-weight: 600;
+                                            font-size: 1.1rem;">
+                                    <%= user.correo.charAt(0).toUpperCase() %>
+                                </div>
+                            </div>
+                        </div>
                     <% } %>
                 </ul>
             </div>
