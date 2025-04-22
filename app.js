@@ -88,11 +88,31 @@ app.get('/', async (req, res) => {
 
 });
 
+function obtenerEstadisticasIntento(idIntentoTest) {
+  const intento =  IntentoTest.findByPk(idIntentoTest, {
+    attributes: ['preguntasAcertadas', 'preguntasIntentadas']
+  });
+
+  if (!intento) {
+    throw new Error('Intento de test no encontrado');
+  }
+
+  return {
+    preguntasAcertadas: intento.preguntasAcertadas,
+    preguntasIntentadas: intento.preguntasIntentadas
+  };
+}
+
 app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
+    
+    
+    console.log("PREGUNTAS ACERTADAS:", intentoTest.preguntasAcertadas);
+    console.log("PREGUNTAS INTENTADAS:", intentoTest.preguntasIntentadas);
+
 
     res.render('pregunta-test', { intentoTest });
   } catch (error) {

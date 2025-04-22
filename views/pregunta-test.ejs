@@ -24,7 +24,7 @@
     <% if (preguntasIntentadas > 0) { %>
         <!-- Contador de aciertos e intentos :3-->
         <div class="d-flex justify-content-end mb-3">
-            <span class="badge badge-primary p-2">
+            <span class="badge badge-secondary p-2">
                 Aciertos: <strong><%= preguntasAcertadas %></strong> / 
                 Intentos: <strong><%= preguntasIntentadas %></strong>
             </span>
@@ -63,7 +63,7 @@
                 <% if (pregunta.numero === intentoTest.test.numeroPreguntas) { %> <!-- Verifica si esta es la última pregunta según el número total -->
                     <button type="button" class="btn btn-success mt-3" onclick="finalizarIntento('<%= idIntentoTest %>')">Finalizar Test</button>
                 <% } else { %>
-                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-primary mt-3">Siguiente Pregunta</a>
+                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-primary m-4">Siguiente Pregunta</a>
                 <% } %>
             </div>
         <% } else { %>
