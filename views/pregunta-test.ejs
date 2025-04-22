@@ -16,8 +16,20 @@
 <%- include('fragments/navbar') %>
 <% const pregunta = intentoTest.test.preguntas[0]; %>
 <% const idIntentoTest = intentoTest.id; %>
+<% const preguntasAcertadas = intentoTest.preguntasAcertadas; %>
+<% const preguntasIntentadas = intentoTest.preguntasIntentadas; %>
 
 <div class="container mt-5">
+    
+    <% if (preguntasIntentadas > 0) { %>
+        <!-- Contador de aciertos e intentos :3-->
+        <div class="d-flex justify-content-end mb-3">
+            <span class="badge badge-primary p-2">
+                Aciertos: <strong><%= preguntasAcertadas %></strong> / 
+                Intentos: <strong><%= preguntasIntentadas %></strong>
+            </span>
+        </div>
+    <% } %>
     <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
         <h5 class="text mb-3">Pregunta <%= pregunta.numero %></h5>
         <div class="card">
