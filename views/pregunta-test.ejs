@@ -8,7 +8,8 @@
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -41,6 +42,13 @@
                     <input class="form-check-input" type="radio" name="idRespuesta" id="opcion<%= i + 1 %>" value="<%= pregunta.respuestas[i].id %>" <%= (pregunta.idRespuestaSeleccionada == pregunta.respuestas[i].id) ? 'disabled checked' : (pregunta.retroalimentacion ? 'disabled' : '') %>>
                     <label class="form-check-label" for="opcion<%= i + 1 %>">
                         <%= pregunta.respuestas[i].texto %>
+                        <% if (pregunta.retroalimentacion && pregunta.idRespuestaSeleccionada === pregunta.respuestas[i].id) { %>
+                            <% if (pregunta.respuestas[i].esCorrecta) { %>
+                              <i class="fas fa-lg fa-check text-success ml-2"></i>
+                            <% } else { %>
+                              <i class="fas fa-lg fa-times text-danger ml-2"></i>
+                            <% } %>
+                          <% } %>
                     </label>
                 </div>
                 <% } %>
@@ -61,14 +69,14 @@
             </div>
             <div class="d-flex justify-content-end">
                 <% if (pregunta.numero === intentoTest.test.numeroPreguntas) { %> <!-- Verifica si esta es la última pregunta según el número total -->
-                    <button type="button" class="btn btn-success mt-3" onclick="finalizarIntento('<%= idIntentoTest %>')">Finalizar Test</button>
+                    <button type="button" class="btn btn-personalizado mt-3" onclick="finalizarIntento('<%= idIntentoTest %>')">Finalizar Test</button>
                 <% } else { %>
-                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-primary m-4">Siguiente Pregunta</a>
+                    <a href="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero + 1 %>/intento-pregunta" class="btn btn-personalizado m-4">Siguiente Pregunta</a>
                 <% } %>
             </div>
         <% } else { %>
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-personalizado mt-3">Responder</button>
+                <button type="submit" class="btn btn-personalizado mt-3 m-4">Responder</button>
             </div>
         <% } %>
     </form>
