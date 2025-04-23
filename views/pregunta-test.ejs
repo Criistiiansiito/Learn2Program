@@ -22,17 +22,17 @@
 
 <div class="container mt-5">
     
-    <% if (preguntasIntentadas > 0) { %>
-        <!-- Contador de aciertos e intentos :3-->
-        <div class="d-flex justify-content-end mb-3">
+    <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="text">Pregunta <%= pregunta.numero %></h5>
+            <% if (preguntasIntentadas > 0) { %>
+            <!-- Contador de aciertos e intentos :3-->
             <span class="badge badge-secondary p-2">
                 Aciertos: <strong><%= preguntasAcertadas %></strong> / 
-                 <strong><%= preguntasIntentadas %></strong>
+                <strong><%= preguntasIntentadas %></strong>
             </span>
+            <% } %>
         </div>
-    <% } %>
-    <form method="POST" action="/intento-test/<%= intentoTest.id %>/pregunta/<%= pregunta.numero %>/intento-pregunta" onsubmit="return validateForm()">
-        <h5 class="text mb-3">Pregunta <%= pregunta.numero %></h5>
         <div class="card">
             <div class="card-body pregunta">
                 <p class="card-title"><%= pregunta.enunciado %></p>
