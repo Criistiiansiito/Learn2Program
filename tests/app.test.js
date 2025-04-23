@@ -257,3 +257,54 @@ describe("GET /intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-preg
     })
 
 })
+
+//pruebas integracion registro
+describe("POST /register", () => {
+
+    test("Debería registrar un usuario nuevo correctamente", async () => {
+        const nuevoUsuario = {
+            correo: "usuario" + Date.now() + "@correo.com", // Para evitar duplicados
+            password: "contrasena123"
+        };
+
+        const response = await request(app)
+            .post('/register')
+            .send(nuevoUsuario);
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.redirect).toBe('/inicio-sesion');
+    });
+
+    test("Debería devolver error si el correo ya está registrado", async () => {
+        const correoDuplicado = "duplicado@correo.com";
+
+        // Creamos el usuario previamente (directamente en la BD con hash)
+        const bcrypt = require('bcrypt');
+        const Usuario = require('../modelos/Usuario');
+        const contraseñaHasheada = await bcrypt.hash('password123', 10);
+
+        await Usuario.findOrCreate({
+            where: { correo: correoDuplicado },
+            defaults: { contraseña: contraseñaHasheada }
+        });
+
+        const response = await request(app)
+            .post('/register')
+            .send({ correo: correoDuplicado, password: 'password123' });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message_error).toBe('¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.');
+    });
+
+    test("Debería rechazar correos con formato inválido", async () => {
+        const response = await request(app)
+            .post('/register')
+            .send({ correo: "correo-invalido", password: "123456" });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message_error).toBe('Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)');
+    });
+
+});
+
