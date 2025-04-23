@@ -16,6 +16,10 @@ const Curso = sequelize.define("Curso", {
     },
     descripcion: {
         type: DataTypes.TEXT
+    },
+    enRevision: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 },
     {

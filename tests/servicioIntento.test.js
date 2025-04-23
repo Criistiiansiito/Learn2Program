@@ -19,6 +19,12 @@ jest.mock("../modelos/Curso", () => ({
     findByPk: jest.fn()
 }));
 
+/*jest.mock("../modelos/IntentoPregunta", () => ({
+    findOne: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+}));*/
+
 describe("intentarTest", () => {
     afterEach(() => {
         jest.clearAllMocks();
@@ -168,3 +174,101 @@ describe("obtenerIntentosTest", () => {
         });
     })
 })
+
+/*describe("obtenerIntentoPregunta", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test("debería obtener el intento de pregunta correctamente cuando ya fue respondida", async () => {
+        // ## Given ##
+        const idIntentoTest = 1;
+        const numeroPregunta = 2;
+
+        const mockIntentoPregunta = {
+            idRespuesta: 3, // Ya fue respondida
+            intento_test: {
+                id: idIntentoTest,
+                test: { id: 10 }
+            },
+            pregunta: {
+                numero: numeroPregunta,
+                respuestas: [
+                    { id: 3, esCorrecta: true },
+                    { id: 4, esCorrecta: false }
+                ]
+            }
+        };
+
+        IntentoPregunta.findOne.mockResolvedValue({
+            ...mockIntentoPregunta,
+            // Asegúrate de incluir las relaciones necesarias
+            include: [
+                {
+                    model: Respuesta,
+                    as: "respuesta",
+                    include: [
+                        {
+                            model: Pregunta,
+                            as: "pregunta"
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // ## When ##
+        const intento = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
+
+        // ## Then ##
+        expect(intento).toEqual(mockIntentoPregunta.intento_test);
+        expect(IntentoPregunta.findOne).toHaveBeenCalledWith(expect.objectContaining({
+            include: expect.any(Array)
+        }));
+    });
+
+    test("debería obtener el intento de pregunta sin información de respuestas correctas si aún no ha sido respondida", async () => {
+        // ## Given ##
+        const idIntentoTest = 1;
+        const numeroPregunta = 2;
+
+        const mockIntentoPregunta = {
+            idRespuesta: null, // No ha sido respondida
+            intento_test: {
+                id: idIntentoTest,
+                test: { id: 10 }
+            },
+            pregunta: {
+                numero: numeroPregunta,
+                respuestas: [
+                    { id: 3 }, 
+                    { id: 4 }
+                ]
+            }
+        };
+
+        IntentoPregunta.findOne.mockResolvedValue(mockIntentoPregunta);
+
+        // ## When ##
+        const intento = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
+
+        // ## Then ##
+        expect(intento).toEqual(mockIntentoPregunta.intento_test);
+        expect(IntentoPregunta.findOne).toHaveBeenCalled();
+    });
+
+    test("debería lanzar una excepción si el intento de pregunta no existe", async () => {
+        // ## Given ##
+        const idIntentoTest = 1;
+        const numeroPregunta = 99;
+
+        IntentoPregunta.findOne.mockResolvedValue(null);
+
+        // ## When & Then ##
+        await expect(servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta))
+            .rejects
+            .toThrow(new IntentoPreguntaNoEncontradoError(idIntentoTest, numeroPregunta));
+
+        expect(IntentoPregunta.findOne).toHaveBeenCalled();
+    });
+});*/

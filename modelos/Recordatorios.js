@@ -16,27 +16,16 @@ const Recordatorio = sequelize.define("Recordatorio", {
     allowNull: false
   },
   mensaje: {
-    type: DataTypes.STRING(200),
+    type: DataTypes.STRING(1000),  // Aumentar tamaño si es necesario
     allowNull: false
   },
   asunto: {
-    type: DataTypes.STRING(100),
+    type: DataTypes.STRING(255),  // Ajuste de tamaño según lo que necesites
     allowNull: false
-  },
-  idUsuario: { // Clave foránea que se refiere al modelo Usuario
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Usuario, // Referencia al modelo Usuario
-      key: 'id'  // Usamos la clave primaria del modelo Usuario
-    },
-    onDelete: 'CASCADE' // Si el usuario se elimina, también se eliminan los recordatorios asociados
-  }
+  }  
 }, {
   tableName: "recordatorios",
   timestamps: false
 });
 
-Recordatorios.belongsTo(Usuario, { foreignKey: "idUsuario", as: "usuario" });
-
-module.exports = Recordatorios;
+module.exports = Recordatorio;

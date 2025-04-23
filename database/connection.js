@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize');
 
-// Conexion con la base de datos con sequelize
+// Configuración de la conexión con la base de datos
 const sequelize = new Sequelize({
     dialect: "mysql", // Cambiar si usas otro gestor
     host: process.env.DB_HOST,    
@@ -10,7 +10,7 @@ const sequelize = new Sequelize({
     dialectOptions: {
         ssl: {
             require: true, 
-            rejectUnauthorized: process.env.DB_REMOTE === "true"
+            rejectUnauthorized: process.env.DB_HOST !== "localhost"
         }
     }   
 });
