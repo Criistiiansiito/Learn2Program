@@ -6,7 +6,7 @@ const servicioIntento = require('./servicios/servicioIntento');
 const servicioLogro = require('./servicios/servicioLogro');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
-
+const LogroUsuario = require('./modelos/LogroUsuario');
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
 const moment = require('moment');  
