@@ -12,6 +12,7 @@ const {
     IntentoTestNoEncontradoError,
     IntentoTestTerminadoError,  
     RespuestaNoEncontradaError,
+    PreguntasSinResponderError
 } = require("../utils/errores");
 
 // Clase que maneja la lógica de negocio de los intentos de preguntas
@@ -98,6 +99,10 @@ class ServicioIntentoTest {
         // Actualizamos los campos del intento
         const numeroPreguntas = intentoTest.intentos_pregunta.length;
         const preguntasAcertadas = intentoTest.intentos_pregunta.filter(ip => ip.respuesta?.esCorrecta).length; // Contamos los intentos con respuestas correctas
+        const preguntasSinResponder = intentoTest.intentos_pregunta.filter(ip => !ip.respuesta); // Preguntas sin responder
+        if (preguntasSinResponder.length > 0) {
+            throw new PreguntasSinResponderError(idIntentoTest);
+        }
         const nota = ((preguntasAcertadas / numeroPreguntas) * 10).toFixed(2); // Nota con dos decimales
         intentoTest.preguntasAcertadas = preguntasAcertadas;
         intentoTest.nota = nota;
