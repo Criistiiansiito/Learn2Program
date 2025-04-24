@@ -88,6 +88,29 @@ app.get('/', async (req, res) => {
 
 });
 
+app.get('/ver-teoria-curso/:idCurso', async (req, res) => {
+  const idCurso = req.params.idCurso;
+
+  try {
+    const curso = await Curso.findByPk(idCurso, {
+      include: [{
+        model: Tema,
+        as: "temas"
+      }]
+    });
+
+    if (!curso) {
+      return res.status(404).send("Curso no encontrado");
+    }
+
+    console.log(`Carga del curso con ID: ${idCurso}`);
+    res.render('ver-teoria-curso', { curso: curso });
+  } catch (error) {
+    console.error("Error al cargar el curso:", error);
+    res.status(500).send("Error del servidor");
+  }
+});
+
 function obtenerEstadisticasIntento(idIntentoTest) {
   const intento =  IntentoTest.findByPk(idIntentoTest, {
     attributes: ['preguntasAcertadas', 'preguntasIntentadas']

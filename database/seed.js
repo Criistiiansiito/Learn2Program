@@ -433,6 +433,419 @@ async function seedDatabase() {
             ]
         });
 
+        // Crea el curso de python junto a sus temas, test, preguntas, y respuestas
+        await Curso.create({
+            titulo: "Introducción a la Programación en Phyton",
+            descripcion: "si",
+            temas: [
+                {
+                    titulo: "Tema 1 - Introducción a Python",
+                    contenido: "<p>Python es un lenguaje de programación de alto nivel, fácil de aprender y ampliamente utilizado en ciencia de datos, desarrollo web, automatización, inteligencia artificial y más. Su sintaxis clara y legible lo hace ideal para principiantes.</p>\n\n<h3>1.1 - Primer programa</h3>\n<p>Para imprimir en pantalla:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">print</span>(\"Hello World\")</code></pre>\n</div>\n\n<p>Este es el programa más sencillo en Python, y es comúnmente utilizado como el primer ejercicio en muchos tutoriales.</p>\n\n<h3>1.2 - Comentarios en Python</h3>\n<p>Los comentarios se hacen con el símbolo <code>#</code>:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"comentario\"># Esto es un comentario</span></code></pre>\n</div>\n\n<p>Los comentarios en Python son importantes para documentar el código y explicar lo que hace una sección de código. Cualquier texto que se encuentre después del símbolo <code>#</code> en una línea será ignorado por el intérprete.</p>\n\n<h3>1.3 - Archivos de Python</h3>\n<p>Los archivos de Python deben tener la extensión <code>.py</code>.</p>\n\n<p>Cuando se guarda un programa en un archivo con extensión <code>.py</code>, Python lo puede ejecutar en cualquier momento. Para ejecutar el archivo, se puede usar el siguiente comando en la terminal:</p>\n<div class=\"bloque-codigo\">\n<pre><code>python <span class=\"archivo\">archivo.py</span></code></pre>\n</div>\n\n<h3>1.4 - Sintaxis y estilo en Python</h3>\n<p>La sintaxis de Python se enfoca en la legibilidad. A diferencia de otros lenguajes de programación, Python no utiliza corchetes (<code>{}</code>) para definir bloques de código. En su lugar, utiliza la indentación para estructurar el código. Es muy importante seguir una convención de 4 espacios por nivel de indentación para evitar errores.</p>\n\n<h3>1.5 - Ejecución interactiva en Python</h3>\n<p>Python también tiene un modo interactivo que permite escribir y ejecutar código línea por línea. Esto es útil para experimentar y probar pequeñas porciones de código rápidamente. Para iniciar el modo interactivo, simplemente ejecuta el comando <code>python</code> en la terminal.</p>"
+                    ,id:7
+                },
+                {
+                    titulo: "Tema 2 - Variables y Tipos de Datos",
+                    contenido: "<p>Las variables son contenedores para almacenar datos. En Python no es necesario declarar el tipo de variable explícitamente. Python es un lenguaje de tipado dinámico, lo que significa que el tipo de una variable se determina automáticamente en función del valor que se le asigne.</p>\n\n<h3>2.1 - Declaración de variables</h3>\n<p>Para declarar una variable en Python, simplemente se le asigna un valor:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">x</span> = <span class=\"numero\">5</span>\n<span class=\"palabra_clave\">x</span> = <span class=\"palabra_clave\">int</span>(<span class=\"numero\">5</span>)</code></pre>\n</div>\n<p>Ambas formas son válidas. Python detectará automáticamente que <code><span class=\"palabra_clave\">x</span></code> es un entero, ya sea que lo asignemos directamente como <code><span class=\"numero\">5</span></code> o usando la función <code><span class=\"palabra_clave\">int</span>(<span class=\"numero\">5</span>)</code>.</p>\n\n<h3>2.2 - Tipos de variables válidos</h3>\n<p>Los nombres de las variables pueden contener letras, números y guiones bajos, pero no pueden empezar con números ni contener guiones (-):</p>\n<ul>\n<li>Válido: <code><span class=\"palabra_clave\">_myvar</span></code>, <code><span class=\"palabra_clave\">my_var</span></code>, <code><span class=\"palabra_clave\">Myvar</span></code></li>\n<li><strong>No válido:</strong> <code><span class=\"palabra_clave\">my-var</span></code>, <code><span class=\"numero\">123abc</span></code></li>\n</ul>\n<p>Es importante ser coherente con los nombres de las variables, siguiendo una convención común como el uso de <em>snake_case</em> (letras minúsculas y guiones bajos) para mejorar la legibilidad del código.</p>\n\n<h3>2.3 - Números flotantes</h3>\n<p>En Python, los números flotantes son aquellos que contienen decimales. Se pueden crear directamente con un valor decimal o utilizando la función <code><span class=\"palabra_clave\">float</span>()</code>:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">x</span> = <span class=\"numero\">2.8</span>\n<span class=\"palabra_clave\">x</span> = <span class=\"palabra_clave\">float</span>(<span class=\"numero\">2.8</span>)</code></pre>\n</div>\n<p>Ambos ejemplos crean un número flotante, <code><span class=\"numero\">2.8</span></code>. Los números flotantes son muy útiles para representar valores como precios, medidas o cualquier tipo de cálculo que requiera precisión decimal.</p>\n\n<h3>2.4 - Tipos de datos comunes en Python</h3>\n<p>En Python, los tipos de datos más comunes son:</p>\n<ul>\n<li><code><span class=\"palabra_clave\">int</span></code>: Números enteros. Ejemplo: <code><span class=\"palabra_clave\">x</span> = <span class=\"numero\">7</span></code></li>\n<li><code><span class=\"palabra_clave\">float</span></code>: Números con decimales. Ejemplo: <code><span class=\"palabra_clave\">x</span> = <span class=\"numero\">3.14</span></code></li>\n<li><code><span class=\"palabra_clave\">str</span></code>: Cadenas de texto. Ejemplo: <code><span class=\"palabra_clave\">x</span> = \"Hola Mundo\"</code></li>\n<li><code><span class=\"palabra_clave\">bool</span></code>: Valores lógicos (verdadero o falso). Ejemplo: <code><span class=\"palabra_clave\">x</span> = <span class=\"palabra_clave\">True</span></code></li>\n<li><code><span class=\"palabra_clave\">list</span></code>: Lista de elementos. Ejemplo: <code><span class=\"palabra_clave\">x</span> = [<span class=\"numero\">1</span>, <span class=\"numero\">2</span>, <span class=\"numero\">3</span>]</code></li>\n<li><code><span class=\"palabra_clave\">dict</span></code>: Diccionario, colección de pares clave-valor. Ejemplo: <code><span class=\"palabra_clave\">x</span> = {'nombre': 'Juan', 'edad': <span class=\"numero\">25</span>}</code></li>\n</ul>\n\n<h3>2.5 - Conversión entre tipos de datos</h3>\n<p>En Python, se puede convertir un tipo de dato a otro utilizando las funciones de conversión:</p>\n<ul>\n<li><code><span class=\"palabra_clave\">int</span>()</code>: Convierte a entero.</li>\n<li><code><span class=\"palabra_clave\">float</span>()</code>: Convierte a flotante.</li>\n<li><code><span class=\"palabra_clave\">str</span>()</code>: Convierte a cadena de texto.</li>\n<li><code><span class=\"palabra_clave\">bool</span>()</code>: Convierte a booleano.</li>\n</ul>\n<p>Ejemplo:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">x</span> = <span class=\"numero\">7.5</span>\n<span class=\"palabra_clave\">x_int</span> = <span class=\"palabra_clave\">int</span>(<span class=\"palabra_clave\">x</span>)  <span class=\"comentario\"># Convertir a entero, resultado: 7</span>\n<span class=\"palabra_clave\">x_str</span> = <span class=\"palabra_clave\">str</span>(<span class=\"palabra_clave\">x</span>)  <span class=\"comentario\"># Convertir a cadena, resultado: '7.5'</span></code></pre>\n</div>\n\n<h3>2.6 - Operaciones con variables</h3>\n<p>Las variables de diferentes tipos de datos pueden ser utilizadas en operaciones. Por ejemplo, podemos realizar cálculos con enteros y flotantes, o concatenar cadenas:</p>\n<ul>\n<li>Operaciones aritméticas: <code><span class=\"palabra_clave\">x</span> = <span class=\"numero\">5</span> + <span class=\"numero\">3.2</span></code> (el resultado será un número flotante).</li>\n<li>Concatenación de cadenas: <code><span class=\"palabra_clave\">nombre</span> = \"Juan\" + \" Pérez\"</code> (el resultado será <code>\"Juan Pérez\"</code>).</li>\n</ul>"
+                    ,id:8
+                },                
+                {
+                    titulo: "Tema 3 - Funciones y Tipos",
+                    contenido: "<p>Python permite definir funciones con la palabra clave <code><span class=\"palabra_clave\">def</span></code>:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">def</span> myFunction():\n    <span class=\"palabra_clave\">print</span>(\"Hola\")</code></pre>\n</div>\n<p>Una función en Python es un bloque de código que se puede reutilizar para realizar una tarea específica. Al definir una función, podemos llamarla en cualquier momento para ejecutar su código. Las funciones pueden recibir parámetros (entradas) y devolver resultados (salidas).</p>\n\n<h3>3.1 - Saber el tipo de una variable</h3>\n<p>Usamos <code><span class=\"palabra_clave\">type</span>()</code> para saber qué tipo de dato contiene una variable:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">print</span>(<span class=\"palabra_clave\">type</span>(x))</code></pre>\n</div>\n<p>El resultado de <code><span class=\"palabra_clave\">type</span>()</code> es una clase que representa el tipo de la variable. Por ejemplo, si <code>x</code> es un número entero, el resultado será <code>&lt;class 'int'&gt;</code>.</p>\n\n<h3>3.2 - Funciones con parámetros</h3>\n<p>Las funciones pueden recibir parámetros (entradas) para hacer su trabajo más dinámico. Aquí hay un ejemplo de una función que recibe un parámetro:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">def</span> saludar(nombre):\n    <span class=\"palabra_clave\">print</span>(\"Hola, \" + nombre)\n\nsaludar(\"Juan\")</code></pre>\n</div>\n<p>Cuando se llama a la función <code>saludar()</code>, el parámetro <code>nombre</code> recibe el valor <code>\"Juan\"</code>, y la salida será <code>Hola, Juan</code>.</p>\n\n<h3>3.3 - Funciones con valores de retorno</h3>\n<p>Las funciones también pueden devolver un valor. Para hacerlo, se utiliza la palabra clave <code><span class=\"palabra_clave\">return</span></code>:</p>\n<div class=\"bloque-codigo\">\n<pre><code><span class=\"palabra_clave\">def</span> suma(a, b):\n    <span class=\"palabra_clave\">return</span> a + b\n\nresultado = suma(5, 3)\n<span class=\"palabra_clave\">print</span>(resultado)</code></pre>\n</div>\n<p>La función <code>suma()</code> devuelve el resultado de sumar <code>a</code> y <code>b</code>. En este caso, la salida será <code>8</code>.</p>\n\n<h3>3.4 - Tipos de funciones</h3>\n<p>Las funciones en Python pueden ser:</p>\n<ul>\n<li><strong>Funciones sin parámetros</strong>: No requieren argumentos para ser llamadas.</li>\n<li><strong>Funciones con parámetros</strong>: Reciben valores como entradas para procesarlos.</li>\n<li><strong>Funciones con retorno de valor</strong>: Devuelven un resultado al ser ejecutadas.</li>\n<li><strong>Funciones lambda</strong>: Son funciones pequeñas, también conocidas como funciones anónimas, que se definen con la palabra clave <code><span class=\"palabra_clave\">lambda</span></code>.</li>\n</ul>\n<p>Ejemplo de una función lambda:</p>\n<div class=\"bloque-codigo\">\n<pre><code>doblar = <span class=\"palabra_clave\">lambda</span> x: x * 2\n<span class=\"palabra_clave\">print</span>(doblar(4))</code></pre>\n</div>\n<p>En este caso, la salida será <code>8</code>, ya que la función multiplica su parámetro por 2.</p>"
+                    ,id:9
+                },
+                {
+                    titulo: "Tema 4 - Cadenas de Texto",
+                    contenido: "<p>Las cadenas de texto en Python pueden estar entre comillas simples o dobles. Ambas son equivalentes:</p>\n<div class=\"bloque-codigo\">\n<pre><code>'Hello' == \"Hello\" # <span class=\"comentario\">True</span></code></pre>\n</div>\n<p>Python no distingue entre comillas simples y dobles, por lo que puedes usar cualquiera de las dos, según prefieras. Sin embargo, es recomendable ser consistente en el estilo que uses.</p>\n\n<h3>4.1 - Acceder a caracteres</h3>\n<p>Para acceder al primer carácter de una cadena:</p>\n<div class=\"bloque-codigo\">\n<pre><code>x = \"Hello\"[0]</code></pre>\n</div>\n<p>Python usa la indexación basada en cero, por lo que el primer carácter de la cadena tiene el índice <code>0</code>, el segundo tiene el índice <code>1</code>, y así sucesivamente. También puedes usar índices negativos para acceder a los caracteres desde el final de la cadena. Por ejemplo, <code>-1</code> accedería al último carácter:</p>\n<div class=\"bloque-codigo\">\n<pre><code>y = \"Hello\"[-1]</code></pre>\n</div>\n<p>En este caso, <code>y</code> sería igual a <code>'o'</code>.</p>\n\n<h3>4.2 - Métodos útiles</h3>\n<ul>\n<li><code><span class=\"palabra_clave\">strip</span>()</code>: Elimina los espacios en blanco al inicio y final de una cadena.</li>\n<li><code><span class=\"palabra_clave\">upper</span>()</code>: Convierte todos los caracteres de la cadena a mayúsculas.</li>\n<li><code><span class=\"palabra_clave\">replace</span>()</code>: Reemplaza partes de una cadena con otra cadena.</li>\n<li><code><span class=\"palabra_clave\">lower</span>()</code>: Convierte todos los caracteres de la cadena a minúsculas.</li>\n<li><code><span class=\"palabra_clave\">split</span>()</code>: Divide una cadena en una lista de subcadenas, basándose en un delimitador.</li>\n<li><code><span class=\"palabra_clave\">find</span>()</code>: Devuelve el índice de la primera aparición de una subcadena dentro de la cadena.</li>\n</ul>\n<p>Ejemplo de algunos métodos:</p>\n<div class=\"bloque-codigo\">\n<pre><code>texto = \"  Hola Mundo  \"\n<span class=\"palabra_clave\">print</span>(texto.<span class=\"palabra_clave\">strip</span>())  # Elimina los espacios\n<span class=\"palabra_clave\">print</span>(texto.<span class=\"palabra_clave\">upper</span>())  # Convierte a mayúsculas\n<span class=\"palabra_clave\">print</span>(texto.<span class=\"palabra_clave\">replace</span>(\"Mundo\", \"Python\"))  # Reemplaza \"Mundo\" por \"Python\"</code></pre>\n</div>\n\n<h3>4.3 - Concatenación de cadenas</h3>\n<p>Las cadenas se pueden concatenar (unir) utilizando el operador <code>+</code>:</p>\n<div class=\"bloque-codigo\">\n<pre><code>saludo = \"Hola \" + \"Mundo\"\n<span class=\"palabra_clave\">print</span>(saludo)  # Hola Mundo</code></pre>\n</div>\n<p>También se puede usar el operador <code>*</code> para repetir una cadena:</p>\n<div class=\"bloque-codigo\">\n<pre><code>repetir = \"Python \" * 3\n<span class=\"palabra_clave\">print</span>(repetir)  # Python Python Python </code></pre>\n</div>\n\n<h3>4.4 - Cadenas multilínea</h3>\n<p>Las cadenas también pueden ser de varias líneas si se encierran entre tres comillas dobles o simples:</p>\n<div class=\"bloque-codigo\">\n<pre><code>texto_multilinea = \"\"\"\nEsto es una cadena\nmultilínea.\n\"\"\"\n<span class=\"palabra_clave\">print</span>(texto_multilinea)</code></pre>\n</div>\n<p>Esto es útil cuando necesitas representar texto largo o cuando trabajas con texto formateado que abarca varias líneas.</p>"
+                    ,id:10
+                },
+                {
+                    titulo: "Tema 5 - Operadores",
+                    contenido: "<p>Python tiene varios operadores para realizar cálculos y comparaciones.</p>\n\n<h3>5.1 - Operadores aritméticos</h3>\n<p>Para realizar operaciones matemáticas básicas como suma, resta, multiplicación y división, Python ofrece operadores aritméticos:</p>\n<ul>\n<li><code><span class=\"palabra_clave\">+</span></code>: Suma</li>\n<li><code><span class=\"palabra_clave\">-</span></code>: Resta</li>\n<li><code><span class=\"palabra_clave\">*</span></code>: Multiplicación</li>\n<li><code><span class=\"palabra_clave\">/</span></code>: División</li>\n<li><code><span class=\"palabra_clave\">//</span></code>: División entera (descarta el decimal)</li>\n<li><code><span class=\"palabra_clave\">%</span></code>: Módulo (resto de la división)</li>\n<li><code><span class=\"palabra_clave\">**</span></code>: Exponentiación</li>\n</ul>\n<p>Ejemplo:</p>\n<div class=\"bloque-codigo\">\n<pre><code>x = 3 + 5  # Suma\ny = 10 - 4  # Resta\nz = 2 * 6  # Multiplicación\ndiv = 10 / 3  # División\n</code></pre>\n</div>\n<p>La división con <code><span class=\"palabra_clave\">/</span></code> siempre devuelve un número flotante, mientras que la división entera (<code><span class=\"palabra_clave\">//</span></code>) devuelve solo la parte entera del resultado. Ejemplo:</p>\n<div class=\"bloque-codigo\">\n<pre><code>div = 10 // 3  # Resultado: 3</code></pre>\n</div>\n\n<h3>5.2 - Operadores de comparación</h3>\n<p>Para comparar dos valores, Python proporciona los siguientes operadores de comparación:</p>\n<ul>\n<li><code><span class=\"palabra_clave\">==</span></code>: Igualdad</li>\n<li><code><span class=\"palabra_clave\">!=</span></code>: Desigualdad</li>\n<li><code><span class=\"palabra_clave\">&gt;</span></code>: Mayor que</li>\n<li><code><span class=\"palabra_clave\">&lt;</span></code>: Menor que</li>\n<li><code><span class=\"palabra_clave\">&gt;=</span></code>: Mayor o igual que</li>\n<li><code><span class=\"palabra_clave\">&lt;=</span></code>: Menor o igual que</li>\n</ul>\n<p>Ejemplo de comparación:</p>\n<div class=\"bloque-codigo\">\n<pre><code>x = 5\ny = 10\nresult = x == y  # False\nresult2 = x &lt; y  # True</code></pre>\n</div>\n<p>Estos operadores devuelven un valor booleano (<code><span class=\"palabra_clave\">True</span></code> o <code><span class=\"palabra_clave\">False</span></code>) según el resultado de la comparación.</p>\n\n<h3>5.3 - Operadores lógicos</h3>\n<p>Los operadores lógicos permiten realizar comparaciones más complejas:</p>\n<ul>\n<li><code><span class=\"palabra_clave\">and</span></code>: Devuelve <code><span class=\"palabra_clave\">True</span></code> si ambas condiciones son verdaderas.</li>\n<li><code><span class=\"palabra_clave\">or</span></code>: Devuelve <code><span class=\"palabra_clave\">True</span></code> si al menos una de las condiciones es verdadera.</li>\n<li><code><span class=\"palabra_clave\">not</span></code>: Invierte el valor de la condición, es decir, si es <code><span class=\"palabra_clave\">True</span></code> la convierte en <code><span class=\"palabra_clave\">False</span></code> y viceversa.</li>\n</ul>\n<p>Ejemplo de operadores lógicos:</p>\n<div class=\"bloque-codigo\">\n<pre><code>x = 5\ny = 10\nz = 15\nresultado = (x &lt; y) and (y &lt; z)  # True\nresultado2 = not(x &gt; z)  # True</code></pre>\n</div>\n\n<h3>5.4 - Operadores de asignación</h3>\n<p>Los operadores de asignación permiten modificar una variable con un valor determinado de manera más eficiente. Algunos ejemplos son:</p>\n<ul>\n<li><code><span class=\"palabra_clave\">=</span></code>: Asignación simple.</li>\n<li><code><span class=\"palabra_clave\">+=</span></code>: Suma y asigna el resultado.</li>\n<li><code><span class=\"palabra_clave\">-=</span></code>: Resta y asigna el resultado.</li>\n<li><code><span class=\"palabra_clave\">*=</span></code>: Multiplica y asigna el resultado.</li>\n<li><code><span class=\"palabra_clave\">/=</span></code>: Divide y asigna el resultado.</li>\n</ul>\n<p>Ejemplo:</p>\n<div class=\"bloque-codigo\">\n<pre><code>x = 5\nx += 3  # x ahora es 8</code></pre>\n</div>\n<p>En este caso, <code>x += 3</code> es equivalente a <code>x = x + 3</code>.</p>"
+                    ,id:11
+                },
+                {
+                    titulo: "Tema 6 - Conclusión y Práctica",
+                    contenido: "<p><span class=\"palabra_clave\">Python</span> es ideal para comenzar a programar. Con una sintaxis sencilla y poderosa, permite crear desde scripts básicos hasta aplicaciones complejas. Su comunidad activa y extensa documentación hacen que aprender y resolver problemas sea accesible para todos.</p>\n\n<p>A lo largo de este curso, hemos cubierto los conceptos básicos de <span class=\"palabra_clave\">Python</span>, desde la declaración de <span class=\"palabra_clave\">variables</span> hasta el uso de <span class=\"palabra_clave\">funciones</span>, <span class=\"palabra_clave\">operadores</span> y <span class=\"palabra_clave\">cadenas de texto</span>. Estos son los cimientos de cualquier proyecto en <span class=\"palabra_clave\">Python</span>, y dominar estos conceptos te permitirá afrontar desafíos más complejos en el futuro.</p>\n\n<p>Te sugerimos practicar con ejercicios como:</p>\n<ul>\n<li>Crear una <span class=\"palabra_clave\">calculadora</span> básica que permita sumar, restar, multiplicar y dividir números.</li>\n<li>Escribir <span class=\"palabra_clave\">funciones</span> que procesen <span class=\"palabra_clave\">listas</span> de números, como calcular la media o filtrar los números pares.</li>\n<li>Trabajar con <span class=\"palabra_clave\">archivos de texto</span>: leer datos desde un archivo y escribir resultados en otro.</li>\n<li>Experimentar con estructuras de datos como <span class=\"palabra_clave\">diccionarios</span> y <span class=\"palabra_clave\">listas</span>, y combinar estas estructuras en proyectos prácticos.</li>\n<li>Crear un programa que reciba entrada del <span class=\"palabra_clave\">usuario</span> y realice alguna acción según los datos introducidos.</li>\n</ul>\n\n<p>La clave está en la <span class=\"palabra_clave\">práctica constante</span>. No tengas miedo de cometer errores; cada error es una oportunidad de aprender. A medida que resuelvas problemas, descubrirás nuevas formas de hacer las cosas y ganarás confianza en tus habilidades.</p>\n\n<p>Recuerda que <span class=\"palabra_clave\">Python</span> también es muy útil para aprender sobre otros campos, como la <span class=\"palabra_clave\">ciencia de datos</span>, la <span class=\"palabra_clave\">inteligencia artificial</span>, la <span class=\"palabra_clave\">automatización de tareas</span> y el <span class=\"palabra_clave\">desarrollo web</span>. ¡Las posibilidades son infinitas!</p>\n\n<p>¡Sigue practicando, experimentando y creando proyectos! No dudes en explorar más temas avanzados de <span class=\"palabra_clave\">Python</span> a medida que te sientas cómodo con lo que has aprendido.</p>"
+                    ,id:12
+                }                
+              ],
+            test: {
+                titulo: "Test Python",
+                preguntas: [
+                    {
+                        numero: 1,
+                        enunciado: "¿Cuál es la sintaxis correcta para generar 'Hola Mundo' en Python?",
+                        retroalimentacion: "La función correcta para imprimir texto en Python es print(). Las otras opciones no son válidas en Python.",
+                        respuestas: [
+                            {
+                                texto: 'p("Hello World")',
+                                esCorrecta: false
+                            },
+                            {
+                                texto: 'echo "Hello World"',
+                                esCorrecta: false
+                            },
+                            {
+                                texto: 'echo("Hello World");',
+                                esCorrecta: false
+                            },
+                            {
+                                texto: 'print("Hello World")',
+                                esCorrecta: true
+                            }
+                        ]
+                    },
+                    {
+                        numero: 2,
+                        enunciado: "¿Cómo se insertan COMENTARIOS en el código Python?",
+                        retroalimentacion: "En Python, los comentarios se insertan con el símbolo #. Cualquier texto después de este símbolo será ignorado por el intérprete. Las otras opciones (// y /* */) corresponden a otros lenguajes de programación.",
+                        respuestas: [
+                            {
+                                texto: "//Esto es un comentario",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "#Esto es un comentario",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "/*Esto es un comentario*/",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "/-Esto es un comentario-",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 3,
+                        enunciado: "¿Cuál NO es un nombre de variable válido?",
+                        retroalimentacion: "En Python, los nombres de las variables no pueden contener guiones (-). Deben usar guiones bajos (_) o solo letras y números. Las otras opciones son válidas.",
+                        respuestas: [
+                            {
+                                texto: "_myvar",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "my_var",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Myvar",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "my-var",
+                                esCorrecta: true
+                            }
+                        ]
+                    },
+                    {
+                        numero: 4,
+                        enunciado: "¿Cómo se crea una variable con el valor numérico 5?",
+                        retroalimentacion: "Ambas formas son válidas. Puedes asignar directamente un valor numérico como x = 5 o convertir el valor a un entero usando x = int(5).",
+                        respuestas: [
+                            {
+                                texto: "x = 5",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Ambas respuestas anteriores son correctas",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "x = int(5)",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Ninguna es correcta.",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 5,
+                        enunciado: "¿Cuál es la extensión de archivo correcta para archivos de Python?",
+                        retroalimentacion: "Los archivos de Python deben tener la extensión .py para ser reconocidos como archivos de código Python.",
+                        respuestas: [
+                            {
+                                texto: ".pyt",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: ".pt",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: ".pyth",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: ".py",
+                                esCorrecta: true
+                            }
+                        ]
+                    },
+                    {
+                        numero: 6,
+                        enunciado: 'En Python, /Hello/ es lo mismo que "Hello".',
+                        retroalimentacion: "Ambas formas son válidas. Puedes asignar directamente el valor x = 2.8 o usar la función float() como x = float(2.8).",
+                        respuestas: [
+                            {
+                                texto: "True",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "False",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Ambos son diferentes",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Depende del contexto",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 7,
+                        enunciado: "¿Cuál es la sintaxis correcta para mostrar el tipo de una variable u objeto en Python?",
+                        retroalimentacion: "Para obtener el tipo de una variable en Python, usamos la función type(). Las otras opciones no existen en Python.",
+                        respuestas: [
+                            {
+                                texto: "print(typeOf(x))",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "print(typeof(x))",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "print(type(x))",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "print(typeof x)",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 8,
+                        enunciado: "¿Cuál es la forma correcta de crear una función en Python?",
+                        retroalimentacion: "En Python, las funciones se definen usando la palabra clave def, seguida del nombre de la función y paréntesis. Las otras opciones no son sintaxis válida en Python.",
+                        respuestas: [
+                            {
+                                texto: "def myFunction():",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "function myfunction():",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "create myFunction():",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Ninguna es correcta.",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 9,
+                        enunciado: "¿Qué indica la palabra clave void en una función en C++?",
+                        retroalimentacion: "En Python, no hay diferencia entre comillas simples y dobles para definir cadenas de texto. Ambos se pueden usar indistintamente.",
+                        respuestas: [
+                            {
+                                texto: "Que la función no devuelve ningún valor.",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "Que la función no recibe parámetros.",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Que la función puede ser llamada sin argumentos.",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Que la función no tiene una implementación.",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 10,
+                        enunciado: "¿Cuál es la sintaxis correcta para devolver el primer carácter de una cadena en Python?",
+                        retroalimentacion: "En Python, se accede a los caracteres de una cadena mediante su índice. El índice 0 devuelve el primer carácter. Las otras opciones no son válidas en Python.",
+                        respuestas: [
+                            {
+                                texto: 'x = sub("Hello", 0, 1)',
+                                esCorrecta: false
+                            },
+                            {
+                                texto: 'x = "Hello"[0]',
+                                esCorrecta: true
+                            },
+                            {
+                                texto: x = '"Hello".sub(0, 1)',
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "Ninguna es correcta",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 11,
+                        enunciado: "¿Qué método se puede utilizar para eliminar los espacios en blanco al inicio y al final de una cadena en Python?",
+                        retroalimentacion: "El método strip() se utiliza para eliminar los espacios en blanco al principio y al final de una cadena. Las otras opciones no existen en Python.",
+                        respuestas: [
+                            {
+                                texto: "ptrim()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "len()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "strip()",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "trim()",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 12,
+                        enunciado: " ¿Qué método se puede utilizar para devolver una cadena en mayúsculas?",
+                        retroalimentacion: "El método upper() convierte todos los caracteres de una cadena a mayúsculas. Las otras opciones no son válidas en Python.",
+                        respuestas: [
+                            {
+                                texto: "upper()",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "toUpperCase()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "upperCase()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "uppercase()",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 13,
+                        enunciado: " ¿Qué método se puede utilizar para reemplazar partes de una cadena?",
+                        retroalimentacion: "El método replace() permite reemplazar una subcadena dentro de una cadena por otra. Las otras opciones no existen en Python.",
+                        respuestas: [
+                            {
+                                texto: "replaceString()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "switch()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "repl()",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "replace()",
+                                esCorrecta: true
+                            }
+                        ]
+                    },
+                    {
+                        numero: 14,
+                        enunciado: "¿Qué operador se utiliza para multiplicar números?",
+                        retroalimentacion: "El operador * se utiliza en Python para multiplicar números. Las otras opciones no son operadores de multiplicación en Py",
+                        respuestas: [
+                            {
+                                texto: "*",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "%",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "x",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "#",
+                                esCorrecta: false
+                            }
+                        ]
+                    },
+                    {
+                        numero: 15,
+                        enunciado: "¿Qué operador se puede utilizar para comparar dos valores?",
+                        retroalimentacion: " El operador == se utiliza para comparar si dos valores son iguales. El operador = es para asignar valores, y >< y <> no son operadores de comparación en Python.",
+                        respuestas: [
+                            {
+                                texto: "=",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "><",
+                                esCorrecta: false
+                            },
+                            {
+                                texto: "==",
+                                esCorrecta: true
+                            },
+                            {
+                                texto: "<>",
+                                esCorrecta: false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }, {
+            // Para que entienda que estamos creando, no solo el Curso, sino también
+            // sus Temas, Test, Preguntas, y Respuestas
+            include: [
+                {
+                    model: Tema,
+                    as: "temas",
+                },
+                {
+                    model: Test,
+                    as: "test",
+                    include: [
+                        {
+                            model: Pregunta,
+                            as: "preguntas",
+                            include: [
+                                {
+                                    model: Respuesta,
+                                    as: "respuestas"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+
         await Logro.create({
             id: 1,
             mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
