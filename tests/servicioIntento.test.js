@@ -126,26 +126,50 @@ describe("terminarIntento", () => {
         expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
     })
 
-    test("deberia calcular correctamente la nota si hay preguntas sin responder", async () => {
-        
+    test("debería calcular correctamente la nota si hay preguntas sin responder", async () => {
         const idIntentoTest = 2;
+    
         const mockIntentoTest = {
             test: { idCurso: 10 },
             intentos_pregunta: [
-                { respuesta: null },
-                { respuesta: { esCorrecta: true } },
-                { respuesta: { esCorrecta: false } }
+                { respuesta: null }, // Pregunta sin responder
+                { respuesta: { esCorrecta: true } }, // Pregunta correcta
+                { respuesta: { esCorrecta: false } } // Pregunta incorrecta
             ],
             save: jest.fn().mockResolvedValue(true)
         };
-
+    
         IntentoTest.findByPk.mockResolvedValue(mockIntentoTest);
-
+    
+        // Aquí deberíamos verificar si lanza el error cuando hay preguntas sin responder
+        await expect(servicioIntento.terminarIntento(idIntentoTest))
+            .rejects
+            .toThrow(new PreguntasSinResponderError(idIntentoTest));
+    
+        // Verificar que no se actualizó el intentoTest ni se guardó
+        expect(mockIntentoTest.save).not.toHaveBeenCalled();
+    });
+    
+    test("debería calcular correctamente la nota si todas las preguntas están respondidas", async () => {
+        const idIntentoTest = 2;
+    
+        const mockIntentoTest = {
+            test: { idCurso: 10 },
+            intentos_pregunta: [
+                { respuesta: { esCorrecta: true } },  // Pregunta correcta
+                { respuesta: { esCorrecta: false } }, // Pregunta incorrecta
+                { respuesta: { esCorrecta: true } }   // Pregunta correcta
+            ],
+            save: jest.fn().mockResolvedValue(true)
+        };
+    
+        IntentoTest.findByPk.mockResolvedValue(mockIntentoTest);
+    
         const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
-
+    
         expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
-        expect(mockIntentoTest.preguntasAcertadas).toBe(1);
-        expect(mockIntentoTest.nota).toBe('3.33');
+        expect(mockIntentoTest.preguntasAcertadas).toBe(2);
+        expect(mockIntentoTest.nota).toBe('6.67'); // Calculado en base a las preguntas acertadas
         expect(mockIntentoTest.terminado).toBe(true);
         expect(mockIntentoTest.fechaFin).toBeInstanceOf(Date);
         expect(mockIntentoTest.save).toHaveBeenCalled();
