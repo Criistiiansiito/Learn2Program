@@ -125,6 +125,32 @@ describe("terminarIntento", () => {
 
         expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
     })
+
+    test("deberia calcular correctamente la nota si hay preguntas sin responder", async () => {
+        
+        const idIntentoTest = 2;
+        const mockIntentoTest = {
+            test: { idCurso: 10 },
+            intentos_pregunta: [
+                { respuesta: null },
+                { respuesta: { esCorrecta: true } },
+                { respuesta: { esCorrecta: false } }
+            ],
+            save: jest.fn().mockResolvedValue(true)
+        };
+
+        IntentoTest.findByPk.mockResolvedValue(mockIntentoTest);
+
+        const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+
+        expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
+        expect(mockIntentoTest.preguntasAcertadas).toBe(1);
+        expect(mockIntentoTest.nota).toBe('3.33');
+        expect(mockIntentoTest.terminado).toBe(true);
+        expect(mockIntentoTest.fechaFin).toBeInstanceOf(Date);
+        expect(mockIntentoTest.save).toHaveBeenCalled();
+        expect(idCurso).toBe(mockIntentoTest.test.idCurso);
+    });
 })
 
 describe("obtenerIntentosTest", () => {
