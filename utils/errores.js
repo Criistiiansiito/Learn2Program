@@ -49,6 +49,12 @@ class CursoNoEncontradoError extends Error {
     }
 }
 
+class IntentoNoPerteneceUsuarioError extends Error {
+    constructor(idIntentoTest, idUsuario) {
+        super(MENSAJES.INTENTO_NO_USUARIO(idIntentoTest, idUsuario));
+    }
+}
+
 module.exports = {
     TestNoEncontradoError,
     TestPreguntaError,
@@ -58,5 +64,6 @@ module.exports = {
     RespuestaNoEncontradaError,
     IntentoTestTerminadoError,
     PreguntaYaIntentadaError,
-    CursoNoEncontradoError
+    CursoNoEncontradoError,
+    IntentoNoPerteneceUsuarioError
 };

@@ -170,7 +170,7 @@ class ServicioIntentoTest {
      * @param {Number} numeroPregunta - Id de la pregunta sobre la que queremos obtener el intento
      * @returns {Object} El intento de test, con el intento de pregunta
      */
-    async obtenerIntentoPregunta(idIntentoTest, numeroPregunta) {
+    async obtenerIntentoPregunta(idIntentoTest, numeroPregunta, idUsuario) {
         const intentoPregunta = await IntentoPregunta.findOne({
             include: [
                 {
