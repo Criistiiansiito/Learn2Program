@@ -5,7 +5,7 @@ const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
 const IntentoTest = require('../modelos/IntentoTest');
 const IntentoPregunta = require('../modelos/IntentoPregunta');
-const { TestNoEncontradoError, IntentoTestNoEncontradoError, CursoNoEncontradoError, IntentoPreguntaNoEncontradoError, IntentoNoPerteneceUsuarioError } = require('../utils/errores');
+const { TestNoEncontradoError, IntentoTestNoEncontradoError, CursoNoEncontradoError, IntentoPreguntaNoEncontradoError, IntentoNoPerteneceUsuarioError, PreguntasSinResponderError } = require('../utils/errores');
 
 
 jest.mock("../modelos/Curso", () => ({
