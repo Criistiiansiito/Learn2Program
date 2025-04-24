@@ -55,6 +55,13 @@ class IntentoNoPerteneceUsuarioError extends Error {
     }
 }
 
+class PreguntasSinResponderError extends Error {
+    constructor(idIntentoTest) {
+        super(MENSAJES.PREGUNTA_SIN_RESPONDER(idIntentoTest));
+        this.name = 'PreguntasSinResponderError';
+    }
+}
+
 module.exports = {
     TestNoEncontradoError,
     TestPreguntaError,
@@ -65,5 +72,6 @@ module.exports = {
     IntentoTestTerminadoError,
     PreguntaYaIntentadaError,
     CursoNoEncontradoError,
-    IntentoNoPerteneceUsuarioError
+    IntentoNoPerteneceUsuarioError,
+    PreguntasSinResponderError
 };
