@@ -10,7 +10,8 @@ const MENSAJES = {
     INTENTO_TEST_TERMINADO: (id) => `El intento de test con id ${id} ya se ha terminado`,
     PREGUNTA_YA_INTENTADA: (idIntentoTest, numeroPregunta) => `La pregunta numero ${numeroPregunta} ya ha sido respondida en el intento ${idIntentoTest}`,
     CURSO_NO_ENCONTRADO: (idCurso) => `El curso con id ${idCurso} no se ha podido encontrar`,
-    INTENTO_NO_USUARIO: (idIntentoTest, idUsuario) => `El intento de test ${idIntentoTest} no pertence al usuario ${idUsuario}`
+    INTENTO_NO_USUARIO: (idIntentoTest, idUsuario) => `El intento de test ${idIntentoTest} no pertence al usuario ${idUsuario}`,
+    PREGUNTA_SIN_RESPONDER: (idIntentoTest) => `Hay preguntas sin responder en el intento de test con id ${idIntentoTest}`,
 };
 
 module.exports = MENSAJES;
