@@ -846,6 +846,279 @@ async function seedDatabase() {
             ]
         });
 
+        // Curso de Java
+        await Curso.create({
+            titulo: "Introducción a la Programación en Java",
+            descripcion: "si",
+            temas: [
+                {
+                titulo: "Tema 1 - Estructura Básica de un Programa en Java",
+                contenido: `<h2>1 - Estructura Básica de un Programa en Java</h2> <h3>1.1 - Sintaxis para imprimir un mensaje en la consola</h3> <p>El primer paso en cualquier lenguaje de programación es entender cómo mostrar información al usuario. En Java, el método principal para imprimir en la consola es el método <code>System.out.println()</code>. Este método es parte de la clase <code>System</code> que pertenece a la biblioteca estándar de Java, y permite que el texto se imprima seguido de un salto de línea. La sintaxis básica de este comando es la siguiente:</p> <div class="bloque-codigo"> <pre><code>System.out.println("Hello World");</code></pre> </div> <p>Al ejecutar este código, la consola imprimirá "Hello World" y luego saltará a la siguiente línea. Es importante notar que el método <code>println()</code> agrega automáticamente un salto de línea al final del texto, lo que significa que si quieres continuar imprimiendo en la misma línea, puedes usar el método <code>System.out.print()</code>, que no añade un salto de línea.</p> <h3>1.2 - La clase principal y el método main()</h3> <p>En Java, todos los programas deben tener una clase principal, que es donde comienza la ejecución. Este punto de entrada se define mediante el método <code>main()</code>. Cada programa en Java debe tener al menos una clase que contenga este método. La estructura básica de una clase con el método <code>main()</code> es la siguiente:</p> <div class="bloque-codigo"> <pre><code>public class MiClase { public static void main(String[] args) { System.out.println("¡Hola, Mundo!"); } }</code></pre> </div> <p>El método <code>main()</code> tiene una firma específica que debe ser respetada: <code>public static void main(String[] args)</code>. La palabra clave <code>public</code> indica que el método es accesible desde cualquier parte del programa, <code>static</code> significa que este método se puede ejecutar sin crear una instancia de la clase, y <code>void</code> indica que no devuelve ningún valor. El parámetro <code>String[] args</code> permite recibir argumentos desde la línea de comandos, aunque en muchos programas básicos no se utilizan.</p>`
+                },
+                {
+                titulo: "Tema 2 - Clases en Java",
+                contenido: `<p>En Java, las clases son uno de los elementos fundamentales para organizar y estructurar los programas de manera eficiente. En términos simples, una clase en Java es una plantilla o un modelo que define las propiedades (atributos) y comportamientos (métodos) de un objeto. La programación orientada a objetos (OOP) en Java se basa en gran parte en el uso de clases para representar conceptos y entidades dentro de un programa.</p>
+
+            <p>Para crear una clase en Java, se utiliza la palabra clave <code>class</code>. La estructura básica de una clase en Java incluye su declaración, seguida de los atributos y métodos que definen el comportamiento de la clase. Es importante señalar que cada clase en Java puede contener constructores, que son métodos especiales utilizados para inicializar los objetos cuando se crean. Además, las clases pueden interactuar entre sí mediante la creación de objetos a partir de ellas, lo que permite que los programas en Java sean modulares y reutilizables.</p>
+
+            <h3>2.1 - Sintaxis para Definir una Clase</h3>
+            <p>La sintaxis básica para crear una clase en Java es la siguiente:</p>
+
+            <div class="bloque-codigo">
+            <pre><code><span class="palabra_clave">class</span> <span class="nombre_clase">MiClase</span> {
+                <span class="tipo_dato">String</span> <span class="atributo">nombre</span>;
+                <span class="tipo_dato">int</span> <span class="atributo">edad</span>;
+                
+                <span class="palabra_clave">public</span> <span class="tipo_dato">void</span> <span class="funcion">mostrarInfo</span>() {
+                    <span class="incluir">System.out.println</span>(<span class="cadena">"Nombre: " + nombre + ", Edad: " + edad</span>);
+                }
+            }
+            </code></pre>
+            </div>
+
+            <p>En este ejemplo, la clase <code>MiClase</code> tiene dos atributos: <code>nombre</code> (de tipo <code>String</code>) y <code>edad</code> (de tipo <code>int</code>). Además, incluye un método <code>mostrarInfo()</code>, que imprime en la consola el valor de los atributos del objeto.</p>
+
+            <h3>2.2 - Conceptos Clave Relacionados con las Clases</h3>
+            <p>Al trabajar con clases en Java, hay algunos conceptos clave que debes tener en cuenta:</p>
+            <ul>
+            <li><strong>Instancia de la clase:</strong> Cuando se crea un objeto de una clase, se dice que se está creando una instancia de esa clase. Este proceso permite que cada objeto tenga su propio conjunto de atributos, manteniendo su independencia de otros objetos.</li>
+            <li><strong>Constructores:</strong> Un constructor es un método especial dentro de una clase que se utiliza para inicializar los objetos. Su nombre es el mismo que el de la clase y no tiene un tipo de retorno.</li>
+            <li><strong>Encapsulamiento:</strong> Las clases en Java permiten el encapsulamiento, que es un principio de la programación orientada a objetos que restringe el acceso directo a algunos de los objetos de un programa y solo permite modificarlos mediante métodos.</li>
+            <li><strong>Herencia:</strong> En Java, una clase puede heredar atributos y métodos de otra clase utilizando la palabra clave <code>extends</code>. Esto permite la creación de clases derivadas que extienden el comportamiento de una clase base.</li>
+            </ul>
+
+            <h3>2.3 - Ejemplo de Clase y Objeto</h3>
+            <div class="bloque-codigo">
+            <pre><code><span class="palabra_clave">public</span> <span class="tipo_dato">class</span> <span class="nombre_clase">Main</span> {
+                
+                <span class="palabra_clave">public static void main</span>(<span class="tipo_dato">String[]</span> <span class="variable">args</span>) {
+                    <span class="nombre_clase">MiClase</span> <span class="objeto">persona</span> = <span class="palabra_clave">new</span> <span class="nombre_clase">MiClase</span>();
+                    persona.<span class="funcion">mostrarInfo</span>();
+                }
+            }
+            </code></pre>
+            </div>
+
+            <p>En este ejemplo, hemos creado un objeto llamado <code>persona</code> de la clase <code>MiClase</code> y hemos llamado al método <code>mostrarInfo()</code> para imprimir la información de la persona en la consola.</p>
+
+            <h3>2.4 - Conclusión</h3>
+            <p>En resumen, las clases son la piedra angular de la programación orientada a objetos en Java. La palabra clave <code>class</code> se utiliza para definir una clase, y dentro de esta se incluyen atributos y métodos que definen el comportamiento de los objetos creados a partir de ella. Es fundamental comprender bien el concepto de clases, ya que son esenciales para crear programas modulares y organizados. A medida que avances en Java, verás cómo las clases te permiten gestionar la complejidad de los programas mediante la reutilización y organización eficiente del código.</p>`
+                },
+                {
+                titulo: "Tema 3 - Comentarios en Java",
+                contenido: `<h2>3 - Comentarios en Java</h2> <h3>3.1 - Comentarios de una sola línea</h3> <p>Los comentarios son un elemento fundamental para escribir código comprensible. Los comentarios permiten que los programadores dejen notas o explicaciones dentro del código sin que éstas afecten la ejecución del programa. En Java, los comentarios de una sola línea comienzan con dos barras diagonales (<code>//</code>). Todo lo que siga en esa línea será considerado un comentario:</p> <div class="bloque-codigo"> <pre><code>// Este es un comentario de una sola línea</code></pre> </div> <p>Los comentarios de una sola línea son útiles para explicar fragmentos de código específicos o agregar anotaciones rápidas sobre el comportamiento del programa.</p> <h3>3.2 - Comentarios de varias líneas</h3> <p>Si necesitas agregar comentarios más largos, o bloquear temporalmente una sección de código, puedes utilizar los comentarios de varias líneas, que comienzan con <code>/*</code> y terminan con <code>*/</code>. Cualquier texto entre estos dos delimitadores será ignorado por el compilador:</p> <div class="bloque-codigo"> <pre><code>/* Este es un comentario que puede ocupar varias líneas. Puede ser muy útil para describir bloques de código largos. */ </code></pre> </div> <p>Los comentarios de varias líneas son ideales para describir funciones o clases completas, o para desactivar temporalmente porciones de código durante el desarrollo.</p>`
+                },
+                {
+                titulo: "Tema 4 - Tipos de Datos y Variables en Java",
+                contenido: `<h2>4 - Tipos de Datos y Variables en Java</h2> <h3>4.1 - Tipos de datos primitivos</h3> <p>En Java, los tipos de datos primitivos son fundamentales para el manejo de información. Los tipos primitivos más comunes incluyen:</p> <ul> <li><code>int</code>: Para enteros, como 5 o -10.</li> <li><code>float</code>: Para números decimales con precisión simple, como 5.75.</li> <li><code>double</code>: Similar a <code>float</code>, pero con mayor precisión.</li> <li><code>char</code>: Para almacenar caracteres individuales, como 'A' o 'z'.</li> <li><code>boolean</code>: Para valores lógicos, verdadero (<code>true</code>) o falso (<code>false</code>).</li> </ul> <p>Estos tipos son esenciales porque te permiten almacenar los diferentes tipos de datos que utilizarás en tu programa. Para declarar una variable de un tipo primitivo, simplemente especificas el tipo y luego el nombre de la variable:</p> <div class="bloque-codigo"> <pre><code>int edad = 25; boolean esMayorDeEdad = true;</code></pre> </div> <p>Las variables en Java son de tipo estático, lo que significa que debes declarar explícitamente el tipo de datos de cada variable antes de usarla.</p> <h3>4.2 - Cadenas de texto (Strings)</h3> <p>Las cadenas de texto se representan en Java con la clase <code>String</code>. A diferencia de otros lenguajes que tratan las cadenas como tipos de datos primitivos, Java las trata como objetos. Aquí hay un ejemplo de cómo declarar y asignar una cadena:</p> <div class="bloque-codigo"> <pre><code>String saludo = "Hola, Mundo!";</code></pre> </div> <p>Es importante recordar que las cadenas en Java son inmutables, lo que significa que una vez que una cadena es creada, no puede ser modificada. Si realizas alguna operación sobre una cadena, se creará una nueva instancia con el resultado.</p>`
+                },
+                {
+                titulo: "Tema 5 - Operadores en Java",
+                contenido: `<h2>5 - Operadores en Java</h2> <h3>5.1 - Operadores Aritméticos</h3> <p>Los operadores aritméticos en Java permiten realizar operaciones matemáticas sobre variables y valores. Los operadores más comunes son:</p> <ul> <li><code>+</code>: Suma</li> <li><code>-</code>: Resta</li> <li><code>*</code>: Multiplicación</li> <li><code>/</code>: División</li> <li><code>%</code>: Módulo (resto de la división)</li> </ul> <p>Estos operadores son utilizados frecuentemente en cálculos y en el procesamiento de datos numéricos. Además, en Java puedes realizar operaciones con otros tipos de datos, como concatenar cadenas con el operador <code>+</code>:</p> <div class="bloque-codigo"> <pre><code>String saludoCompleto = "Hola, " + "Mundo"; // Resultado: "Hola, Mundo"</code></pre> </div> <h3>5.2 - Operador de Comparación</h3> <p>En Java, el operador de comparación <code>==</code> se utiliza para verificar si dos valores son iguales. A continuación, te mostramos cómo usarlo:</p> <div class="bloque-codigo"> <pre><code>int a = 5; int b = 5;
+            boolean esIgual = (a == b); // Resultado: true</code></pre>
+            </div> <p>Este operador es muy útil cuando necesitas verificar si dos variables tienen el mismo valor. Sin embargo, ten en cuenta que cuando se comparan objetos (como cadenas de texto), debes usar el método <code>equals()</code> para realizar la comparación de contenido, ya que <code>==</code> compara referencias en memoria.</p>`
+                },
+                {
+                titulo: "Tema 6 - Métodos en Java",
+                contenido: `<h2>6 - Métodos en Java</h2> <p>Los métodos son una parte fundamental de la programación en Java, ya que nos permiten dividir nuestro código en bloques lógicos que realizan tareas específicas. Los métodos son similares a las funciones en otros lenguajes de programación y nos permiten estructurar nuestro código de manera más eficiente y reutilizable. En Java, los métodos se pueden usar tanto en clases estáticas como no estáticas, y su declaración y uso son fundamentales para crear programas modularizados.</p> <h3>6.1 - Declaración de Métodos</h3> <p>En Java, la declaración de un método sigue una sintaxis muy clara. Un método debe tener un tipo de retorno, un nombre, y opcionalmente, parámetros. La sintaxis básica es la siguiente:</p> <div class="bloque-codigo"> <pre><code><span class="palabra_clave">public</span> <span class="tipo_retorno">void</span> <span class="nombre_metodo">miMetodo</span>() { <span class="comentario">// Aquí va el código del método</span> }</code></pre> </div> <p>En este ejemplo, el método <code>miMetodo</code> no devuelve ningún valor, ya que tiene el tipo de retorno <code>void</code>. Si un método devuelve un valor, como un número o una cadena, entonces en lugar de <code>void</code>, se debe especificar el tipo de dato correspondiente. Los parámetros se pasan entre los paréntesis del método, lo que permite que el método reciba valores de entrada para procesar.</p> <h3>6.2 - Métodos con Parámetros</h3> <p>Los métodos también pueden aceptar parámetros, lo que les permite operar sobre datos específicos. Los parámetros se definen entre los paréntesis de la declaración del método y pueden ser de cualquier tipo de datos, incluidos los tipos primitivos y objetos. A continuación, se muestra un ejemplo de un método con parámetros:</p> <div class="bloque-codigo"> <pre><code><span class="palabra_clave">public</span> <span class="tipo_retorno">int</span> sumar(<span class="tipo_retorno">int</span> a, <span class="tipo_retorno">int</span> b) { <span class="palabra_clave">return</span> a + b; }</code></pre> </div> <p>En este ejemplo, el método <code>sumar</code> acepta dos parámetros enteros <code>a</code> y <code>b</code>, y devuelve su suma. El tipo de retorno es <code>int</code>, ya que el resultado de la suma es un número entero.</p> <h3>6.3 - Llamada a Métodos</h3> <p>Para llamar a un método, simplemente usamos su nombre seguido de paréntesis. Si el método requiere parámetros, debemos pasar los valores adecuados dentro de los paréntesis. A continuación, un ejemplo de cómo se llama a un método desde el <code>main()</code>:</p> <div class="bloque-codigo"> <pre><code><span class="palabra_clave">public</span> <span class="tipo_retorno">static</span> <span class="tipo_retorno">void</span> main(<span class="palabra_clave">String</span>[] args) { <span class="nombre_metodo">sumar</span>(5, 10); <span class="comentario">// Llama al método sumar con los parámetros 5 y 10</span> }</code></pre> </div> <h3>6.4 - Métodos Estáticos y No Estáticos</h3> <p>En Java, los métodos pueden ser estáticos o no estáticos. Los métodos estáticos pertenecen a la clase en sí misma, mientras que los métodos no estáticos pertenecen a instancias de la clase (objetos). Los métodos estáticos se definen utilizando la palabra clave <code>static</code> y pueden ser llamados sin crear una instancia de la clase:</p> <div class="bloque-codigo"> <pre><code><span class="palabra_clave">public</span> <span class="palabra_clave">static</span> <span class="tipo_retorno">void</span> metodoEstatico() { <span class="incluir">System.out.println</span>("Método estático llamado"); }</code></pre> </div> <p>Los métodos no estáticos, por otro lado, requieren la creación de un objeto de la clase para ser llamados:</p> <div class="bloque-codigo"> <pre><code><span class="palabra_clave">public</span> <span class="tipo_retorno">void</span> metodoNoEstatico() { <span class="incluir">System.out.println</span>("Método no estático llamado"); }</code></pre> </div> <h3>6.5 - Resumen</h3> <p>En resumen, los métodos en Java son bloques fundamentales para estructurar el código y mejorar su reutilización y organización. Al declarar métodos, puedes realizar tareas específicas, aceptar parámetros para personalizar su comportamiento, y devolver resultados. Comprender cómo declarar y utilizar métodos es esencial para programar en Java de manera eficiente.</p>`
+                }
+            ],
+            test: {
+                titulo: "Test Java",
+                preguntas: [
+                    {
+                        numero: 1,
+                        enunciado: "¿Cuál es la sintaxis correcta para generar \"Hello World\" en Java?",
+                        retroalimentacion: "La forma correcta es: System.out.println(\"Hello World\");",
+                        respuestas: [
+                            { texto: "System.out.println(\"Hello World\");", esCorrecta: true },
+                            { texto: "Console.Writeline(\"Hello World\");", esCorrecta: false },
+                            { texto: "print (\"Helio World\");", esCorrecta: false },
+                            { texto: "echo(\"Hello World\");", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 2,
+                        enunciado: "¿Qué palabra clave se utiliza para crear una clase en Java?",
+                        retroalimentacion: "La palabra clave correcta para definir una clase es 'class'.",
+                        respuestas: [
+                            { texto: "class()", esCorrecta: false },
+                            { texto: "className", esCorrecta: false },
+                            { texto: "MyClass", esCorrecta: false },
+                            { texto: "class", esCorrecta: true }
+                        ]
+                    },
+                    {
+                        numero: 3,
+                        enunciado: "¿Cómo se insertan COMENTARIOS en el código Java?",
+                        retroalimentacion: "Se usan // para comentarios de línea y /* */ para comentarios de bloque.",
+                        respuestas: [
+                            { texto: "//Esto es un comentario", esCorrecta: true },
+                            { texto: "/* Esto es un comentario", esCorrecta: true },
+                            { texto: "#Esto es un comentario", esCorrecta: false },
+                            { texto: "<!--Esto es un comentario", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 4,
+                        enunciado: "¿Qué tipo de datos se utiliza para crear una variable que debe almacenar texto?",
+                        retroalimentacion: "El tipo de datos adecuado en Java para texto es 'String'.",
+                        respuestas: [
+                            { texto: "myString", esCorrecta: false },
+                            { texto: "Txt", esCorrecta: false },
+                            { texto: "string", esCorrecta: false },
+                            { texto: "String", esCorrecta: true }
+                        ]
+                    },
+                    {
+                        numero: 5,
+                        enunciado: "¿Cómo se crea una variable con el valor numérico 5?",
+                        retroalimentacion: "La forma correcta es: int x = 5;",
+                        respuestas: [
+                            { texto: "num x = 5", esCorrecta: false },
+                            { texto: "int x = 5;", esCorrecta: true },
+                            { texto: "float x = 5;", esCorrecta: false },
+                            { texto: "x = 5;", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 6,
+                        enunciado: "¿Cómo se crea una variable con el número flotante 2.8?",
+                        retroalimentacion: "Se usa float x = 2.8f; para definir un número flotante.",
+                        respuestas: [
+                            { texto: "float x = 2.8f;", esCorrecta: true },
+                            { texto: "byte x = 2.8f", esCorrecta: false },
+                            { texto: "x = 2.8f;", esCorrecta: false },
+                            { texto: "int x = 2.8f;", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 7,
+                        enunciado: "¿Qué método se puede utilizar para encontrar la longitud de una cadena?",
+                        retroalimentacion: "length() se utiliza para obtener la longitud de una cadena.",
+                        respuestas: [
+                            { texto: "length()", esCorrecta: true },
+                            { texto: "len()", esCorrecta: false },
+                            { texto: "getSize()", esCorrecta: false },
+                            { texto: "getLength()", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 8,
+                        enunciado: "¿Qué operador se utiliza para sumar dos valores?",
+                        retroalimentacion: "El signo + se utiliza para sumar valores.",
+                        respuestas: [
+                            { texto: "El signo *", esCorrecta: false },
+                            { texto: "El signo &", esCorrecta: false },
+                            { texto: "El signo +", esCorrecta: true },
+                            { texto: "El signo x", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 9,
+                        enunciado: "¿Cuál es la forma correcta de crear un objeto llamado myObj de MyClass?",
+                        retroalimentacion: "La forma correcta es: MyClass myObj = new MyClass();",
+                        respuestas: [
+                            { texto: "new miObj = MiClase();", esCorrecta: false },
+                            { texto: "MyClass myObj = new MyClass();", esCorrecta: true },
+                            { texto: "class miObj = new MiClase();", esCorrecta: false },
+                            { texto: "clase MiClase = new miObj();", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 10,
+                        enunciado: "¿Qué método se puede usar para devolver una cadena en letras mayúsculas?",
+                        retroalimentacion: "Se utiliza toUpperCase() para convertir una cadena a mayúsculas.",
+                        respuestas: [
+                            { texto: "toUpperCase()", esCorrecta: true },
+                            { texto: "touppercase()", esCorrecta: false },
+                            { texto: "upperCase()", esCorrecta: false },
+                            { texto: "tuc()", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 11,
+                        enunciado: "¿Qué operador se puede utilizar para comparar dos valores?",
+                        retroalimentacion: "El operador == se utiliza para comparar valores.",
+                        respuestas: [
+                            { texto: "==", esCorrecta: true },
+                            { texto: "=", esCorrecta: false },
+                            { texto: "><", esCorrecta: false },
+                            { texto: "<>", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 12,
+                        enunciado: "Para declarar un array en Java, defina el tipo de variable con:",
+                        retroalimentacion: "En Java se utiliza [] para declarar arrays.",
+                        respuestas: [
+                            { texto: "{}", esCorrecta: false },
+                            { texto: "[]", esCorrecta: true },
+                            { texto: "()", esCorrecta: false },
+                            { texto: "<>", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 13,
+                        enunciado: "¿Qué método se puede utilizar para hallar el mayor valor de x e y?",
+                        retroalimentacion: "Se usa Math.max(x, y) para hallar el mayor valor.",
+                        respuestas: [
+                            { texto: "Math.max(x,y)", esCorrecta: true },
+                            { texto: "Math.maxNum(x,y)", esCorrecta: false },
+                            { texto: "Math.largest(x,y)", esCorrecta: false },
+                            { texto: "Math.maximum(x,y)", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 14,
+                        enunciado: "¿Cómo se crea un método en Java?",
+                        retroalimentacion: "Se declara como: tipo nombre() { ... }",
+                        respuestas: [
+                            { texto: "Methodnmae.", esCorrecta: false },
+                            { texto: "Methodnmae[]", esCorrecta: false },
+                            { texto: "Methodnmae()", esCorrecta: true },
+                            { texto: "(Methodnmae)", esCorrecta: false }
+                        ]
+                    },
+                    {
+                        numero: 15,
+                        enunciado: "¿Cómo se llama a un método en Java?",
+                        retroalimentacion: "Se llama usando paréntesis: metodo();",
+                        respuestas: [
+                            { texto: "(methodName);", esCorrecta: false },
+                            { texto: "methodName();", esCorrecta: true },
+                            { texto: "methodName[];", esCorrecta: false },
+                            { texto: "methodName;", esCorrecta: false }
+                        ]
+                    }
+                ]
+            }
+        },{
+            include: [
+                {
+                    model: Tema,
+                    as: "temas",
+                },
+                {
+                    model: Test,
+                    as: "test",
+                    include: [
+                        {
+                            model: Pregunta,
+                            as: "preguntas",
+                            include: [
+                                {
+                                    model: Respuesta,
+                                    as: "respuestas"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+    
+        });
+
         await Logro.create({
             id: 1,
             mensajeMotivacionalCursoOK: '¡Felicidades, has completado el curso con éxito!',
