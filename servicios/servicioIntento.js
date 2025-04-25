@@ -10,7 +10,7 @@ const {
     IntentoPreguntaNoEncontradoError,
     TestNoEncontradoError,
     IntentoTestNoEncontradoError,
-    IntentoTestTerminadoError,  
+    IntentoTestTerminadoError,
     RespuestaNoEncontradaError,
     PreguntasSinResponderError
 } = require("../utils/errores");
@@ -22,6 +22,7 @@ class ServicioIntentoTest {
      * Inicia un intento de test
      * 
      * @param {Number} idTest - El id del test a intentar
+     * @param {Number} idUsuario - El id del usuario en la sesión
      * @returns {Promise<Number>} El id del intento de test creado
      */
     async intentarTest(idTest, idUsuario) {
@@ -69,12 +70,17 @@ class ServicioIntentoTest {
      * actualizado
      * 
      * @param {Number} idIntentoTest - Id del intento de test a terminar
+     * @param {Number} idUsuario - Id del usuario en la sesión
      * @returns {Number} El id del curso al que pertenece el test
      */
-    async terminarIntento(idIntentoTest) {
+    async terminarIntento(idIntentoTest, idUsuario) {
 
         // Buscamos el intento de test por su id, con su test, y sus intentos de pregunta y respuestas
-        const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
+        const intentoTest = await IntentoTest.findOne({
+            where: {
+                id: idIntentoTest,
+                idUsuario: idUsuario
+            },
             include: [
                 {
                     model: Test,
@@ -125,8 +131,9 @@ class ServicioIntentoTest {
      * @param {Number} idIntentoTest - Id del intento de test asociado al intento de la pregunta
      * @param {Number} numeroPregunta - Id de la pregunta a intentar
      * @param {Number} idRespuesta - Id de la respuesta a la pregunta
+     * @param {Number} idUsuario - Id del usuario en la sesión
      */
-    async intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta) {
+    async intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta, idUsuario) {
         // Buscamos la respuesta con su intento de pregunta y su intento de test correspondientes al parametro
         const respuesta = await Respuesta.findByPk(idRespuesta, {
             include: [
@@ -142,7 +149,10 @@ class ServicioIntentoTest {
                                 {
                                     model: IntentoTest,
                                     as: "intento_test",
-                                    where: { id: idIntentoTest }
+                                    where: {
+                                        id: idIntentoTest,
+                                        idUsuario: idUsuario
+                                    }
                                 }
                             ]
                         }
@@ -173,6 +183,7 @@ class ServicioIntentoTest {
      *
      * @param {Number} idIntentoTest - Id del intento de test asociado al intento de la pregunta
      * @param {Number} numeroPregunta - Id de la pregunta sobre la que queremos obtener el intento
+     * @param {Number} idUsuario - Id del usuario en la sesión
      * @returns {Object} El intento de test, con el intento de pregunta
      */
     async obtenerIntentoPregunta(idIntentoTest, numeroPregunta, idUsuario) {
@@ -181,7 +192,10 @@ class ServicioIntentoTest {
                 {
                     model: IntentoTest,
                     as: "intento_test",
-                    where: { id: idIntentoTest },
+                    where: {
+                        id: idIntentoTest,
+                        idUsuario: idUsuario
+                    },
                     include: [
                         {
                             model: Test,
@@ -243,10 +257,11 @@ class ServicioIntentoTest {
      * Obtiene un curso junto con su test y sus intentos
      * 
      * @param {Number} idCurso - El id del curso al que pertenece el test al que pertenecen los intentos
+     * @param {Number} idUsuario - El id del usuario en la sesión
      * @returns {Object} El curso con el id proporcionado y su test con sus intentos
      * @throws {CursoNoEncontradoError} Si no se encuentra ningún curso con el id indicado
      */
-    async obtenerIntentosTest(idCurso) {
+    async obtenerIntentosTest(idCurso, idUsuario) {
         const curso = await Curso.findByPk(idCurso, {
             include: [
                 {
@@ -255,7 +270,8 @@ class ServicioIntentoTest {
                     include: [
                         {
                             model: IntentoTest,
-                            as: "intentos"
+                            as: "intentos",
+                            where: { idUsuario: idUsuario }
                         }
                     ]
                 }

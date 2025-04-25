@@ -221,7 +221,8 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
-    const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
+    const idUsuario = req.session.user.id; // Rescatamos el id de usuario de la sesión
+    const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta, idUsuario);
 
     res.render('pregunta-test', { intentoTest });
   } catch (error) {
@@ -235,8 +236,9 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const idRespuesta = req.body.idRespuesta; // Rescatamos el id de la respuesta seleccionada del cuerpo de la petición
+    const idUsuario = req.session.user.id;
     // Delegamos a la capa de servicio
-    await servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta);
+    await servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta, idUsuario);
     res.redirect(`/intento-test/${idIntentoTest}/pregunta/${numeroPregunta}/intento-pregunta`);
   } catch (error) {
     next(error); // Llamamos al (middleware) manejador de errores/excepciones
@@ -257,10 +259,10 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
 app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest;
+    const idUsuario = req.session.user.id;
     // Llamamos a la función del servicio para obtener el intento de test
-    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+    await servicioIntento.terminarIntento(idIntentoTest, idUsuario);
     res.json({ redirectUrl: `/logro-curso/${idIntentoTest}` });
-
   } catch (error) {
     next(error);
   }
@@ -273,13 +275,8 @@ app.get('/nuevo-recordatorio', (req, res) => {
 // Ver información antes de realizar el test
 app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
   try {
-    const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso);
-    const idUsuario=req.session.user?.id;
-    let intentosPorUsuario=curso.test.intentos;
-
-    if(idUsuario){
-      intentosPorUsuario=curso.test.intentos.filter(intento=>intento.idUsuario===idUsuario);
-    }
+    const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso, req.session.user.id);
+    
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {
       idTest: curso.test.id,
