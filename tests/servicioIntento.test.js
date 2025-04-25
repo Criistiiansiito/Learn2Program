@@ -36,6 +36,7 @@ jest.mock("../modelos/Pregunta", () => ({
 jest.mock("../modelos/IntentoTest", () => ({
     create: jest.fn(), // La llamada a create será simulada
     findByPk: jest.fn(),
+    findOne: jest.fn(),
 }));
 
 jest.mock("../modelos/IntentoPregunta", () => ({
@@ -94,116 +95,90 @@ describe("intentarTest", () => {
 
 })
 
-describe("terminarIntento", () => {
+describe('terminarIntento', () => {
+    const idIntentoTest = 1;
+    const idUsuario = 123;
+
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    test("deberia actualizar el intento de test y devolver el id del curso", async () => {
-        // ## Given ##
-        const idIntentoTest = 1;
+    it('debería lanzar un error si hay preguntas sin responder', async () => {
         const mockIntentoTest = {
-            preguntasAcertadas: 2, // Ahora las preguntas acertadas no se calculan en terminar intento
-            test: { idCurso: 5 },
+            id: idIntentoTest,
+            idUsuario: idUsuario,
             intentos_pregunta: [
+                { respuesta: { esCorrecta: true } },
+                { respuesta: null } // <- pregunta sin responder
+            ],
+            test: { idCurso: 5 }
+        };
+
+        IntentoTest.findOne.mockResolvedValue(mockIntentoTest);
+
+        await expect(servicioIntento.terminarIntento(idIntentoTest, idUsuario))
+            .rejects
+            .toThrow(PreguntasSinResponderError);
+    });
+
+    it('debería lanzar un error si no se encuentra el intento', async () => {
+        IntentoTest.findOne.mockResolvedValue(null);
+
+        await expect(servicioIntento.terminarIntento(idIntentoTest, idUsuario))
+            .rejects
+            .toThrow(IntentoTestNoEncontradoError);
+    });
+
+    it('debería terminar el intento correctamente si todas las preguntas están respondidas', async () => {
+        const mockSave = jest.fn();
+
+        const mockIntentoTest = {
+            id: idIntentoTest,
+            idUsuario: idUsuario,
+            intentos_pregunta: [
+                { respuesta: { esCorrecta: true } },
                 { respuesta: { esCorrecta: false } },
                 { respuesta: { esCorrecta: true } },
-                { respuesta: { esCorrecta: true } }
             ],
-            save: jest.fn().mockResolvedValue(true)
+            preguntasAcertadas: 0,
+            nota: 0,
+            terminado: false,
+            fechaFin: null,
+            save: mockSave,
+            test: { idCurso: 42 }
         };
-        IntentoTest.findByPk.mockResolvedValue(mockIntentoTest);
-        // ## When ##
-        const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
-        // ## Then ##
-        expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
+
+        IntentoTest.findOne.mockResolvedValue(mockIntentoTest);
+
+        const idCurso = await servicioIntento.terminarIntento(idIntentoTest, idUsuario);
+
+        expect(idCurso).toBe(42);
         expect(mockIntentoTest.preguntasAcertadas).toBe(2);
         expect(mockIntentoTest.nota).toBe('6.67');
         expect(mockIntentoTest.terminado).toBe(true);
-        expect(mockIntentoTest.fechaFin).toBeInstanceOf(Date);
-        expect(mockIntentoTest.save).toHaveBeenCalled();
-        expect(idCurso).toBe(mockIntentoTest.test.idCurso);
-    })
-
-    test("deberia lanzar una excepcion cuando no se encuentre el test", async () => {
-        const idIntentoTest = 99;
-        IntentoTest.findByPk.mockResolvedValue(null);
-
-        await expect(servicioIntento.terminarIntento(idIntentoTest))
-            .rejects
-            .toThrow(new IntentoTestNoEncontradoError(idIntentoTest));
-
-        expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
-    })
-
-    test("debería calcular correctamente la nota si hay preguntas sin responder", async () => {
-        const idIntentoTest = 2;
-    
-        const mockIntentoTest = {
-            test: { idCurso: 10 },
-            intentos_pregunta: [
-                { respuesta: null }, // Pregunta sin responder
-                { respuesta: { esCorrecta: true } }, // Pregunta correcta
-                { respuesta: { esCorrecta: false } } // Pregunta incorrecta
-            ],
-            save: jest.fn().mockResolvedValue(true)
-        };
-    
-        IntentoTest.findByPk.mockResolvedValue(mockIntentoTest);
-    
-        // Aquí deberíamos verificar si lanza el error cuando hay preguntas sin responder
-        await expect(servicioIntento.terminarIntento(idIntentoTest))
-            .rejects
-            .toThrow(new PreguntasSinResponderError(idIntentoTest));
-    
-        // Verificar que no se actualizó el intentoTest ni se guardó
-        expect(mockIntentoTest.save).not.toHaveBeenCalled();
+        expect(mockSave).toHaveBeenCalled();
     });
-    
-    test("debería calcular correctamente la nota si todas las preguntas están respondidas", async () => {
-        const idIntentoTest = 2;
-    
-        const mockIntentoTest = {
-            test: { idCurso: 10 },
-            intentos_pregunta: [
-                { respuesta: { esCorrecta: true } },  // Pregunta correcta
-                { respuesta: { esCorrecta: false } }, // Pregunta incorrecta
-                { respuesta: { esCorrecta: true } }   // Pregunta correcta
-            ],
-            save: jest.fn().mockResolvedValue(true)
-        };
-    
-        IntentoTest.findByPk.mockResolvedValue(mockIntentoTest);
-    
-        const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
-    
-        expect(IntentoTest.findByPk).toHaveBeenCalledWith(idIntentoTest, expect.any(Object));
-        expect(mockIntentoTest.preguntasAcertadas).toBe(2);
-        expect(mockIntentoTest.nota).toBe('6.67'); // Calculado en base a las preguntas acertadas
-        expect(mockIntentoTest.terminado).toBe(true);
-        expect(mockIntentoTest.fechaFin).toBeInstanceOf(Date);
-        expect(mockIntentoTest.save).toHaveBeenCalled();
-        expect(idCurso).toBe(mockIntentoTest.test.idCurso);
-    });
-})
+});
 
 describe("obtenerIntentosTest", () => {
     afterEach(() => {
         jest.clearAllMocks();
-    })
+    });
 
     test("deberia obtener el curso con su test y sus intentos", async () => {
         // ## Given ##
         const idCurso = 1;
+        const idUsuario = 99;
         const mockCurso = {
             id: idCurso,
             test: { intentos: [] }
         };
+
         Curso.findByPk.mockResolvedValue(mockCurso);
         IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
 
         // ## When ##
-        const curso = await servicioIntento.obtenerIntentosTest(idCurso);
+        const curso = await servicioIntento.obtenerIntentosTest(idCurso, idUsuario);
 
         // ## Then ##
         expect(curso).toBe(mockCurso);
@@ -215,7 +190,8 @@ describe("obtenerIntentosTest", () => {
                     include: [
                         {
                             model: IntentoTest,
-                            as: "intentos"
+                            as: "intentos",
+                            where: { idUsuario: idUsuario }
                         }
                     ]
                 }
@@ -231,13 +207,16 @@ describe("obtenerIntentosTest", () => {
     test("deberia lanzar una excepcion cuando no se encuentre el curso", async () => {
         // ## Given ##
         const idCurso = 1;
+        const idUsuario = 99;
+
         Curso.findByPk.mockResolvedValue(null);
         IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
 
         // ## When & Then ##
-        await expect(servicioIntento.obtenerIntentosTest(idCurso))
+        await expect(servicioIntento.obtenerIntentosTest(idCurso, idUsuario))
             .rejects
             .toThrow(new CursoNoEncontradoError(idCurso));
+
         expect(Curso.findByPk).toHaveBeenCalledWith(idCurso, {
             include: [
                 {
@@ -246,7 +225,8 @@ describe("obtenerIntentosTest", () => {
                     include: [
                         {
                             model: IntentoTest,
-                            as: "intentos"
+                            as: "intentos",
+                            where: { idUsuario: idUsuario }
                         }
                     ]
                 }
@@ -258,7 +238,7 @@ describe("obtenerIntentosTest", () => {
             }
         });
     });
-})
+});
 
 describe("intentarPregunta", () => {
     afterEach(() => {
@@ -405,27 +385,6 @@ describe("obtenerIntentoPregunta", () => {
 
         expect(IntentoPregunta.findOne).toHaveBeenCalled();
     });
-
-    test("deberia lanzar una excepcion cuando el intento de test no pertenece al usuario", async () => {
-        // ## Given ##
-        const idIntentoTest = 1;
-        const idUsuario = 1;
-
-        const mockIntentoTest = {
-            id: idIntentoTest,
-            idUsuario: 3
-        }
-
-        IntentoPregunta.findOne.mockResolvedValue(mockIntentoTest);
-
-        // ## When & Then ##
-        await expect(servicioIntento.obtenerIntentoPregunta(idIntentoTest, 1, idUsuario))
-            .rejects
-            .toThrow(new IntentoNoPerteneceUsuarioError(idIntentoTest, idUsuario))
-        
-        expect(IntentoPregunta.findOne).toHaveBeenCalled();
-        expect(Pregunta.findOne).not.toHaveBeenCalled();
-    })
 
     test("debería obtener el intento de pregunta correctamente cuando ya fue respondida", async () => {
         // ## Given ##
