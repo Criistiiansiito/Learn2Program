@@ -112,12 +112,12 @@ class ServicioIntentoTest {
         const nota = ((preguntasAcertadas / numeroPreguntas) * 10).toFixed(2); // Nota con dos decimales
         intentoTest.preguntasAcertadas = preguntasAcertadas;
         intentoTest.nota = nota;
+        
         intentoTest.terminado = true;
         intentoTest.fechaFin = new Date();
+        
         // Guardamos el intento actualizado
         await intentoTest.save();
-
-        const idCurso = intentoTest.test ? intentoTest.test.idCurso : null;
 
         return intentoTest.test ? intentoTest.test.idCurso : null;
     }
@@ -173,6 +173,14 @@ class ServicioIntentoTest {
             // Si ya se ha respondido a la pregunta, lanzamos una excepción
             throw new PreguntaYaIntentadaError(idIntentoTest, numeroPregunta);
         }
+        // Actualizamos las preguntas intentadas
+        const intentoTest = intentoPregunta.intento_test;
+        intentoTest.preguntasIntentadas++;
+        // Actualizamos la puntuación del test
+        if (respuesta.esCorrecta) {
+            intentoTest.preguntasAcertadas++;
+        }
+        await intentoTest.save();
         // Actualizamos el intento de la pregunta
         intentoPregunta.idRespuesta = idRespuesta;
         await intentoPregunta.save();
@@ -250,6 +258,7 @@ class ServicioIntentoTest {
         // Añadimos la pregunta a intentoPregunta.intento_test
         intentoPregunta.intento_test.test.numeroPreguntas = intentoPregunta.intento_test.test.preguntas.length;
         intentoPregunta.intento_test.test.preguntas = [pregunta];
+        intentoPregunta.intento_test.test.preguntas[0].idRespuestaSeleccionada = intentoPregunta.idRespuesta;
         return intentoPregunta.intento_test;
     }
 
@@ -262,6 +271,14 @@ class ServicioIntentoTest {
      * @throws {CursoNoEncontradoError} Si no se encuentra ningún curso con el id indicado
      */
     async obtenerIntentosTest(idCurso, idUsuario) {
+
+        // Eliminamos los intentos no terminados
+        await IntentoTest.destroy({
+            where: {
+                terminado: false
+            }
+        });
+
         const curso = await Curso.findByPk(idCurso, {
             include: [
                 {
@@ -276,10 +293,12 @@ class ServicioIntentoTest {
                     ]
                 }
             ]
-        })
+        });
+
         if (!curso) {
             throw new CursoNoEncontradoError(idCurso);
         }
+
         return curso;
     }
 

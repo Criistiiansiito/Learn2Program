@@ -215,7 +215,20 @@ app.get('/ver-teoria-curso', async (req, res) => {
 
 });
 
-//HASTA AQUI LO NUEVO
+function obtenerEstadisticasIntento(idIntentoTest) {
+  const intento =  IntentoTest.findByPk(idIntentoTest, {
+    attributes: ['preguntasAcertadas', 'preguntasIntentadas']
+  });
+
+  if (!intento) {
+    throw new Error('Intento de test no encontrado');
+  }
+
+  return {
+    preguntasAcertadas: intento.preguntasAcertadas,
+    preguntasIntentadas: intento.preguntasIntentadas
+  };
+}
 
 app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
   try {
@@ -223,6 +236,9 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const idUsuario = req.session.user.id; // Rescatamos el id de usuario de la sesión
     const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta, idUsuario);
+    
+    console.log("PREGUNTAS ACERTADAS:", intentoTest.preguntasAcertadas);
+    console.log("PREGUNTAS INTENTADAS:", intentoTest.preguntasIntentadas);
 
     res.render('pregunta-test', { intentoTest });
   } catch (error) {
@@ -328,6 +344,7 @@ app.get('/establecer-recordatorio', (req, res) => {
     mensajeExito: null
   });
 });
+
 
 app.post('/crear-recordatorio', (req, res) => {
   const { fecha, email, mensaje, asunto, time } = req.body;

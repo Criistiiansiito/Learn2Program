@@ -259,8 +259,6 @@ describe("GET /intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-preg
 })
 
 // Prueba de integración para el login
-const request = require('supertest');
-const app = require('../app');
 const Usuario = require('../modelos/Usuario');
 const bcrypt = require('bcrypt');
 
