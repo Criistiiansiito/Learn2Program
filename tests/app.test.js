@@ -411,14 +411,14 @@ describe("GET /intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-preg
     })
 
 })
-
-//pruebas integracion registro
+// Pruebas de integración registro
 describe("POST /register", () => {
 
     test("Debería registrar un usuario nuevo correctamente", async () => {
         const nuevoUsuario = {
             correo: "usuario" + Date.now() + "@correo.com", // Para evitar duplicados
-            password: "contrasena123"
+            password: "contrasena123",
+            password2: "contrasena123" // 🔥 Añadido
         };
 
         const response = await request(app)
@@ -445,7 +445,11 @@ describe("POST /register", () => {
 
         const response = await request(app)
             .post('/register')
-            .send({ correo: correoDuplicado, password: 'password123' });
+            .send({
+                correo: correoDuplicado,
+                password: 'password123',
+                password2: 'password123' // 🔥 Añadido
+            });
 
         expect(response.status).toBe(400);
         expect(response.body.message_error).toBe('¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.');
@@ -454,10 +458,27 @@ describe("POST /register", () => {
     test("Debería rechazar correos con formato inválido", async () => {
         const response = await request(app)
             .post('/register')
-            .send({ correo: "correo-invalido", password: "123456" });
+            .send({
+                correo: "correo-invalido",
+                password: "123456",
+                password2: "123456" // 🔥 Añadido
+            });
 
         expect(response.status).toBe(400);
         expect(response.body.message_error).toBe('Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)');
+    });
+
+    test("Debería fallar si las contraseñas no coinciden", async () => {
+        const response = await request(app)
+            .post('/register')
+            .send({
+                correo: "nuevoUsuario" + Date.now() + "@correo.com",
+                password: "123456",
+                password2: "654321" // 🔥 Contraseñas distintas
+            });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message_error).toBe('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
     });
 
 });

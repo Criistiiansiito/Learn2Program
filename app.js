@@ -165,14 +165,23 @@ app.post('/register', async (req, res) => {
   try {
     const correo = req.body.correo;
     const password = req.body.password;
+    const password2 = req.body.password2; // Añadimos también el segundo password
 
-    // Para poder validar el correo y que sea con una terminacion válida
+    // Validar formato del correo
     const correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|es|org|net)$/;
 
     if (!correoValido.test(correo)) {
       return res.status(400).json({
         success: false,
         message_error: 'Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)'
+      });
+    }
+console.log(password + 'y contraseña' + password2);
+    // Comprobar que ambas contraseñas coincidan
+    if (password !== password2) {
+      return res.status(400).json({
+        success: false,
+        message_error: 'Las contraseñas no coinciden. Por favor, inténtalo de nuevo.'
       });
     }
 
@@ -185,6 +194,8 @@ app.post('/register', async (req, res) => {
         message_error: '¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.'
       });
     }
+
+    // Si todo va bien, hasheamos y guardamos
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await Usuario.create({

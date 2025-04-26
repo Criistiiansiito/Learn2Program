@@ -44,6 +44,10 @@
                             <label for="password" >Contraseña</label>
                             <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="password2" >Repite la Contraseña</label>
+                            <input type="password" class="form-control" id="password2" name="password2" placeholder="Repite Contraseña" required>
+                        </div>
                         <button type="submit" class="btn btn-primary w-100">Registrarse</button>
                     </form>
     
@@ -65,11 +69,13 @@
 
           const correo = document.getElementById('correo').value;
           const password = document.getElementById('password').value;
+          const password2 = document.getElementById('password2').value;
       
           // Crear el objeto que se enviará al servidor
           const formData = {
             correo: correo,
-            password: password
+            password: password,
+            password2: password2
           };
       
             const response = await fetch('/register', {

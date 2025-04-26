@@ -20,7 +20,11 @@ describe('POST /register', () => {
 
     const response = await request(app)
       .post('/register')
-      .send({ correo: nuevoCorreo, password: nuevaContraseña });
+      .send({
+        correo: nuevoCorreo,
+        password: nuevaContraseña,
+        password2: nuevaContraseña // 🔥 ahora también enviamos password2
+      });
 
     expect(response.statusCode).toBe(200); 
     expect(Usuario.create).toHaveBeenCalled();
@@ -35,7 +39,11 @@ describe('POST /register', () => {
 
     const response = await request(app)
       .post('/register')
-      .send({ correo: correoExistente, password: '123456' });
+      .send({
+        correo: correoExistente,
+        password: '123456',
+        password2: '123456'
+      });
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message_error).toBe('¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.');
@@ -44,9 +52,26 @@ describe('POST /register', () => {
   it('debe fallar si el correo no tiene formato válido', async () => {
     const response = await request(app)
       .post('/register')
-      .send({ correo: 'correoInvalido', password: '123456' });
+      .send({
+        correo: 'correoInvalido',
+        password: '123456',
+        password2: '123456'
+      });
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message_error).toBe('Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)');
+  });
+
+  it('debe fallar si las contraseñas no coinciden', async () => {
+    const response = await request(app)
+      .post('/register')
+      .send({
+        correo: 'nuevo@correo.com',
+        password: '123456',
+        password2: '654321' // 🔥 contraseñas distintas
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message_error).toBe('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
   });
 });
