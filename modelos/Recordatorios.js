@@ -24,8 +24,8 @@ const Recordatorio = sequelize.define("Recordatorio", {
     allowNull: false
   }  
 }, {
-  tableName: "recordatorios", // Nombre de la tabla en la BD
-  timestamps: false // Evita que sequelize añada createdAt y updatedAt automáticamente
+  tableName: "recordatorios",
+  timestamps: false
 });
 
 module.exports = Recordatorio;

@@ -6,14 +6,14 @@ const servicioIntento = require('./servicios/servicioIntento');
 const servicioLogro = require('./servicios/servicioLogro');
 const Curso = require('./modelos/Curso');
 const Tema = require('./modelos/Tema');
-const Test = require('./modelos/Test');
-const IntentoTest = require('./modelos/IntentoTest');
-
+const LogroUsuario = require('./modelos/LogroUsuario');
 const manejadorErrores = require('./middleware/manejadorErrores');
 const seedDatabase = require('./database/seed');
-const Pregunta = require('./modelos/Pregunta');
+const moment = require('moment');  
+var cookieParser = require('cookie-parser');
 const Recordatorio = require('./modelos/Recordatorios');
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
+const requireAuth = require('./middleware/filtroAuteticacion');
 
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
@@ -56,25 +56,153 @@ async function enviarRecordatorios() {
   }
 }
 
-setInterval(enviarRecordatorios, 10 * 1000);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(enviarRecordatorios, 10 * 1000);
+  enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
+}
 
 const app = express();
+const session = require('express-session'); 
+
+const bcrypt = require('bcrypt');
+const Usuario = require('./modelos/Usuario');
+
+app.use(session({
+  secret: 'mi_clave_secreta',  
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }    
+}));
+
+// Middleware para pasar información de la sesión a la vista
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;  // Pasa el usuario actual a las vistas
+  next();
+});
 
 //Variable que almancenará el idCurso durante toda la ejecucion
 app.locals.idCurso = 1;
 
-// Configuración para que el servidor sepa redirigir correctamente a las plantillas
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // sirve para que en tiempo de ejecución el servidor sepa acceder a la carpeta public para imagenes, etc
 app.use(express.static(path.join(__dirname, 'public')));
-// (Middleware que) covierte los cuerpos x-www-form-urlencoded de las peticiones en objetos javascript
-// Necesario para los intentos de las preguntas del test
-app.use(express.urlencoded({ extended: true }));
 
-// Home en primera historia de usuario
+// Cuando no se pone ninguna ruta, se redirige automaticamente al inicio de sesión, actuando como página principal.
 app.get('/', async (req, res) => {
+  console.log("Carga de la página de inicio de sesión");
+  
+  // Cogemos mensaje de la sesion si lo hay
+  //Esto se usa por ejemplo cuando haya un registro exitoso, este es el mensaje que se mostrará en verde.
+  const message = req.session.message || '';
+
+  // Lo eliminamos para que si recargamos no salga
+  delete req.session.message;
+  res.render('inicio-sesion', { message });
+});
+
+//Maneja la petición para mostrar la vista del formulario de inicio de sesión
+app.get('/inicio-sesion', async (req, res) => {
+  console.log("Carga de la página de inicio de sesión");
+
+  // Cogemos mensaje de la sesion si lo hay
+  const message = req.session.message || '';
+
+  // Lo eliminamos para que si recargamos no salga
+  delete req.session.message;
+  res.render('inicio-sesion', { message });
+});
+
+// Maneja el formulario de inicio de sesión de un usuario existente, y muestra mensajes de alerta en caso de haber error,
+// y en caso de exito redirije a la vista de la teoría del curso que tenemos actualmente.
+app.post('/login', async (req, res) => {
+  try {
+    const correo = req.body.correo;
+    const password = req.body.password;
+ 
+    const user = await Usuario.findOne({ where: { correo: correo } });
+
+    if (!user) {
+      return res.status(400).json({ message_error: '¡No hay ninguna cuenta con este correo!' });
+    }
+
+    // Comparamos las contraseñas
+    const isMatch = await bcrypt.compare(password, user.contraseña); 
+    if (!isMatch) {
+      return res.status(400).json({ message_error: 'Contraseña incorrecta' });
+    }
+
+    // Guardar la información del usuario en la sesión
+    req.session.user = {
+      id: user.id,
+      correo: user.correo,  
+      password: user.contraseña,
+    };
+
+    console.log(`Usuario autenticado: ${req.session.user.correo}`);
+
+    res.json({ success: true, redirect: '/ver-teoria-curso' });
+
+  } catch (err) {
+    console.error('Error en el inicio de sesión:', err);
+    res.status(500).json({ message_error: 'Error interno del servidor' });
+  }
+});
+
+//Maneja la petición para mostrar la vista del formulario de registro
+app.get('/registro', async (req, res) => {
+  console.log("Carga de la página de registro");
+  res.render('registro');
+});
+
+// Maneja el formulario de registro de un nuevo usuario, y muestra mensajes de alerta en caso de haber error
+// y en caso de exito redirije a la vista de inicio de sesión, mostrando un mensaje de registro exitoso.
+app.post('/register', async (req, res) => {
+  try {
+    const correo = req.body.correo;
+    const password = req.body.password;
+
+    // Para poder validar el correo y que sea con una terminacion válida
+    const correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|es|org|net)$/;
+
+    if (!correoValido.test(correo)) {
+      return res.status(400).json({
+        success: false,
+        message_error: 'Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)'
+      });
+    }
+
+    // Verificar si ya existe el usuario
+    const usuarioExistente = await Usuario.findOne({ where: { correo } });
+
+    if (usuarioExistente) {
+      return res.status(400).json({
+        success: false,
+        message_error: '¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.'
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await Usuario.create({
+      correo: correo,
+      contraseña: hashedPassword,
+    });
+
+    req.session.message = '¡Registro completado! Inicia sesión para acceder a la teoría.';
+    res.json({ success: true, redirect: '/inicio-sesion' });
+
+  } catch (err) {
+    console.error('Error en el registro:', err);
+    res.status(500).json({ message_error: 'Error interno del servidor' });
+  }
+});
+
+//Ver teoria curso
+app.get('/ver-teoria-curso', requireAuth, async (req, res) => {
 
   // Carga un curso junto con sus temas
   const curso = await Curso.findOne({
@@ -103,16 +231,15 @@ function obtenerEstadisticasIntento(idIntentoTest) {
   };
 }
 
-app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
+app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
-    const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta);
-    
+    const idUsuario = req.session.user.id; // Rescatamos el id de usuario de la sesión
+    const intentoTest = await servicioIntento.obtenerIntentoPregunta(idIntentoTest, numeroPregunta, idUsuario);
     
     console.log("PREGUNTAS ACERTADAS:", intentoTest.preguntasAcertadas);
     console.log("PREGUNTAS INTENTADAS:", intentoTest.preguntasIntentadas);
-
 
     res.render('pregunta-test', { intentoTest });
   } catch (error) {
@@ -121,13 +248,14 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
 });
 
 // Procesa el intento de una pregunta de un test
-app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
+app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
     const idRespuesta = req.body.idRespuesta; // Rescatamos el id de la respuesta seleccionada del cuerpo de la petición
+    const idUsuario = req.session.user.id;
     // Delegamos a la capa de servicio
-    await servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta);
+    await servicioIntento.intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta, idUsuario);
     res.redirect(`/intento-test/${idIntentoTest}/pregunta/${numeroPregunta}/intento-pregunta`);
   } catch (error) {
     next(error); // Llamamos al (middleware) manejador de errores/excepciones
@@ -135,9 +263,9 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
 });
 
 // Comienza un intento de test
-app.post('/test/:idTest/intento-test', async (req, res, next) => {
+app.post('/test/:idTest/intento-test', requireAuth, async (req, res, next) => {
   try {
-    const idIntentoTest = await servicioIntento.intentarTest(req.params.idTest);
+    const idIntentoTest = await servicioIntento.intentarTest(req.params.idTest, req.session.user.id);
     res.redirect(`/intento-test/${idIntentoTest}/pregunta/1/intento-pregunta`)
   } catch (error) {
     next(error);
@@ -145,27 +273,27 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
 });
 
 // Termina un intento de test
-app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
+app.patch('/intento-test/:idIntentoTest/terminar-intento', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest;
+    const idUsuario = req.session.user.id;
     // Llamamos a la función del servicio para obtener el intento de test
-    const idCurso = await servicioIntento.terminarIntento(idIntentoTest);
+    await servicioIntento.terminarIntento(idIntentoTest, idUsuario);
     res.json({ redirectUrl: `/logro-curso/${idIntentoTest}` });
-
   } catch (error) {
     next(error);
   }
 });
 
-app.get('/nuevo-recordatorio', (req, res) => {
+app.get('/nuevo-recordatorio', requireAuth, (req, res) => {
   res.render("establecer-recordatorio");
 });
 
 // Ver información antes de realizar el test
-app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
+app.get('/curso/:idCurso/previsualizacion-de-test', requireAuth, async (req, res, next) => {
   try {
-    const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso);
-
+    const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso, req.session.user.id);
+    
     // Renderizar la vista con los datos (incluso si no hay intentos)
     res.render('previsualizar-test', {
       idTest: curso.test.id,
@@ -179,11 +307,25 @@ app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
   }
 });
 
-app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
+app.get('/logro-curso/:idIntentoTest', requireAuth, async (req, res, next) => {
   try {
     const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
-
+    const idUsuario=req.session.user?.id;
+    const idLogro=intento.test.curso.logro.id;
     // Pasar el idIntentoTest a la vista
+    
+    if (intento.nota >= 5 && idUsuario) {
+      await LogroUsuario.findOrCreate({
+        where: {
+          idUsuario: idUsuario,
+          idLogro: idLogro
+        },
+        defaults: {
+          fecha: new Date()
+        }
+      });
+    }
+    
     res.render('obtencion-logros', {
       idIntentoTest: req.params.idIntentoTest, // Pasa el ID aquí
       nombreCurso: intento.test.curso.titulo,
@@ -197,7 +339,7 @@ app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
   }
 });
 
-app.get('/establecer-recordatorio', (req, res) => {
+app.get('/establecer-recordatorio', requireAuth, (req, res) => {
   res.render('establecer-recordatorio', {
     mensajeError: null,
     mensajeExito: null
@@ -205,7 +347,7 @@ app.get('/establecer-recordatorio', (req, res) => {
 });
 
 
-app.post('/crear-recordatorio', (req, res) => {
+app.post('/crear-recordatorio', requireAuth, (req, res) => {
   const { fecha, email, mensaje, asunto, time } = req.body;
 
   // Mostrar los datos recibidos para verificar

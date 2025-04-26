@@ -8,6 +8,12 @@ const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
 const IntentoTest = require('../modelos/IntentoTest');
 const Recordatorio = require('../modelos/Recordatorios');
+const Usuario = require('../modelos/Usuario');
+
+const bcrypt = require('bcrypt');
+
+const contraseñaPlana = '123456';
+const saltRounds = 10;
 
 // Función que puebla la base de datos
 async function seedDatabase() {
@@ -465,6 +471,13 @@ async function seedDatabase() {
             email: 'prueba@ucm.es',  // El correo al que se enviará el recordatorio
             mensaje: 'Recuerda que tienes que ir empezando a leerte la teoría el tema, para poder hacer el test .',
             asunto: ' RECORDATORIO  - Learn2Program'
+        });
+
+        const hash = await bcrypt.hash(contraseñaPlana, saltRounds);
+
+        await Usuario.create({
+            correo: 'usuario@example.com',
+            contraseña: hash, 
         });
 
         console.log("Base de datos poblada");

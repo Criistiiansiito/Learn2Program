@@ -10,8 +10,9 @@ const {
     IntentoPreguntaNoEncontradoError,
     TestNoEncontradoError,
     IntentoTestNoEncontradoError,
-    IntentoTestTerminadoError,  
+    IntentoTestTerminadoError,
     RespuestaNoEncontradaError,
+    PreguntasSinResponderError
 } = require("../utils/errores");
 
 // Clase que maneja la lógica de negocio de los intentos de preguntas
@@ -21,9 +22,10 @@ class ServicioIntentoTest {
      * Inicia un intento de test
      * 
      * @param {Number} idTest - El id del test a intentar
+     * @param {Number} idUsuario - El id del usuario en la sesión
      * @returns {Promise<Number>} El id del intento de test creado
      */
-    async intentarTest(idTest) {
+    async intentarTest(idTest, idUsuario) {
         // Obtenemos el test con sus preguntas
         const test = await Test.findByPk(idTest, {
             include: [
@@ -46,6 +48,7 @@ class ServicioIntentoTest {
         const intentoTest = await IntentoTest.create(
             {
                 idTest: idTest,
+                idUsuario: idUsuario,
                 intentos_pregunta: intentosPregunta,
             },
             {
@@ -67,12 +70,16 @@ class ServicioIntentoTest {
      * actualizado
      * 
      * @param {Number} idIntentoTest - Id del intento de test a terminar
+     * @param {Number} idUsuario - Id del usuario en la sesión
      * @returns {Number} El id del curso al que pertenece el test
      */
-    async terminarIntento(idIntentoTest) {
-
+    async terminarIntento(idIntentoTest, idUsuario) {
         // Buscamos el intento de test por su id, con su test, y sus intentos de pregunta y respuestas
-        const intentoTest = await IntentoTest.findByPk(idIntentoTest, {
+        const intentoTest = await IntentoTest.findOne({
+            where: {
+                id: idIntentoTest,
+                idUsuario: idUsuario
+            },
             include: [
                 {
                     model: Test,
@@ -94,9 +101,13 @@ class ServicioIntentoTest {
             // Si no existe el intento, lanzamos una excepción
             throw new IntentoTestNoEncontradoError(idIntentoTest);
         }
-        
-        //guardamos los campos de la nota y la fecha de fin
-        const totalPreguntas = intentoTest.intentos_pregunta.length
+        const numeroPreguntas = intentoTest.intentos_pregunta.length
+        if (intentoTest.preguntasIntentadas < numeroPreguntas) {
+            // Si hay preguntas sin responder, lanzamos una excepcion
+            throw new PreguntasSinResponderError(idIntentoTest);
+        }
+        // Actualizamos los campos del intento
+        intentoTest.nota = ((intentoTest.preguntasAcertadas / numeroPreguntas) * 10).toFixed(2);
         intentoTest.terminado = true;
         intentoTest.fechaFin = new Date();
         
@@ -106,8 +117,6 @@ class ServicioIntentoTest {
         
         // Guardamos el intento actualizado
         await intentoTest.save();
-
-        const idCurso = intentoTest.test ? intentoTest.test.idCurso : null;
 
         return intentoTest.test ? intentoTest.test.idCurso : null;
     }
@@ -121,8 +130,9 @@ class ServicioIntentoTest {
      * @param {Number} idIntentoTest - Id del intento de test asociado al intento de la pregunta
      * @param {Number} numeroPregunta - Id de la pregunta a intentar
      * @param {Number} idRespuesta - Id de la respuesta a la pregunta
+     * @param {Number} idUsuario - Id del usuario en la sesión
      */
-    async intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta) {
+    async intentarPregunta(idIntentoTest, numeroPregunta, idRespuesta, idUsuario) {
         // Buscamos la respuesta con su intento de pregunta y su intento de test correspondientes al parametro
         const respuesta = await Respuesta.findByPk(idRespuesta, {
             include: [
@@ -138,7 +148,10 @@ class ServicioIntentoTest {
                                 {
                                     model: IntentoTest,
                                     as: "intento_test",
-                                    where: { id: idIntentoTest }
+                                    where: {
+                                        id: idIntentoTest,
+                                        idUsuario: idUsuario
+                                    }
                                 }
                             ]
                         }
@@ -177,15 +190,19 @@ class ServicioIntentoTest {
      *
      * @param {Number} idIntentoTest - Id del intento de test asociado al intento de la pregunta
      * @param {Number} numeroPregunta - Id de la pregunta sobre la que queremos obtener el intento
+     * @param {Number} idUsuario - Id del usuario en la sesión
      * @returns {Object} El intento de test, con el intento de pregunta
      */
-    async obtenerIntentoPregunta(idIntentoTest, numeroPregunta) {
+    async obtenerIntentoPregunta(idIntentoTest, numeroPregunta, idUsuario) {
         const intentoPregunta = await IntentoPregunta.findOne({
             include: [
                 {
                     model: IntentoTest,
                     as: "intento_test",
-                    where: { id: idIntentoTest },
+                    where: {
+                        id: idIntentoTest,
+                        idUsuario: idUsuario
+                    },
                     include: [
                         {
                             model: Test,
@@ -248,10 +265,11 @@ class ServicioIntentoTest {
      * Obtiene un curso junto con su test y sus intentos
      * 
      * @param {Number} idCurso - El id del curso al que pertenece el test al que pertenecen los intentos
+     * @param {Number} idUsuario - El id del usuario en la sesión
      * @returns {Object} El curso con el id proporcionado y su test con sus intentos
      * @throws {CursoNoEncontradoError} Si no se encuentra ningún curso con el id indicado
      */
-    async obtenerIntentosTest(idCurso) {
+    async obtenerIntentosTest(idCurso, idUsuario) {
 
         // Eliminamos los intentos no terminados
         await IntentoTest.destroy({
@@ -265,19 +283,21 @@ class ServicioIntentoTest {
                 {
                     model: Test,
                     as: "test",
-                    include: [
-                        {
-                            model: IntentoTest,
-                            as: "intentos"
-                        }
-                    ]
                 }
             ]
         });
 
+        
         if (!curso) {
             throw new CursoNoEncontradoError(idCurso);
         }
+        const intentos = await IntentoTest.findAll({
+            where: {
+                idTest: curso.test.id,
+                idUsuario: idUsuario
+            }
+        })
+        curso.test.intentos = intentos;
 
         return curso;
     }
