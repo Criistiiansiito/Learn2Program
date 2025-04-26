@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/connection");
 const IntentoTest = require("./IntentoTest");
-const Recordatorios = require("./Recordatorios"); // Asegúrate de que el nombre coincide con el modelo
+const Recordatorio = require("./Recordatorios");
 
 const Usuario = sequelize.define("Usuario", {
     id: {
@@ -21,18 +21,18 @@ const Usuario = sequelize.define("Usuario", {
         type: DataTypes.STRING,
         allowNull: false
     }
-}, 
-{
-    tableName: "usuario",
-    timestamps: false
-});
+},
+    {
+        tableName: "usuario",
+        timestamps: false
+    });
 
 // Relación 1:N con IntentoTest
 Usuario.hasMany(IntentoTest, { foreignKey: "idUsuario", onDelete: "CASCADE" });
 IntentoTest.belongsTo(Usuario, { foreignKey: "idUsuario" });
 
 // Relación 1:N con Recordatorios
-
-
+Usuario.hasMany(Recordatorio, { foreignKey: "idUsuario", onDelete: "CASCADE" });
+Recordatorio.belongsTo(Usuario, { foreignKey: "idUsuario" });
 
 module.exports = Usuario;

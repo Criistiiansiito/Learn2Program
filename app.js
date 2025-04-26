@@ -13,6 +13,7 @@ const moment = require('moment');
 var cookieParser = require('cookie-parser');
 const Recordatorio = require('./modelos/Recordatorios');
 const enviarRecordatorio=require("./servicios/enviarRecordatorio");
+const requireAuth = require('./middleware/filtroAuteticacion');
 
 enviarRecordatorio("test@email.com", "Asunto de prueba", "Mensaje de prueba");
 
@@ -201,7 +202,7 @@ app.post('/register', async (req, res) => {
 });
 
 //Ver teoria curso
-app.get('/ver-teoria-curso', async (req, res) => {
+app.get('/ver-teoria-curso', requireAuth, async (req, res) => {
 
   // Carga un curso junto con sus temas
   const curso = await Curso.findOne({
@@ -230,7 +231,7 @@ function obtenerEstadisticasIntento(idIntentoTest) {
   };
 }
 
-app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
+app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
@@ -247,7 +248,7 @@ app.get('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta'
 });
 
 // Procesa el intento de una pregunta de un test
-app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', async (req, res, next) => {
+app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest; // Rescatamos :idIntentoTest de la URL
     const numeroPregunta = req.params.numeroPregunta; // Rescatamos :numeroPregunta de la URL
@@ -262,7 +263,7 @@ app.post('/intento-test/:idIntentoTest/pregunta/:numeroPregunta/intento-pregunta
 });
 
 // Comienza un intento de test
-app.post('/test/:idTest/intento-test', async (req, res, next) => {
+app.post('/test/:idTest/intento-test', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = await servicioIntento.intentarTest(req.params.idTest, req.session.user.id);
     res.redirect(`/intento-test/${idIntentoTest}/pregunta/1/intento-pregunta`)
@@ -272,7 +273,7 @@ app.post('/test/:idTest/intento-test', async (req, res, next) => {
 });
 
 // Termina un intento de test
-app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next) => {
+app.patch('/intento-test/:idIntentoTest/terminar-intento', requireAuth, async (req, res, next) => {
   try {
     const idIntentoTest = req.params.idIntentoTest;
     const idUsuario = req.session.user.id;
@@ -284,12 +285,12 @@ app.patch('/intento-test/:idIntentoTest/terminar-intento', async (req, res, next
   }
 });
 
-app.get('/nuevo-recordatorio', (req, res) => {
+app.get('/nuevo-recordatorio', requireAuth, (req, res) => {
   res.render("establecer-recordatorio");
 });
 
 // Ver información antes de realizar el test
-app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
+app.get('/curso/:idCurso/previsualizacion-de-test', requireAuth, async (req, res, next) => {
   try {
     const curso = await servicioIntento.obtenerIntentosTest(req.params.idCurso, req.session.user.id);
     
@@ -297,8 +298,8 @@ app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
     res.render('previsualizar-test', {
       idTest: curso.test.id,
       tituloTest: curso.test.titulo,
-      numIntentos: intentosPorUsuario.length,
-      intentos: intentosPorUsuario,
+      numIntentos: curso.test.intentos.length,
+      intentos: curso.test.intentos,
     });
 
   } catch (error) {
@@ -306,7 +307,7 @@ app.get('/curso/:idCurso/previsualizacion-de-test', async (req, res, next) => {
   }
 });
 
-app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
+app.get('/logro-curso/:idIntentoTest', requireAuth, async (req, res, next) => {
   try {
     const intento = await servicioLogro.ObtenerLogro(req.params.idIntentoTest);
     const idUsuario=req.session.user?.id;
@@ -338,7 +339,7 @@ app.get('/logro-curso/:idIntentoTest', async (req, res, next) => {
   }
 });
 
-app.get('/establecer-recordatorio', (req, res) => {
+app.get('/establecer-recordatorio', requireAuth, (req, res) => {
   res.render('establecer-recordatorio', {
     mensajeError: null,
     mensajeExito: null
@@ -346,7 +347,7 @@ app.get('/establecer-recordatorio', (req, res) => {
 });
 
 
-app.post('/crear-recordatorio', (req, res) => {
+app.post('/crear-recordatorio', requireAuth, (req, res) => {
   const { fecha, email, mensaje, asunto, time } = req.body;
 
   // Mostrar los datos recibidos para verificar

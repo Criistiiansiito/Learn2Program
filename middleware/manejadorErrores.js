@@ -6,7 +6,8 @@ const {
   IntentoPreguntaNoEncontradoError, 
   TestNoEncontradoError, 
   IntentoTestTerminadoError,
-  CursoNoEncontradoError
+  CursoNoEncontradoError,
+  PreguntasSinResponderError
  } = require("../utils/errores");
 
 // Gestiona las posibles excepciones
@@ -32,6 +33,9 @@ function errorHandler(err, req, res, next) {
   }
   if (err instanceof CursoNoEncontradoError) {
     return manejaError(StatusCodes.NOT_FOUND, err.message);
+  }
+  if (err instanceof PreguntasSinResponderError) {
+    return manejaError(StatusCodes.CONFLICT, err.message);
   }
   console.error("Error no manejado:", err);
   res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: ReasonPhrases.INTERNAL_SERVER_ERROR });

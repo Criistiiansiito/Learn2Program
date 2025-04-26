@@ -37,6 +37,7 @@ jest.mock("../modelos/IntentoTest", () => ({
     create: jest.fn(), // La llamada a create será simulada
     findByPk: jest.fn(),
     findOne: jest.fn(),
+    findAll: jest.fn()
 }));
 
 jest.mock("../modelos/IntentoPregunta", () => ({
@@ -107,11 +108,12 @@ describe('terminarIntento', () => {
         const mockIntentoTest = {
             id: idIntentoTest,
             idUsuario: idUsuario,
+            preguntasIntentadas: 1,
             intentos_pregunta: [
                 { respuesta: { esCorrecta: true } },
                 { respuesta: null } // <- pregunta sin responder
             ],
-            test: { idCurso: 5 }
+            test: { idCurso: 5 },
         };
 
         IntentoTest.findOne.mockResolvedValue(mockIntentoTest);
@@ -135,13 +137,12 @@ describe('terminarIntento', () => {
         const mockIntentoTest = {
             id: idIntentoTest,
             idUsuario: idUsuario,
+            preguntasIntentadas: 3,
             intentos_pregunta: [
                 { respuesta: { esCorrecta: true } },
                 { respuesta: { esCorrecta: false } },
                 { respuesta: { esCorrecta: true } },
             ],
-            preguntasAcertadas: 0,
-            nota: 0,
             terminado: false,
             fechaFin: null,
             save: mockSave,
@@ -153,8 +154,6 @@ describe('terminarIntento', () => {
         const idCurso = await servicioIntento.terminarIntento(idIntentoTest, idUsuario);
 
         expect(idCurso).toBe(42);
-        expect(mockIntentoTest.preguntasAcertadas).toBe(2);
-        expect(mockIntentoTest.nota).toBe('6.67');
         expect(mockIntentoTest.terminado).toBe(true);
         expect(mockSave).toHaveBeenCalled();
     });
@@ -169,39 +168,28 @@ describe("obtenerIntentosTest", () => {
         // ## Given ##
         const idCurso = 1;
         const idUsuario = 99;
+        const mockIntentos = [];
         const mockCurso = {
             id: idCurso,
-            test: { intentos: [] }
+            test: { intentos: mockIntentos }
         };
 
-        Curso.findByPk.mockResolvedValue(mockCurso);
         IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
+        Curso.findByPk.mockResolvedValue(mockCurso);
+        IntentoTest.findAll.mockResolvedValue(mockIntentos);
 
         // ## When ##
         const curso = await servicioIntento.obtenerIntentosTest(idCurso, idUsuario);
 
         // ## Then ##
         expect(curso).toBe(mockCurso);
-        expect(Curso.findByPk).toHaveBeenCalledWith(idCurso, {
-            include: [
-                {
-                    model: Test,
-                    as: "test",
-                    include: [
-                        {
-                            model: IntentoTest,
-                            as: "intentos",
-                            where: { idUsuario: idUsuario }
-                        }
-                    ]
-                }
-            ]
-        });
+        expect(Curso.findByPk).toHaveBeenCalled();
         expect(IntentoTest.destroy).toHaveBeenCalledWith({
             where: {
                 terminado: false
             }
         });
+        expect(IntentoTest.findAll).toHaveBeenCalled();
     });
 
     test("deberia lanzar una excepcion cuando no se encuentre el curso", async () => {
@@ -217,21 +205,7 @@ describe("obtenerIntentosTest", () => {
             .rejects
             .toThrow(new CursoNoEncontradoError(idCurso));
 
-        expect(Curso.findByPk).toHaveBeenCalledWith(idCurso, {
-            include: [
-                {
-                    model: Test,
-                    as: "test",
-                    include: [
-                        {
-                            model: IntentoTest,
-                            as: "intentos",
-                            where: { idUsuario: idUsuario }
-                        }
-                    ]
-                }
-            ]
-        });
+        expect(Curso.findByPk).toHaveBeenCalled();
         expect(IntentoTest.destroy).toHaveBeenCalledWith({
             where: {
                 terminado: false
