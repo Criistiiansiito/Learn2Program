@@ -83,6 +83,10 @@ app.get('/', async (req, res) => {
       as: "temas"
     }]
   });
+  //Carga título de los cursos
+  const tituloCursos = await Curso.findAll({
+    attributes: ['titulo']
+  });
   console.log("Carga de la página principal");
   res.render('ver-teoria-curso', { curso: curso });
 
