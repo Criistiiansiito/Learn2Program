@@ -159,13 +159,13 @@ app.get('/registro', async (req, res) => {
   res.render('registro');
 });
 
-// Maneja el formulario de registro de un nuevo usuario, y muestra mensajes de alerta en caso de haber error
-// y en caso de exito redirije a la vista de inicio de sesión, mostrando un mensaje de registro exitoso.
+// Maneja el formulario de registro de un nuevo usuario, y muestra mensajes de alerta en caso de error
+// y en caso de éxito redirige a la vista de inicio de sesión, mostrando un mensaje de registro exitoso.
 app.post('/register', async (req, res) => {
   try {
     const correo = req.body.correo;
     const password = req.body.password;
-    const password2 = req.body.password2; // Añadimos también el segundo password
+    const password2 = req.body.password2; // Segunda contraseña
 
     // Validar formato del correo
     const correoValido = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|es|org|net)$/;
@@ -173,15 +173,24 @@ app.post('/register', async (req, res) => {
     if (!correoValido.test(correo)) {
       return res.status(400).json({
         success: false,
-        message_error: 'Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)'
+        message_error: 'Introduce un correo válido (ejemplo: usuario@dominio.com, .es ...)',
       });
     }
-console.log(password + 'y contraseña' + password2);
+
     // Comprobar que ambas contraseñas coincidan
     if (password !== password2) {
       return res.status(400).json({
         success: false,
-        message_error: 'Las contraseñas no coinciden. Por favor, inténtalo de nuevo.'
+        message_error: 'Las contraseñas no coinciden. Por favor, inténtalo de nuevo.',
+      });
+    }
+
+    // Validar seguridad de la contraseña
+    const passwordSeguro = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordSeguro.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message_error: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.',
       });
     }
 
@@ -191,7 +200,7 @@ console.log(password + 'y contraseña' + password2);
     if (usuarioExistente) {
       return res.status(400).json({
         success: false,
-        message_error: '¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.'
+        message_error: '¡Ese usuario ya está registrado! Inicia sesión para acceder a la teoría.',
       });
     }
 

@@ -417,8 +417,8 @@ describe("POST /register", () => {
     test("Debería registrar un usuario nuevo correctamente", async () => {
         const nuevoUsuario = {
             correo: "usuario" + Date.now() + "@correo.com", // Para evitar duplicados
-            password: "contrasena123",
-            password2: "contrasena123" // 🔥 Añadido
+            password: "Contrasena123",
+            password2: "Contrasena123" 
         };
 
         const response = await request(app)
@@ -436,7 +436,7 @@ describe("POST /register", () => {
         // Creamos el usuario previamente (directamente en la BD con hash)
         const bcrypt = require('bcrypt');
         const Usuario = require('../modelos/Usuario');
-        const contraseñaHasheada = await bcrypt.hash('password123', 10);
+        const contraseñaHasheada = await bcrypt.hash('Password123', 10); 
 
         await Usuario.findOrCreate({
             where: { correo: correoDuplicado },
@@ -447,8 +447,8 @@ describe("POST /register", () => {
             .post('/register')
             .send({
                 correo: correoDuplicado,
-                password: 'password123',
-                password2: 'password123' // 🔥 Añadido
+                password: 'Password123',
+                password2: 'Password123'
             });
 
         expect(response.status).toBe(400);
@@ -460,8 +460,8 @@ describe("POST /register", () => {
             .post('/register')
             .send({
                 correo: "correo-invalido",
-                password: "123456",
-                password2: "123456" // 🔥 Añadido
+                password: "Password123",
+                password2: "Password123"
             });
 
         expect(response.status).toBe(400);
@@ -473,12 +473,25 @@ describe("POST /register", () => {
             .post('/register')
             .send({
                 correo: "nuevoUsuario" + Date.now() + "@correo.com",
-                password: "123456",
-                password2: "654321" // 🔥 Contraseñas distintas
+                password: "Password123",
+                password2: "Password321" 
             });
 
         expect(response.status).toBe(400);
         expect(response.body.message_error).toBe('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
+    });
+
+    test("Debería fallar si la contraseña no cumple los requisitos de seguridad", async () => {
+        const response = await request(app)
+            .post('/register')
+            .send({
+                correo: "seguridad" + Date.now() + "@correo.com",
+                password: "12345678",  
+                password2: "12345678"
+            });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message_error).toBe('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.');
     });
 
 });
