@@ -4,7 +4,6 @@ const Test = require('../modelos/Test');
 const Pregunta = require('../modelos/Pregunta');
 const Respuesta = require('../modelos/Respuesta');
 const IntentoTest = require('../modelos/IntentoTest');
-const Respuesta = require('../modelos/Respuesta');
 const IntentoPregunta = require('../modelos/IntentoPregunta');
 const { 
     IntentoTestTerminadoError, 

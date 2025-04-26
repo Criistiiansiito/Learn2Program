@@ -110,9 +110,7 @@ class ServicioIntentoTest {
         intentoTest.nota = ((intentoTest.preguntasAcertadas / numeroPreguntas) * 10).toFixed(2);
         intentoTest.terminado = true;
         intentoTest.fechaFin = new Date();
-        
-        intentoTest.nota = ((intentoTest.preguntasAcertadas / totalPreguntas) * 10).toFixed(2);
-        
+                
         await intentoTest.save();
         
         // Guardamos el intento actualizado
