@@ -542,6 +542,7 @@ button {
 .dropdown-menu{
     background-color: rgb(19, 45, 54) !important;
     border-width: 5px;
+    transform: translateX(-50px);
 }
 
 .dropdown-item{
