@@ -929,7 +929,7 @@ async function seedDatabase() {
                     {
                         numero: 1,
                         enunciado: "¿Cuál es la sintaxis correcta para generar \"Hello World\" en Java?",
-                        retroalimentacion: "La forma correcta es: System.out.println(\"Hello World\");",
+                        retroalimentacion: "La respuesta correcta es System.out.println(\"Hello World\");. En Java, para imprimir texto en consola usamos System.out.println(), asegurándonos de escribir el texto entre comillas y finalizar la instrucción con un punto y coma.",
                         respuestas: [
                             { texto: "System.out.println(\"Hello World\");", esCorrecta: true },
                             { texto: "Console.Writeline(\"Hello World\");", esCorrecta: false },
@@ -951,7 +951,7 @@ async function seedDatabase() {
                     {
                         numero: 3,
                         enunciado: "¿Cómo se insertan COMENTARIOS en el código Java?",
-                        retroalimentacion: "Se usan // para comentarios de línea y /* */ para comentarios de bloque.",
+                        retroalimentacion: "La respuesta correcta es // Esto es un comentario. En Java, los comentarios de una sola línea se escriben con //. Para comentarios de varias líneas, se usan /* comentario */. Otros símbolos como # o <!-- --> pertenecen a otros lenguajes.",
                         respuestas: [
                             { texto: "//Esto es un comentario", esCorrecta: true },
                             { texto: "/* Esto es un comentario", esCorrecta: true },
@@ -973,7 +973,7 @@ async function seedDatabase() {
                     {
                         numero: 5,
                         enunciado: "¿Cómo se crea una variable con el valor numérico 5?",
-                        retroalimentacion: "La forma correcta es: int x = 5;",
+                        retroalimentacion: "La respuesta correcta es int x = 5;. En Java, int se utiliza para declarar variables de tipo entero. Siempre terminamos las declaraciones con un punto y coma.",
                         respuestas: [
                             { texto: "num x = 5", esCorrecta: false },
                             { texto: "int x = 5;", esCorrecta: true },
@@ -1006,7 +1006,7 @@ async function seedDatabase() {
                     {
                         numero: 8,
                         enunciado: "¿Qué operador se utiliza para sumar dos valores?",
-                        retroalimentacion: "El signo + se utiliza para sumar valores.",
+                        retroalimentacion: "La respuesta correcta es el signo +. En Java, el operador + se utiliza tanto para sumar números como para concatenar (unir) cadenas de texto.",
                         respuestas: [
                             { texto: "El signo *", esCorrecta: false },
                             { texto: "El signo &", esCorrecta: false },
@@ -1028,7 +1028,7 @@ async function seedDatabase() {
                     {
                         numero: 10,
                         enunciado: "¿Qué método se puede usar para devolver una cadena en letras mayúsculas?",
-                        retroalimentacion: "Se utiliza toUpperCase() para convertir una cadena a mayúsculas.",
+                        retroalimentacion: "La respuesta correcta es toUpperCase(). Este método convierte todos los caracteres de una cadena a mayúsculas. Recuerda que en Java, la sintaxis es sensible a mayúsculas y minúsculas (toUpperCase, no touppercase).",
                         respuestas: [
                             { texto: "toUpperCase()", esCorrecta: true },
                             { texto: "touppercase()", esCorrecta: false },
@@ -1061,7 +1061,7 @@ async function seedDatabase() {
                     {
                         numero: 13,
                         enunciado: "¿Qué método se puede utilizar para hallar el mayor valor de x e y?",
-                        retroalimentacion: "Se usa Math.max(x, y) para hallar el mayor valor.",
+                        retroalimentacion: "La respuesta correcta es Math.max(x,y). El método Math.max() compara dos valores y devuelve el mayor. Es parte de la clase Math en Java, que contiene funciones matemáticas útiles.",
                         respuestas: [
                             { texto: "Math.max(x,y)", esCorrecta: true },
                             { texto: "Math.maxNum(x,y)", esCorrecta: false },
@@ -1072,7 +1072,7 @@ async function seedDatabase() {
                     {
                         numero: 14,
                         enunciado: "¿Cómo se crea un método en Java?",
-                        retroalimentacion: "Se declara como: tipo nombre() { ... }",
+                        retroalimentacion: "La respuesta correcta es Methodname(). En Java, para definir un método se especifica el tipo de retorno, el nombre del método y se colocan paréntesis, que pueden contener parámetros si es necesario.",
                         respuestas: [
                             { texto: "Methodnmae.", esCorrecta: false },
                             { texto: "Methodnmae[]", esCorrecta: false },
