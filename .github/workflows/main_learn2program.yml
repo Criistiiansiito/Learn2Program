@@ -7,6 +7,9 @@ on:
   pull_request: 
     branches:
       - main
+  push:
+    branches:
+      - dev
       
   workflow_dispatch:
  
@@ -61,6 +64,13 @@ jobs:
         run: unzip release.zip
 
       - name: Run tests
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
         run: |
           npm test
       

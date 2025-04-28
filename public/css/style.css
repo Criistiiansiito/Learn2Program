@@ -1,0 +1,541 @@
+html, body {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.contedor-principal{
+    flex: 1; 
+    min-height: 70vh; /* Opcionalmente, establece un mínimo */
+}
+
+.titulos{
+    color:rgb(19, 45, 54);
+}
+
+.logo-llorando{
+    width: 400px; 
+    margin-top: 5%;
+}
+
+.accordion-item {
+    margin-bottom: 20px; /* Margen que hay entre cada uno de los temas */
+    border: none; /* Eliminamos el borde que sino se lia con el "boton" de cada tema */
+}
+
+/* Asegurarse de que el accordion-header cubra todo el fondo y no deje espacio */
+.accordion-header {
+    background-color: transparent; /* Transaparente para que no influya con el button */
+    cursor: pointer;
+    text-align: left; /* Alinea el texto del header para que empiece a la izquierda */
+    font-size: 1.2em; /* Tamaño de la fuente */
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;  /* Esto separa el texto y el ícono, uno a la izquierda y el otro a la derecha */
+    align-items: center;  /* Alinea el texto y el ícono verticalmente */
+    width: 100%;  /* Asegura que el contenedor ocupe todo el espacio disponible */
+}
+
+/* Fondo y borde consistente para el botón de acordeón */
+.accordion-button {
+    background-color: rgba(19, 45, 54, 0.507) !important; /* Azul uniforme para el fondo */
+    border: 1px solid #ffffff !important; /* Borde azul */
+    color: white !important; /* Texto blanco */
+    padding: 0.75rem 1.25rem; /* Ajustar padding */
+    margin: 0; /* Eliminar cualquier margen */
+    box-sizing: border-box; /* Asegura que el ancho incluya bordes y rellenos */
+    border-radius: 0; /* Eliminar borde redondeado si quieres bordes rectos */
+    height: 70px; /* Establece una altura fija para el botón */  
+}
+
+/* Fondo y borde consistente cuando el acordeón está abierto */
+.accordion-button:not(.collapsed) {
+    background-color: rgba(19, 45, 54, 0.76) !important; /* Azul oscuro pero más transparente para que cuando se haga el hover se vea el cambio de color */
+    box-sizing: border-box;
+    border-radius: 0; /* Eliminar borde redondeado si no quieres bordes redondeados */
+}
+
+/* Cambia el color del botón (cuadro del titulo de cada tema) cuando el ratón pasa por encima */
+.accordion-button:hover {
+    background-color: rgb(19, 45, 54) !important; /* Azul más oscuro, como el footer y header */  
+    font-size: 1.10rem; /* Aumenta el tamaño de letra un poco */
+    transform: scale(1.01); /* Aumenta la escala del recuadro de cada tema*/
+}
+
+/* Contenido del acordeón oculto por defecto */
+.accordion-content {
+    text-align: justify;
+    display: none;
+    padding: 20px;
+    background-color: #fafafa;
+    border-top: 1px solid #ddd;
+    transition: max-height 0.5s ease;
+    overflow: hidden;
+    max-height: 0;
+}
+
+.accordion-content.show {
+    display: block;
+    max-height: 5000px; /* Esta es la altura máxima del body que se despliega de cada tema, se puede aumentar si hace falta más, pero no creo */
+}
+
+/* Botón para subir */
+.scroll-to-top {
+    text-decoration: none;
+    position: fixed;
+    bottom: 15%;
+    right: 0; 
+    background-color:rgba(19, 45, 54, 0.685); 
+    color: #fff; 
+    width: 50px;
+    height: 50px;
+    border-top-left-radius: 10px; 
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0;  
+    border-bottom-right-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: color 0.3s, opacity 0.3s, visibility 0.3s;  
+    z-index: 1000;
+}
+  
+.scroll-to-top:hover {
+    color: rgb(17, 41, 49);  /* La flecha se vuelve dorada al pasar el ratón */
+}
+  
+.scroll-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Diseño*/
+.accordion-button::after {
+    background-color: #ffffffb4;         
+    border-radius: 50%;             
+}
+
+/* Estilo general para el fondo y texto */
+pre {
+    background-color: #1e1e1e;  /* Fondo oscuro */
+    padding: 15px;
+    border-radius: 5px;
+    font-family: "Courier New", monospace;
+    color: #d4d4d4;  /* Texto blanco claro por defecto */
+    overflow-x: auto; /* Para permitir desplazamiento horizontal si el código es largo */
+    margin-bottom: 20px; /* Espacio entre los bloques de código */
+}
+
+/* Comentarios */
+.comentario {
+    color: #6a9955;  /* Verde */
+    font-style: italic; /* Cursiva para comentarios */
+}
+
+/* Palabras clave */
+.palabra_clave {
+    color: #569cd6;  /* Azul claro (para palabras clave como int, return, etc.) */
+}
+
+/* Cadenas de texto */
+.cadena {
+    color: #ce9178;  /* Naranja suave */
+}
+
+/* Números */
+.numero {
+    color: #b5cea8;  /* Verde claro */
+}
+
+/* Operadores */
+.operador {
+    color: #dcdcaa;  /* Amarillo */
+}
+
+/* Funciones */
+.funcion {
+    color: #dcdcaa;  /* Amarillo (para funciones como cout, main, etc.) */
+}
+
+/* Librerías */
+.libreria {
+    color: #ce9178;  /* Naranja (para <iostream>) */
+}
+
+/* Directiva #include y cout << */
+.incluir {
+    color: #a8a8a8;  /* Gris */
+}
+
+/* return en violeta */
+.return {
+    color: #c586c0;  /* Violeta */
+}
+
+/* Comandos de terminal */
+.comando {
+    color: #d4d4d4;  /* Gris claro para los comandos de la terminal */
+    font-weight: bold;  /* Hacer los comandos un poco más destacados */
+}
+
+/* Comentarios en comandos de terminal */
+.comando-comentario {
+    color: #6a9955;  /* Verde para los comentarios en los comandos */
+}
+
+/* Agregar más espaciado entre los elementos */
+h1, h2, p {
+    margin-bottom: 20px;
+}
+
+/* Mejorar la apariencia de los enlaces */
+a {
+    color: #569cd6;  /* Azul para enlaces */
+    text-decoration: none;  /* Quitar subrayado */
+}
+
+a:hover {
+    text-decoration: underline;  /* Subrayado al pasar el ratón */
+}
+
+/* Resaltar el bloque de código completo con borde oscuro */
+.bloque-codigo {
+    border: 1px solid #444;  /* Borde gris oscuro y delgado */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top:2%;
+    margin-bottom:2%;
+}
+
+.btn.btn-primary{
+    border-radius: 20px;
+    width:200px;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.boton-test{
+    display:flex;
+    justify-content: center;
+}
+
+.boton-vista-test {
+    white-space: nowrap; 
+    display: inline-flex; 
+    align-items: center; 
+    padding: 10px 20px; 
+    width: auto; 
+    font-size: 1rem;
+    margin-top: 50px;
+    box-sizing: border-box; 
+}
+
+.btn.btn-primary:hover{
+    background-color: rgb(24, 24, 69);
+}
+
+footer {
+    background: linear-gradient(to right, rgb(11, 26, 36), rgb(19, 45, 54)); /* degradado de izquierda a derecha */
+    color: white;
+    padding: 1rem;
+    font-size:100%;
+    text-align: center; 
+    width: 100vw; /* Fuerza el ancho completo */
+}
+
+nav {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    color: white;
+    padding-left: 0rem;
+    width: 100%;
+}
+
+.logo {
+    width: 6%; 
+}
+
+.nombre-app {
+    margin-left: 2%;
+    margin-top:2%;
+    font-size: 2.4vh; 
+}
+
+/* Con esto evitamos que el titulo de los enlaces del navbar se dividan en varias líneas */
+.navbar-nav .nav-item {
+    white-space: nowrap; 
+}
+
+.navbar-nav .nav-link {
+    color: white; 
+}
+
+.navbar-nav .nav-link:hover {
+    color: #6c757d;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+.navbar-toggler {
+    position: relative;
+    top: -40px; /* Ajusta este valor según sea necesario */
+}
+
+.pregunta {
+    background-color: #b3cde0;
+    border: 1px solid #7195bb;
+}
+
+.pregunta .form-check-input {
+    margin-right: 10px; /* Ajusta el valor según lo que necesites */
+}
+
+.retroalimentacion {
+    background-color: #f5e6a1;
+    border: 1px solid #e2cb6f;
+}
+
+.btn-personalizado {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    border-radius: 40px;
+    border-color: #ffffff;
+    color: white; 
+    transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.btn-personalizado:hover {
+    background: linear-gradient(to right, rgba(17, 39, 54, 0.411), rgba(19, 45, 54, 0.438));
+    border-color: #ffffff;
+    color: white;
+}
+
+i{
+    margin-right:10px;
+}
+
+.table-custom th {
+    background: linear-gradient(to right, rgb(17, 39, 54), rgb(19, 45, 54));
+    color: #ffffff; 
+}
+
+hr.linea-separacion {
+    border: 0;
+    border-top: 1px solid rgb(17, 39, 54); 
+    margin: 30px 0; 
+    opacity: 1; 
+}
+                
+.recuadro-gris {
+    border: 2px solid #ccc; 
+    border-radius: 10px; 
+    padding: 15px;
+    background-color: #cacaca; 
+    font-size: 1.2rem; 
+    height:150px;
+}
+
+#alertMessage .close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 2rem; /* Aumenta el tamaño */
+    opacity: 1;
+    position: absolute;
+    top: -30px;
+    right: 10px;
+}
+#alertMessage {
+    position: relative;
+    padding-right: 2.5rem; /* Asegura espacio suficiente a la derecha */
+}
+
+.form-container {
+    margin-top:2%;
+    background-color: #f5f5f5;
+    padding: 30px;
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    width: 100%;
+    max-width: 600px;
+}
+
+.form-content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #666;
+}
+
+.bg-correct {
+    background-color: #abcd8c; 
+}
+
+.bg-incorrect {
+    background-color: #eb9892; 
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #aaa;
+}
+
+select {
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="%23333" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+    background-size: 12px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.date-time-group {
+    display: flex;
+    gap: 20px; /* Adjust spacing between date and time fields */
+}
+
+.input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="date"]:disabled {
+    background-color: #f0f0f0;
+    opacity: 0.6;
+}
+
+button {
+    display: block; 
+    margin: 20px auto; 
+    color: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.text {
+    font-size:1.2rem;
+    font-weight: bold;
+    color: rgb(7, 7, 34) !important;
+    animation: colorChange 3s linear infinite;
+}
+
+@keyframes colorChange {
+    0% { color: red; }
+    25% { color: orange; }
+    50% { color: green; }
+    75% { color: blue; }
+    100% { color: red; }
+}
+
+.modal-header{
+    background-color: #07063ad5;
+   
+}
+
+.modal-title{
+
+    font-size: 1rem !important;
+}
+
+/* Cambiar color de la cruz de cerrar a blanco */
+.modal-header .btn-close {
+    color: white !important; /* Cambiar color del icono de cerrar a blanco */
+    opacity: 1 !important; /* Asegura que el icono sea completamente opaco */
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    background-color: transparent !important; /* Evita el color de fondo cuando se pasa el ratón */
+    border: none !important; /* Elimina el borde */
+}
+
+.custom-box {
+    background-color: #bbd1e7; 
+    border: 0.125rem solid #07063a; 
+    box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.1); 
+    border-radius: 0.9375rem; 
+}
+
+.custom-title {
+    color: #0b213d; 
+    font-family: 'Poppins', sans-serif; /* Cambiar a Poppins */
+    font-weight: bold;
+}
+
+.custom-text {
+    color: #282a2c; 
+    font-size: 0.9rem; 
+    font-family: 'Poppins', sans-serif; 
+
+    width: bold;
+}
+
+.custom-button {
+    background-color: #07063a !important;
+    color: white !important;
+    border-radius: 1.875rem !important; 
+    padding: 0.75rem 1.875rem !important; 
+    font-size: 1rem !important;
+    font-weight: bold !important;
+}
+
+@media (max-width: 800px) {
+    /* Contenido del acordeón oculto por defecto */
+    .accordion-content {
+        padding: 15px;
+        font-size:90%;
+    }
+
+    .footer{
+        font-size:80%;
+    }
+
+    .logo{
+        width: 10%;
+    }
+    
+    .nombre-app {
+        margin-left: 3%;
+        font-size: 2vh; 
+    }
+
+}

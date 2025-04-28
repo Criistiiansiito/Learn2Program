@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="/css/logro-modal.css">
+
+<div class="modal" id="logro-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Logro obtenido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p><img src="/images/logo.png" class="img-fluid" alt="Logo-modal" style="width: 200px;height: 200px;" ></p>
+        <p class="text">¡Has pasado este curso! ¡Enhorabuena!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var logroModal = document.getElementById('logro-modal');
+  logroModal.addEventListener('shown.bs.modal', function () {
+    var audio = new Audio('/sonidos/logro-modal.mp3');
+    audio.play();
+  });
+</script>
