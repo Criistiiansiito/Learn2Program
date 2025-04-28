@@ -37,7 +37,8 @@ jest.mock("../modelos/IntentoTest", () => ({
     create: jest.fn(), // La llamada a create será simulada
     findByPk: jest.fn(),
     findOne: jest.fn(),
-    findAll: jest.fn()
+    findAll: jest.fn(),
+    destroy: jest.fn()
 }));
 
 jest.mock("../modelos/IntentoPregunta", () => ({
@@ -174,7 +175,7 @@ describe("obtenerIntentosTest", () => {
             test: { intentos: mockIntentos }
         };
 
-        IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
+        IntentoTest.destroy.mockResolvedValue(true);
         Curso.findByPk.mockResolvedValue(mockCurso);
         IntentoTest.findAll.mockResolvedValue(mockIntentos);
 
@@ -186,7 +187,8 @@ describe("obtenerIntentosTest", () => {
         expect(Curso.findByPk).toHaveBeenCalled();
         expect(IntentoTest.destroy).toHaveBeenCalledWith({
             where: {
-                terminado: false
+                terminado: false,
+                idUsuario: idUsuario
             }
         });
         expect(IntentoTest.findAll).toHaveBeenCalled();
@@ -198,7 +200,7 @@ describe("obtenerIntentosTest", () => {
         const idUsuario = 99;
 
         Curso.findByPk.mockResolvedValue(null);
-        IntentoTest.destroy = jest.fn().mockResolvedValue(true); // Mock de IntentoTest.destroy
+        IntentoTest.destroy.mockResolvedValue(true);
 
         // ## When & Then ##
         await expect(servicioIntento.obtenerIntentosTest(idCurso, idUsuario))
@@ -208,7 +210,8 @@ describe("obtenerIntentosTest", () => {
         expect(Curso.findByPk).toHaveBeenCalled();
         expect(IntentoTest.destroy).toHaveBeenCalledWith({
             where: {
-                terminado: false
+                terminado: false,
+                idUsuario: idUsuario
             }
         });
     });

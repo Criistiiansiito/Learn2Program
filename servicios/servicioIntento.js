@@ -272,7 +272,8 @@ class ServicioIntentoTest {
         // Eliminamos los intentos no terminados
         await IntentoTest.destroy({
             where: {
-                terminado: false
+                terminado: false,
+                idUsuario: idUsuario
             }
         });
 
