@@ -552,3 +552,40 @@ button {
 .dropdown-item:hover {
     text-decoration: none;
 }
+
+/* Ver cursos */
+
+.course-card {
+    background-color: #e6f0fa;
+    position: relative;
+}
+.course-card p {
+    margin-bottom: 0.1rem;
+}
+.course-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.course-btn {
+    margin-bottom: 0.2rem;
+    padding: 0.5rem 1.5rem;
+}
+.course-btn:hover {
+    background-color: rgb(24, 24, 69);
+}
+.label {
+    color: rgb(0, 0, 200);
+}
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.header-container h1 {
+    margin-bottom: 0;
+}
+.header-container .input-group {
+    width: 300px;
+}
