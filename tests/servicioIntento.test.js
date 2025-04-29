@@ -17,7 +17,8 @@ jest.mock("../modelos/IntentoTest", () => ({
 }));
 
 jest.mock("../modelos/Curso", () => ({
-    findByPk: jest.fn()
+    findByPk: jest.fn(),
+    findAll: jest.fn()
 }));
 
 jest.mock("../modelos/Respuesta", () => ({
@@ -322,6 +323,21 @@ describe("intentarPregunta", () => {
         expect(mockIntentoTest.save).toHaveBeenCalled();
         expect(mockIntentoPregunta.idRespuesta).toBe(idRespuesta);
         expect(mockIntentoPregunta.save).toHaveBeenCalled();
+    })
+
+})
+
+describe("obtenerCursos", () => {
+
+    test("deberia devolver todos los cursos", async () => {
+        // ## Given ##
+        const mockCursos = [];
+        Curso.findAll.mockResolvedValue(mockCursos);
+        // ## When ##
+        const cursos = await servicioIntento.obtenerCursos();
+        // ## Then ##
+        expect(cursos).toBe(mockCursos);
+        expect(Curso.findAll).toHaveBeenCalled();
     })
 
 })
