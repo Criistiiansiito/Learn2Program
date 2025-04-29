@@ -87,6 +87,11 @@ require('dotenv').config();
    res.render('ver-teoria-curso', { curso: curso });
  
  });
+
+ app.get('/cursos', async (req, res) => {
+  const cursos = await servicioIntento.obtenerCursos();
+  res.render('ver-cursos', { cursos });
+ });
  
  app.get('/ver-teoria-curso/:idCurso', async (req, res) => {
    const idCurso = req.params.idCurso;

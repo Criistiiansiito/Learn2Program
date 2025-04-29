@@ -282,6 +282,15 @@ class ServicioIntentoTest {
         return curso;
     }
 
+    /**
+     * Obtiene los todos los cursos disponibles
+     * 
+     * @returns {Array<Object>} La lista de cursos
+     */
+    async obtenerCursos() {
+        return await Curso.findAll();
+    }
+
 }
 
 module.exports = new ServicioIntentoTest(); // Exportamos una instancia (singleton)
